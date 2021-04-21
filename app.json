@@ -1,0 +1,86 @@
+{
+  "expo": {
+    "name": "Mã bưu chính quốc gia",
+    "slug": "tracuumabuuchinh",
+    "version": "12",
+    "privacy": "unlisted",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "backgroundColor": "#ffffff",
+    "primaryColor": "#2DB08C",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "enabled": true,
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "raynext-p9",
+            "project": "postalcode",
+            "authToken": "f3419805812d4f83be269e85d9ff0ade8171a8e656264fcf9831c2b7b73a5ddf"
+          }
+        }
+      ]
+    },
+    "android": {
+      "package": "htn.tracuumabuuchinh",
+      "versionCode": 17,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA"
+        }
+      },
+      "useNextNotificationsApi": true
+    },
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Ma buu chinh needs to access your camera to be able to scan QR-codes of postal code.",
+        "NSContactsUsageDescription": "This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.",
+        "NSLocationWhenInUseUsageDescription": "Ma buu chinh needs to know your location to find place's postal code around you.",
+        "NSLocationAlwaysUsageDescription": "Ma buu chinh needs to know your location to find place's postal code around you.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Ma buu chinh needs to know your location to find place's postal code around you.",
+        "NSLocationUsageDescription": "Ma buu chinh needs to know your location to find place's postal code around you.",
+        "NSMicrophoneUsageDescription": "This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.",
+        "NSMotionUsageDescription": "This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.",
+        "NSPhotoLibraryAddUsageDescription": "This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.",
+        "NSPhotoLibraryUsageDescription": "This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.",
+        "NSRemindersUsageDescription": "This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "api.mabuuchinh.vn": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+            }
+          }
+        }
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "mabuuchinh",
+      "buildNumber": "8",
+      "config": {
+        "googleMapsApiKey": "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA",
+        "usesNonExemptEncryption": false
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": ""
+  }
+}
