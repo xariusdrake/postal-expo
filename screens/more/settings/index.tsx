@@ -259,7 +259,7 @@ function MoreInfoScreen(props) {
 					<Divider />
 					<Setting
 						style={styles.setting}
-						hint="Kiểm tra cập nhật"
+						hint="Cập nhật phiên bản mới"
 						onPress={() => UpdateApp()}
 					/>
 					{/*<Setting

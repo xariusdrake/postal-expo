@@ -362,24 +362,24 @@ function createPostalLocationScreen(props) {
 		<TopNavigationAction icon={MenuIcon} onPress={toggleMenu} />
 	);
 
-	const renderRightActions = () => (
-		<React.Fragment>
-			{isUpdate == true && (
-				<OverflowMenu
-					anchor={renderMenuAction}
-					visible={menuVisible}
-					onBackdropPress={toggleMenu}
-				>
-					<MenuItem
-						accessoryLeft={InfoIcon}
-						title="Xoá"
-						onSelect={() => console.log("work")}
-					/>
-				</OverflowMenu>
-			)}
-			{/*isUpdate == false && <TopNavigationAction icon={SubmitIcon} />*/}
-		</React.Fragment>
-	);
+	// const renderRightActions = () => (
+	// 	<React.Fragment>
+	// 		{isUpdate == true && (
+	// 			<OverflowMenu
+	// 				anchor={renderMenuAction}
+	// 				visible={menuVisible}
+	// 				onBackdropPress={toggleMenu}
+	// 			>
+	// 				<MenuItem
+	// 					accessoryLeft={InfoIcon}
+	// 					title="Xoá"
+	// 					onSelect={() => console.log("work")}
+	// 				/>
+	// 			</OverflowMenu>
+	// 		)}
+	// 		{/*isUpdate == false && <TopNavigationAction icon={SubmitIcon} />*/}
+	// 	</React.Fragment>
+	// );
 
 	const renderRightLocation = () => (
 		<Button size="small" onPress={() => setIsMain(true)}>
@@ -430,7 +430,7 @@ function createPostalLocationScreen(props) {
 								: "Đăng ký mã bưu chính"
 						}
 						accessoryLeft={renderBackAction}
-						accessoryRight={renderRightActions}
+						// accessoryRight={renderRightActions}
 					/>
 					<Divider />
 					<Spinner visible={loading} />

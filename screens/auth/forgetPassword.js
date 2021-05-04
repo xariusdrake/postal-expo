@@ -210,7 +210,7 @@ function ForgetPasswordScreen(props) {
 									}
 								>
 									<Text style={styles.textSignUp}>
-										Đăng nhập
+										Quay về đăng nhập
 									</Text>
 								</TouchableOpacity>
 							</View>

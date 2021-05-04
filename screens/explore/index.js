@@ -174,22 +174,22 @@ function ExploreScreen(props) {
 		}
 	}
 
-	async function TestThisShit() {
-		await axios(
-			"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
-			{
-				method: "get",
-				headers: {
-					// "Content-type": "Application/json",
-					// Accept: "Application/json",
-					// Authorization: jwt,
-				},
-				data: {},
-			}
-		).then((res) => {
-			console.log(188, res);
-		});
-	}
+	// async function TestThisShit() {
+	// 	await axios(
+	// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
+	// 		{
+	// 			method: "get",
+	// 			headers: {
+	// 				// "Content-type": "Application/json",
+	// 				// Accept: "Application/json",
+	// 				// Authorization: jwt,
+	// 			},
+	// 			data: {},
+	// 		}
+	// 	).then((res) => {
+	// 		console.log(188, res);
+	// 	});
+	// }
 
 	useEffect(() => {
 		askPermissions();
@@ -200,18 +200,18 @@ function ExploreScreen(props) {
 		// 	.then((res) => console.log(596, res))
 		// 	.then((json) => console.log(json));
 
-		axios
-			.get(
-				`http://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52`
-			)
-			.then((res) => {
-				console.log(18822, res);
-				Alert.alert("WORK");
-			})
-			.catch((error) => {
-				console.log(123, error);
-				Alert.alert("ERR");
-			});
+		// axios
+		// 	.get(
+		// 		`http://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52`
+		// 	)
+		// 	.then((res) => {
+		// 		console.log(18822, res);
+		// 		Alert.alert("WORK");
+		// 	})
+		// 	.catch((error) => {
+		// 		console.log(123, error);
+		// 		Alert.alert("ERR");
+		// 	});
 
 		// fetch("https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52")
 		// 	.then((response) => response.json())
@@ -361,7 +361,7 @@ function ExploreScreen(props) {
 					<Tab title="Trang chủ">
 						<Layout style={styles.container}>
 							<Text style={styles.title} category="h6">
-								MÃ BƯU CHÍNH QUỐC GIA VIỆT NAMM
+								MÃ BƯU CHÍNH QUỐC GIA VIỆT NAM
 							</Text>
 							<TouchableOpacity
 								onPress={() =>

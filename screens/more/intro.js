@@ -55,14 +55,14 @@ function IntroModalScreen(props) {
 					backgroundColor: "#fff",
 				}}
 			>
-				<Text style={styles.text}>1. Cấu trúc Mã bưu chính</Text>
+				<Text style={{ fontWeight: "bold" }}>1. Cấu trúc Mã bưu chính</Text>
 				<Text style={styles.description}>
 					Mã bưu chính quốc gia gồm tập hợp 05 (năm) ký tự số, cụ thể
 				</Text>
-				<Text style={styles.text}>
+				<Text style={{ fontWeight: "bold" }}>
 					2. Lợi ích của việc sử dụng Mã bưu chính
 				</Text>
-				<Text style={styles.description}>
+				<Text style={{ fontWeight: "bold" }}>
 					2.1 Đối với người sử dụng dịch vụ bưu chính
 				</Text>
 
@@ -83,7 +83,7 @@ function IntroModalScreen(props) {
 					- Chất lượng cung ứng dịch vụ được nâng cao.
 				</Text>
 
-				<Text style={styles.description}>
+				<Text style={{ fontWeight: "bold" }}>
 					2.2 Đối với tổ chức, doanh nghiệp cung ứng dịch vụ bưu chính
 				</Text>
 
@@ -121,7 +121,6 @@ function IntroModalScreen(props) {
 					vụ; xây Dựng kế hoạch kinh doanh và quản lý hoạt động bán
 					hàng có hiệu quả hơn.
 				</Text>
-
 				<Text style={styles.description}>
 					- Tạo thêm nguồn thu thông qua hoạt động đáp ứng nhu cầu
 					nghiên cứu thị trường của tổ chức, cá nhân.
@@ -151,6 +150,10 @@ const styles = StyleSheet.create({
 		height: 50,
 		// position: "absolute",
 	},
+	description: {
+
+        paddingTop: 5,
+	}
 });
 
 function mapStateToProps(state) {

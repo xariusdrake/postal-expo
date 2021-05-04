@@ -99,6 +99,11 @@ function DetailPostalScreen(props) {
 		// console.log(90, getLocation);
 	};
 
+	function translateAddress(address) {
+		let address = address.replace("District", "");
+		return 1
+	}
+
 	return (
 		<View>
 			<View style={{ ...styles.head }}>
@@ -132,12 +137,12 @@ function DetailPostalScreen(props) {
 				</Text>
 				{response.postal.type == 1 && (
 					<Text>
-						Địa chỉ: {getAddress != null ? getAddress : "Đang cập nhật"}
+						Địa chỉ: {getAddress != null ? translateAddress(getAddress) : "Đang cập nhật"}
 					</Text>
 				)}
 				{response.postal.type == 2 && (
 					<Text>
-						Địa chỉ: {response.postal.address != null ? response.postal.address : "Đang cập nhật"}
+						Địa chỉ: {response.postal.address != null ? translateAddress(response.postal.address) : "Đang cập nhật"}
 					</Text>
 				)}
 			</Card>

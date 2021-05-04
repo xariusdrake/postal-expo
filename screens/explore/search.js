@@ -144,7 +144,7 @@ function SearchScreen(props) {
 			>
 				<Input
 					style={styles.messageInput}
-					placeholder="Tên địa điểm, mã bưu chính..."
+					placeholder="Tên địa điểm, số mã bưu chính"
 					value={textSearch}
 					onChangeText={(textSearch) => setTextSearch(textSearch)}
 					// icon={MicIcon}

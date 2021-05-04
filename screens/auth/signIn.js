@@ -268,7 +268,7 @@ function SignInScreen(props) {
 									}
 								>
 									<Text style={styles.textSignUp}>
-										Tìm kiếm
+										Quay về tìm kiếm
 									</Text>
 								</TouchableOpacity>
 							</View>
