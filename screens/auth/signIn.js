@@ -40,7 +40,7 @@ function SignInScreen(props) {
 			data: dataLogin,
 		},
 	] = useLazyQuery(QUERY_LOGIN_USER, {
-		// fetchPolicy: "no-cache",
+		fetchPolicy: "no-cache",
 		onCompleted: (dataLogin) => {
 			console.log("onCompleted");
 			console.log(dataLogin);
@@ -268,7 +268,7 @@ function SignInScreen(props) {
 									}
 								>
 									<Text style={styles.textSignUp}>
-										Quay về tìm kiếm
+										Quay về
 									</Text>
 								</TouchableOpacity>
 							</View>

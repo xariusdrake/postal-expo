@@ -13,6 +13,8 @@ import { StatusBar } from "expo-status-bar";
 // import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
+// import * as Updates from "expo-updates";
+
 import { connect } from "react-redux";
 import {
 	Text,
@@ -174,25 +176,85 @@ function ExploreScreen(props) {
 		}
 	}
 
-	// async function TestThisShit() {
-	// 	await axios(
-	// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
-	// 		{
-	// 			method: "get",
-	// 			headers: {
-	// 				// "Content-type": "Application/json",
-	// 				// Accept: "Application/json",
-	// 				// Authorization: jwt,
-	// 			},
-	// 			data: {},
+	function TestThisShit() {
+		// axios({
+		// 	method: "get",
+		// 	url:
+		// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
+		// 	headers: { "Content-Type": "application/json" },
+		// 	// params: {
+		// 	// 	category_id: 3,
+		// 	// 	page: this.page,
+		// 	// },
+		// })
+		// 	.then((response) => {
+		// 		console.log(response);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.log(error);
+		// 	});
+
+		axios(
+			"https://reqres.in/api/users?page=2",
+			{
+				method: "get",
+				headers: {
+					"Content-Type": "application/json",
+					// "Content-type": "Application/json",
+					// Accept: "Application/json",
+					// Authorization: jwt,
+				},
+				data: {},
+			}
+		).then((res) => {
+			console.log(188, res);
+		});
+	}
+
+	// async function checkUpdate() {
+	// 	console.log("UpdateApp");
+	// 	try {
+	// 		const update = await Updates.checkForUpdateAsync();
+	// 		if (update.isAvailable) {
+	// 			Alert.alert(
+	// 				// "Alert Title",
+	// 				"Cập nhập phiên bản mới",
+	// 				[
+	// 					{
+	// 						text: "Để sau",
+	// 						// onPress: () => Alert.alert("Cancel Pressed"),
+	// 						style: "cancel",
+	// 					},
+	// 					{
+	// 						text: "Cập nhật",
+	// 						onPress: () => updateVersion(),
+	// 					},
+	// 				],
+	// 				{
+	// 					cancelable: true,
+	// 					// onDismiss: () =>
+	// 					// 	Alert.alert(
+	// 					// 		"This alert was dismissed by tapping outside of the alert dialog."
+	// 					// 	),
+	// 				}
+	// 			);
+	// 		} else {
+	// 			console.log("update: not new");
 	// 		}
-	// 	).then((res) => {
-	// 		console.log(188, res);
-	// 	});
+	// 	} catch (e) {
+	// 		// handle or log error
+	// 		console.log(e);
+	// 	}
+	// }
+
+	// async function updateVersion() {
+	// 	await Updates.fetchUpdateAsync();
+	// 	await Updates.reloadAsync();
 	// }
 
 	useEffect(() => {
 		askPermissions();
+		// checkUpdate();
 
 		// fetch(
 		// 	"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52"
@@ -222,7 +284,7 @@ function ExploreScreen(props) {
 		// 		console.error(error);
 		// 	});
 
-		// TestThisShit();
+		TestThisShit();
 		// axios({
 		// 	method: "get",
 		// 	// baseURL: baseUrl,

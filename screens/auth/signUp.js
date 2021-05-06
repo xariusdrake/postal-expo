@@ -20,7 +20,7 @@ import { connect } from "react-redux";
 import { AppLoading } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, gql } from "@apollo/client";
 import { MUTATION_SIGNUP_USER } from "../../graphql/query";
 
 import { isEmpty, isMin } from "../../functions/strings";
@@ -28,6 +28,14 @@ import { isEmpty, isMin } from "../../functions/strings";
 import appConfigs from "../../config";
 
 const color_blue = "#0469c1";
+
+const QUERY_CHECK_PHONE = gql`
+	query QueryCheckPhone($phone: String!) {
+		users(where: { phone: { _eq: $phone } }) {
+			id
+		}
+	}
+`;
 
 function SignUpScreen(props) {
 	const [
@@ -39,6 +47,7 @@ function SignUpScreen(props) {
 			data: dataSignUp,
 		},
 	] = useMutation(MUTATION_SIGNUP_USER, {
+		fetchPolicy: "no-cache",
 		onCompleted: (dataSignUp) => {
 			console.log("onCompleted");
 			console.log(dataSignUp);
@@ -58,6 +67,39 @@ function SignUpScreen(props) {
 		onError: (errorSignUp) => {
 			console.log("onErrorX");
 			console.log(errorSignUp);
+		},
+	});
+
+	const [
+		checkPhone,
+		{
+			error: errorCheckPhone,
+			called: calledCheckPhone,
+			loading: loadingCheckPhone,
+			data: dataCheckPhone,
+		},
+	] = useLazyQuery(QUERY_CHECK_PHONE, {
+		fetchPolicy: "no-cache",
+		onCompleted: (dataCheckPhone) => {
+			console.log("dataCheckToken onCompleted");
+			console.log(dataCheckPhone);
+			console.log(dataCheckPhone.users[0].id);
+
+			if (dataCheckPhone.users[0].id != null) {
+				Alert.alert("Số điện thoại đã được đăng ký!");
+			} else {
+				signUpUser({
+					variables: {
+						fullname: fullnameInput,
+						phone: phoneInput.toString(),
+						password: passwordInput,
+					},
+				});
+			}
+		},
+		onError: (errorCheckPhone) => {
+			console.log("onError errorCheckToken");
+			console.log(errorCheckPhone);
 		},
 	});
 
@@ -104,7 +146,7 @@ function SignUpScreen(props) {
 	const onClickSignUp = async () => {
 		Keyboard.dismiss();
 
-		let phoneno = /^\d{10}$/;
+		// let phoneno = /^\d{10}$/;
 
 		if (isMin(fullnameInput, appConfigs.VALIDATE.PROFILE.MIN_FULLNAME)) {
 			Alert.alert("Họ tên từ 6 đến 15 ký tự");
@@ -125,13 +167,7 @@ function SignUpScreen(props) {
 
 		console.log(111, fullnameInput, phoneInput, passwordInput);
 
-		signUpUser({
-			variables: {
-				fullname: fullnameInput,
-				phone: phoneInput.toString(),
-				password: passwordInput,
-			},
-		});
+		checkPhone({ variables: { phone: phoneInput.toString() } });
 	};
 
 	if (props.token) {
@@ -237,10 +273,11 @@ function SignUpScreen(props) {
 									setRePasswordInput(text)
 								}
 							/>
+
 							<TouchableOpacity
 								style={[
 									styles.forgotContainer,
-									{ height: 44, marginTop: 16 },
+									{ height: 44, marginTop: 10 },
 								]}
 							>
 								<Text

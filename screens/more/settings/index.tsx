@@ -7,6 +7,7 @@ import {
 	View,
 	SafeAreaView,
 	ScrollView,
+	Alert,
 } from "react-native";
 
 import { connect } from "react-redux";
@@ -63,11 +64,11 @@ function MoreInfoScreen(props) {
 	// 	// onError: (errorInfo) => {},
 	// });
 
-	const [soundEnabled, setSoundEnabled] = React.useState<boolean>(false);
+	// const [soundEnabled, setSoundEnabled] = React.useState < boolean > false;
 
-	const toggleSound = (): void => {
-		setSoundEnabled(!soundEnabled);
-	};
+	// const toggleSound = (): void => {
+	// 	setSoundEnabled(!soundEnabled);
+	// };
 
 	const logout = async () => {
 		try {
@@ -89,25 +90,32 @@ function MoreInfoScreen(props) {
 	// 	}
 	// });
 
-	function signin() {
-		props.navigation.navigate("SignIn");
-	}
+	// function signin() {
+	// 	props.navigation.navigate("SignIn");
+	// }
 
-	async function UpdateApp() {
+	async function checkUpdate() {
 		console.log("UpdateApp");
 		try {
 			const update = await Updates.checkForUpdateAsync();
 			if (update.isAvailable) {
+				Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
+
 				await Updates.fetchUpdateAsync();
-				// ... notify user of update ...
 				await Updates.reloadAsync();
 			} else {
+				Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
+
 				console.log("nothing");
 			}
 		} catch (e) {
-			// handle or log error
 			console.log(e);
 		}
+	}
+
+	async function updateVersion() {
+		await Updates.fetchUpdateAsync();
+		await Updates.reloadAsync();
 	}
 
 	return (
@@ -130,7 +138,7 @@ function MoreInfoScreen(props) {
 											}
 										>
 											<Text
-												style={styles.profileLocation}
+												// style={styles.profileLocation}
 												appearance="hint"
 												category="s1"
 											>
@@ -253,15 +261,16 @@ function MoreInfoScreen(props) {
 							category="s1"
 							style={{ color: "#0469c1" }}
 						>
-							Phiên bản 2.4
+							Phiên bản 2.4.1
 						</Text>
 					</TouchableOpacity>
 					<Divider />
 					<Setting
 						style={styles.setting}
 						hint="Cập nhật phiên bản mới"
-						onPress={() => UpdateApp()}
+						onPress={() => checkUpdate()}
 					/>
+
 					{/*<Setting
 					style={styles.setting}
 					hint="Đăng ký mã bưu chính [X]"

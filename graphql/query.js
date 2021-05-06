@@ -155,6 +155,57 @@ export const QUERY_FORGET_PASSWORD_CHECK_PHONE = gql`
 	}
 `;
 
+export const QUERY_FORGET_PASSWORD_CHECK_CODE = gql`
+	query QueryForgetPasswordCheckCode($code: Int!, $phone: Int!) {
+		user_confirm_code(
+			where: { code: { _eq: $code }, phone: { _eq: $phone } }
+		) {
+			id
+		}
+	}
+`;
+
+export const MUTATION_FORGET_PASSWORD_CHANGE = gql`
+	mutation Mobile_UpdateProfileDetail(
+		$uid: Int!
+		$newPassword: String!
+	) {
+		update_users(
+			where: { id: { _eq: $uid }}
+			_set: { password: $newPassword }
+		) {
+			returning {
+				id
+				fullname
+				phone
+				gender
+				birthday
+				address
+				token
+				is_actived
+				is_deleted
+				postals(where: { is_deleted: { _eq: 0 } }) {
+					id
+					name
+					phone
+					address
+					image_url
+					lng
+					lat
+					code
+					phone
+					region
+					type
+					uid
+					is_approved
+					is_actived
+					created_at
+				}
+			}
+		}
+	}
+`;
+
 export const MUTATION_UPDATE_PROFILE_DETAIL = gql`
 	mutation Mobile_UpdateProfileDetail(
 		$id: Int!
@@ -165,7 +216,12 @@ export const MUTATION_UPDATE_PROFILE_DETAIL = gql`
 	) {
 		update_users(
 			where: { id: { _eq: $id } }
-			_set: { fullname: $fullname, gender: $gender, birthday: $birthday, address: $address }
+			_set: {
+				fullname: $fullname
+				gender: $gender
+				birthday: $birthday
+				address: $address
+			}
 		) {
 			returning {
 				id
@@ -321,8 +377,14 @@ export const MUTATION_UPDATE_POSTAL = gql`
 `;
 
 export const MUTATION_CREATE_CODE_CONFIRM = gql`
-	mutation Mobile_MutationCreateCodeConfirm($code: Int!, $uid: Int, $phone: Int) {
-		insert_user_confirm_code(objects: { code: $code, uid: $uid, phone: $phone }) {
+	mutation Mobile_MutationCreateCodeConfirm(
+		$code: Int!
+		$uid: Int
+		$phone: Int
+	) {
+		insert_user_confirm_code(
+			objects: { code: $code, uid: $uid, phone: $phone }
+		) {
 			returning {
 				id
 				code

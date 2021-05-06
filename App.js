@@ -33,13 +33,16 @@ import { FontAwesome5 } from "@expo/vector-icons";
 // AUTH
 import SignInScreen from "./screens/auth/signIn";
 import SignUpScreen from "./screens/auth/signUp";
+
 import ForgetPasswordScreen from "./screens/auth/forgetPassword";
+import ForgetPasswordStepEnterCode from "./screens/auth/forgetPassword/stepEnterCode";
+import ForgetPasswordStepNewPassword from "./screens/auth/forgetPassword/stepNewPassword";
 
 // EXPLORE
 import ExploreScreen from "./screens/explore";
 // import MapScreen from "./screens/explore/Map";
 import SearchExploreScreen from "./screens/explore/search";
-import SearchedResultsScreen from "./screens/searchedResults";
+// import SearchedResultsScreen from "./screens/searchedResults";
 import FilterModalScreen from "./screens/explore/filterModalScreen";
 
 // POSTAL
@@ -47,9 +50,8 @@ import MyPostalScreen from "./screens/postal/myPostal";
 import CreatePostalScreen from "./screens/postal/createPostal";
 import CreatePostalLocationScreen from "./screens/postal/createPostalLocation";
 
-// import DetailPostalScreen from "./screens/postal/detailPostal";
-import DetailPostalScreen from "./screens/postal/detailPostalX";
-import EditPostalScreen from "./screens/postal/editPostal";
+import DetailPostalScreen from "./screens/postal/detailPostal";
+// import EditPostalScreen from "./screens/postal/editPostal";
 import ScanQRScreen from "./screens/postal/scanQR";
 
 // ACCOUNT
@@ -63,7 +65,6 @@ import VerifyPhoneNumberScreen from "./screens/account/phoneNumber/verifyPhoneNu
 // MORE
 // import MoreScreen from "./screens/more";
 import MoreScreen from "./screens/more/settings";
-import MoreIndexScreen from "./screens/more/indexx";
 import IntroModalScreen from "./screens/more/intro";
 import DocumentModalScreen from "./screens/more/document";
 import GuideModalScreen from "./screens/more/guide";
@@ -276,6 +277,16 @@ function MainStackScreen() {
 				component={ForgetPasswordScreen}
 				options={{ headerShown: false }}
 			/>
+			<MainStack.Screen
+				name="ForgetPasswordStepEnterCode"
+				component={ForgetPasswordStepEnterCode}
+				options={{ headerShown: false }}
+			/>
+			<MainStack.Screen
+				name="ForgetPasswordStepNewPassword"
+				component={ForgetPasswordStepNewPassword}
+				options={{ headerShown: false }}
+			/>
 		</MainStack.Navigator>
 	);
 }
@@ -320,10 +331,10 @@ function App() {
 								name="CreatePostalLocation"
 								component={CreatePostalLocationScreen}
 							/>
-							<RootStack.Screen
+							{/*<RootStack.Screen
 								name="EditPostal"
 								component={EditPostalScreen}
-							/>
+							/>*/}
 							<RootStack.Screen
 								name="ChangePhoneNumber"
 								component={ChangePhoneNumberScreen}
@@ -339,10 +350,6 @@ function App() {
 							<RootStack.Screen
 								name="ChangePassword"
 								component={ChangePasswordScreen}
-							/>
-							<RootStack.Screen
-								name="SearchedResults"
-								component={SearchedResultsScreen}
 							/>
 							<RootStack.Screen
 								name="IntroModal"

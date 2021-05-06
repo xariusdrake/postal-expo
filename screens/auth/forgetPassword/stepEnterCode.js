@@ -18,21 +18,21 @@ import { connect } from "react-redux";
 
 // custom fonts
 import { AppLoading } from "expo";
-import SMS from "../../functions/sms";
+import SMS from "../../../functions/sms";
 
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import {
 	MUTATION_CREATE_CODE_CONFIRM,
 	QUERY_FORGET_PASSWORD_CHECK_PHONE,
-} from "../../graphql/query";
+} from "../../../graphql/query";
 
-import { isEmpty, isMin } from "../../functions/strings";
+import { isEmpty, isMin } from "../../../functions/strings";
 
-import appConfigs from "../../config";
+import appConfigs from "../../../config";
 
 import Spinner from "react-native-loading-spinner-overlay";
 
-function ForgetPasswordScreen(props) {
+function ForgetPasswordStepEnterCodeScreen(props) {
 	const [
 		checkPhone,
 		{
@@ -153,7 +153,7 @@ function ForgetPasswordScreen(props) {
 									color: "#000",
 								}}
 							>
-								Quên mật khẩu
+								Nhập mã xác nhận
 							</Text>
 
 							<Text style={[styles.textBlackSize14]}>
@@ -282,4 +282,4 @@ function mapStateToProps(state) {
 	return { token: state.token };
 }
 
-export default connect(mapStateToProps, null)(ForgetPasswordScreen);
+export default connect(mapStateToProps, null)(ForgetPasswordStepEnterCodeScreen);
