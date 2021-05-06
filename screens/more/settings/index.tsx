@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
 	StyleSheet,
 	TouchableOpacity,
@@ -70,6 +70,8 @@ function MoreInfoScreen(props) {
 	// 	setSoundEnabled(!soundEnabled);
 	// };
 
+	const [newUpdate, setNewUpdate] = useState(false);
+
 	const logout = async () => {
 		try {
 			await AsyncStorage.removeItem("@token");
@@ -84,11 +86,13 @@ function MoreInfoScreen(props) {
 		props.navigation.navigate("SignIn");
 	}
 
-	// useEffect(() => {
-	// 	if (!!props.infos.id) {
-	// 		liveUserInfo()
-	// 	}
-	// });
+	useEffect(() => {
+		// if (!!props.infos.id) {
+		// 	liveUserInfo()
+		// }
+
+		checkUpdate();
+	});
 
 	// function signin() {
 	// 	props.navigation.navigate("SignIn");
@@ -99,13 +103,14 @@ function MoreInfoScreen(props) {
 		try {
 			const update = await Updates.checkForUpdateAsync();
 			if (update.isAvailable) {
-				Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
+				setNewUpdate(false);
+				// Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
 
-				await Updates.fetchUpdateAsync();
-				await Updates.reloadAsync();
+				// await Updates.fetchUpdateAsync();
+				// await Updates.reloadAsync();
 			} else {
-				Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
-
+				setNewUpdate(true);
+				// Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
 				console.log("nothing");
 			}
 		} catch (e) {
@@ -114,6 +119,7 @@ function MoreInfoScreen(props) {
 	}
 
 	async function updateVersion() {
+		Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
 		await Updates.fetchUpdateAsync();
 		await Updates.reloadAsync();
 	}
@@ -265,11 +271,14 @@ function MoreInfoScreen(props) {
 						</Text>
 					</TouchableOpacity>
 					<Divider />
-					<Setting
-						style={styles.setting}
-						hint="Cập nhật phiên bản mới"
-						onPress={() => checkUpdate()}
-					/>
+
+					{newUpdate == true && (
+						<Setting
+							style={styles.setting}
+							hint="Cập nhật phiên bản mới"
+							onPress={() => updateVersion()}
+						/>
+					)}
 
 					{/*<Setting
 					style={styles.setting}
