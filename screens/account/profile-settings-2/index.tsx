@@ -137,6 +137,7 @@ function EditProfileScreen(props) {
 	});
 
 	const [fullnameInput, setFullnameInput] = useState("");
+	const [idNationInput, setIdNationInput] = useState("");
 	const [genderInput, setGenderInput] = useState("");
 	const [birthdayInput, setBirthdayInput] = useState("");
 	const [addressInput, setAddressInput] = useState("");
@@ -260,7 +261,26 @@ function EditProfileScreen(props) {
 					autoCapitalize="words"
 					value={fullnameInput}
 					onChangeText={(text) => setFullnameInput(text)}
+					style={{ paddingBottom: 15 }}
+				/>
+				<Datepicker
+					style={{ paddingBottom: 15 }}
+					label="Ngày sinh"
+					date={date}
+					onSelect={(nextDate) => setDate(nextDate)}
+					accessoryRight={CalendarIcon}
+					dateService={localeDateService}
+					{...localePickerState}
+				/>
+
+				<Input
+					placeholder=""
+					label="Số CMT/CCCD/Hộ chiếu"
+					autoCapitalize="words"
+					value={idNationInput}
+					onChangeText={(text) => setIdNationInput(text)}
 					style={{ paddingBottom: 5 }}
+					keyboardType="numeric"
 				/>
 				<Layout style={styles.containerRadio} level="1">
 					<RadioGroup
@@ -271,16 +291,6 @@ function EditProfileScreen(props) {
 						<Radio value="2">Nữ</Radio>
 					</RadioGroup>
 				</Layout>
-
-				{/*<Datepicker
-					style={{ paddingTop: 8 }}
-					label="Ngày sinh"
-					date={date}
-					onSelect={(nextDate) => setDate(nextDate)}
-					accessoryRight={CalendarIcon}
-					dateService={localeDateService}
-					{...localePickerState}
-				/>*/}
 
 				<Input
 					placeholder=""
@@ -311,6 +321,7 @@ const themedStyles = StyleService.create({
 	containerRadio: {
 		flexDirection: "row",
 		flexWrap: "wrap",
+		paddingBottom: 10
 	},
 	containerInput: {
 		flexDirection: "row",

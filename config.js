@@ -4,18 +4,18 @@ const appConfigs = {
         PAGE_MESSAGE: true
     },
     API: {
-        POSTAL: {
-            URI: 'https://api.mabuuchinh.vn/api/v1/MBC'
-        },
+        // POSTAL: {
+        //     URI: 'https://api.mabuuchinh.vn/api/v1/MBC'
+        // },
         GRAPHQL: {
             URI: 'https://postal.hasura.app/v1/graphql'
         },
-        SERVICE: {
-            URI: 'http://localhost:3000'
-        },
-        URL: {
-            BASE_URL: 'https://tin03.000webhostapp.com/mabuuchinh/data.php'
-        },
+        // SERVICE: {
+        //     URI: 'http://localhost:3000'
+        // },
+        // URL: {
+        //     BASE_URL: 'https://tin03.000webhostapp.com/mabuuchinh/data.php'
+        // },
     },
     REQUEST: {
         TIMEOUT: 30000
