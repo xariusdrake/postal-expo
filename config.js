@@ -10,6 +10,9 @@ const appConfigs = {
         GRAPHQL: {
             URI: 'https://postal.hasura.app/v1/graphql'
         },
+        VNPOST: {
+            URI: "https://api.mabuuchinh.vn/api/v1/MBC"
+        }
         // SERVICE: {
         //     URI: 'http://localhost:3000'
         // },

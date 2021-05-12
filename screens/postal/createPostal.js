@@ -160,9 +160,12 @@ function createPostalLocationScreen(props) {
 
 	const [indexLevel2, setIndexLevel2] = useState(new IndexPath(0));
 	const [displayLevel2, setDisplayLevel2] = useState("Chọn huyện");
+	const [dataPostalLevel2, setDataPostalLevel2] = useState([]);
 
 	const [indexLevel3, setIndexLevel3] = useState(new IndexPath(0));
 	const [displayLevel3, setDisplayLevel3] = useState("Chọn xã");
+	const [dataPostalLevel3, setDataPostalLevel3] = useState([]);
+	const [codeArea, setCodeArea] = useState(null);
 
 	const [nameInput, setNameInput] = useState("");
 	const [phoneInput, setPhoneInput] = useState("");
@@ -215,10 +218,10 @@ function createPostalLocationScreen(props) {
 						setCurrentLong(location.coords.longitude);
 					}
 
-					fetchAddress(
-						location.coords.latitude,
-						location.coords.longitude
-					);
+					// fetchAddress(
+					// 	location.coords.latitude,
+					// 	location.coords.longitude
+					// );
 
 					// });
 				} else {
@@ -314,6 +317,7 @@ function createPostalLocationScreen(props) {
 					name: nameInput,
 					phone: phoneInput.toString(),
 					address: addressInput,
+					code_area: codeArea,
 					type: 99,
 					image_url: "https://i.imgur.com/fkmKq6F.png",
 					lat: currentLat.toString(),
@@ -434,6 +438,7 @@ function createPostalLocationScreen(props) {
 					/>
 					<Divider />
 					<Spinner visible={loading} />
+					{/*
 					{currentLat != null && currentLong != null && (
 						<MapView
 							initialRegion={{
@@ -468,133 +473,8 @@ function createPostalLocationScreen(props) {
 							/>
 						</MapView>
 					)}
-					<Text
-						style={{
-							marginTop: 5,
-							paddingTop: 6,
-							paddingHorizontal: 10,
-							paddingBottom: 8,
-						}}
-					>
-						Địa chỉ
-					</Text>
-					<Select
-						placeholder="Chọn tỉnh thành"
-						value={displayLevel1}
-						selectedIndex={indexLevel1}
-						onSelect={(index) => {
-							setIndexLevel1(index);
-							setDisplayLevel1(
-								DataPostalLevel1[index.row]["name"]
-							);
-							var root =
-								"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52";
+					*/}
 
-							// Make a GET request
-
-							// axios
-							// 	.get(root)
-							// 	.then((data) => {
-							// 		console.log("data", data);
-							// 	})
-							// 	.catch((e) => {
-							// 		console.log("error", e);
-							// 	});
-							//
-
-							// fetch("https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52")
-							// 	.then((res) => console.log(596, res))
-							// 	.then((json) => console.log(json));
-
-							axios({
-								method: "get",
-								// baseURL: baseUrl,
-								url:
-									"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
-								headers: {
-									accept: "text/plain",
-									// 'x-app-key': baseUrl == appConfigs.API.URL.EID_URL ? appConfigs.API.SECRET_KEY : '',
-									// 'x-app-key': appConfigs.API.SECRET_KEY,
-									// 'Authorization': 'Bearer ' + token || '',
-								},
-								// params: params,
-							})
-								.then((data) => {
-									console.log("data", data);
-								})
-								.catch((e) => {
-									console.log("error", e);
-									// console.error("Failed to send captured exception to Sentry");
-								});
-							// axios
-							// 	.get("https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52")
-							// 	.then(function (response) {
-							// 		// handle success
-							// 		console.log(response);
-							// 	})
-							// 	.catch(function (error) {
-							// 		// handle error
-							// 		console.log(error);
-							// 	})
-							// 	.then(function () {
-							// 		// always executed
-							// 	});
-
-							// HTTPRequest.get({
-							// 	baseUrl:
-							// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies",
-							// 	// url: "/api/v1/MBC/GetAdministrativeAgencies",
-							// 	// token: this.props.authenticatedData.token,
-							// 	params: {
-							// 		parentPostCode: "51-52",
-							// 		version: "1",
-							// 	},
-							// })
-							// 	.then((res) => {
-							// 		console.log(500, res);
-							// 	})
-							// 	.catch((e) => {
-							// 		console.log(501, e);
-							// 	});
-						}}
-						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
-					>
-						{DataPostalLevel1.map((postal) => (
-							<SelectItem title={postal.name} />
-						))}
-					</Select>
-					<Select
-						placeholder="Chọn tỉnh thành"
-						value={displayLevel2}
-						selectedIndex={indexLevel2}
-						onSelect={(index) => {
-							setIndexLevel1(index);
-							setDisplayLevel1(
-								DataPostalLevel1[index.row]["name"]
-							);
-						}}
-						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
-					>
-						{DataPostalLevel1.map((postal) => (
-							<SelectItem title={postal.name} />
-						))}
-					</Select>
-					<Select
-						placeholder="Chọn tỉnh thành"
-						value={displayLevel3}
-						selectedIndex={indexLevel3}
-						onSelect={(index) => {
-							setIndexLevel1(index);
-							setDisplayLevel1(
-								DataPostalLevel1[index.row]["name"]
-							);
-						}}
-						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
-					>
-						{DataPostalLevel1.map((postal) => (
-							<SelectItem title={postal.name} />
-						))}
-					</Select>
 					<Text
 						style={{
 							marginTop: 5,
@@ -639,16 +519,142 @@ function createPostalLocationScreen(props) {
 					>
 						Địa chỉ
 					</Text>
-					{/*<Input
-							style={{ paddingHorizontal: 10 }}
-							placeholder=""
-							onPress={() =>
-								props.navigation.navigate(
-									"CreatePostalLocation"
-								)
-							}
-						/>*/}
+					<Select
+						placeholder="Chọn tỉnh thành"
+						value={displayLevel1}
+						selectedIndex={indexLevel1}
+						onSelect={(index) => {
+							setIndexLevel1(index);
+							setDisplayLevel1(
+								DataPostalLevel1[index.row]["name"]
+							);
 
+							// fetchGeocode(DataPostalLevel1[index.row]["name"])
+							axios({
+								method: "get",
+								url:
+									"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+									DataPostalLevel1[index.row]["code"],
+								headers: {
+									accept: "text/plain",
+								},
+							})
+								.then((data) => {
+									console.log("data", data);
+									setDataPostalLevel2(data.data);
+								})
+								.catch((e) => {
+									console.log("error", e);
+								});
+						}}
+						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
+					>
+						{DataPostalLevel1.map((postal) => (
+							<SelectItem title={postal.name} />
+						))}
+					</Select>
+					<Select
+						placeholder="Chọn tỉnh thành"
+						value={displayLevel2}
+						selectedIndex={indexLevel2}
+						onSelect={(index) => {
+							setIndexLevel2(index);
+							setDisplayLevel2(
+								dataPostalLevel2[index.row]["name"].replace(
+									"tỉnh " + displayLevel1,
+									""
+								)
+							);
+
+							// fetchGeocode(dataPostalLevel2[index.row]["name"])
+							axios({
+								method: "get",
+								url:
+									"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+									dataPostalLevel2[index.row]["postcode"],
+								headers: {
+									accept: "text/plain",
+								},
+							})
+								.then((data) => {
+									console.log("data", data);
+									setDataPostalLevel3(data.data);
+								})
+								.catch((e) => {
+									console.log("error", e);
+								});
+						}}
+						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
+					>
+						{dataPostalLevel2.map((postal) => (
+							<SelectItem
+								title={postal.name.replace(
+									"tỉnh " + displayLevel1,
+									""
+								)}
+							/>
+						))}
+					</Select>
+					<Select
+						placeholder="Chọn tỉnh thành"
+						value={displayLevel3}
+						selectedIndex={indexLevel3}
+						onSelect={(index) => {
+							setIndexLevel3(index);
+							setDisplayLevel3(
+								dataPostalLevel3[index.row]["name"]
+									.replace("tỉnh " + displayLevel1, "")
+									.replace(displayLevel2, "")
+							);
+
+							console.log(
+								601,
+								dataPostalLevel3[index.row]["postcode"]
+							);
+
+							setCodeArea(
+								dataPostalLevel3[index.row]["postcode"]
+							);
+
+							// fetchGeocode(dataPostalLevel3[index.row]["name"])
+						}}
+						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
+					>
+						{dataPostalLevel3.map((postal) => (
+							<SelectItem
+								title={postal.name
+									.replace("tỉnh " + displayLevel1, "")
+									.replace(""+ displayLevel2, "")}
+							/>
+						))}
+					</Select>
+					<Text
+						style={{
+							marginTop: 5,
+							paddingTop: 6,
+							paddingHorizontal: 10,
+							paddingBottom: 8,
+						}}
+					>
+						Địa chỉ (số nhà, đường)
+					</Text>
+					<Input
+						style={{ paddingHorizontal: 10 }}
+						placeholder=""
+						value={addressInput}
+						onChangeText={(text) => setAddressInput(text)}
+					/>
+
+					{/*<Text
+						style={{
+							marginTop: 5,
+							paddingTop: 6,
+							paddingHorizontal: 10,
+							paddingBottom: 8,
+						}}
+					>
+						Địa chỉ
+					</Text>
 					<TouchableOpacity onPress={() => setIsMain(false)}>
 						<View style={styles.input}>
 							<Text style={styles.input_text}>
@@ -657,7 +663,7 @@ function createPostalLocationScreen(props) {
 									: "Nhập địa chỉ của bạn"}
 							</Text>
 						</View>
-					</TouchableOpacity>
+					</TouchableOpacity>*/}
 
 					<Button
 						style={{ marginHorizontal: 10, marginTop: 15 }}

@@ -1140,6 +1140,11 @@
   dependencies:
     react-native-iphone-x-helper "^1.0.3"
 
+"@dietime/react-native-date-picker@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@dietime/react-native-date-picker/-/react-native-date-picker-1.1.2.tgz#896643a21dcacd5f19ad24b61dec9ebab9d10b4b"
+  integrity sha512-fON8rNI+0+0UE53uHHAwKMs/viD2iEbdgYLYjEAnfzBnWj0swA+2TDldU0f9qxCsvStEtyo7g8O8puTALhJXEg==
+
 "@egjs/hammerjs@^2.0.17":
   version "2.0.17"
   resolved "https://registry.yarnpkg.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"
@@ -1861,6 +1866,13 @@
     strip-ansi "^5.2.0"
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
+
+"@react-native-community/datetimepicker@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-2.4.0.tgz#6b3cf050f507f9b70d31d5a572e1153bb5bd50c9"
+  integrity sha512-ZXPwNAQt4T66PTL20l2nSEbtsn6vtsvFqdYWBfx8aaNKBoCPDygR6SsYzWcIoexKH5wmX0zctSzIsryl+Gtngg==
+  dependencies:
+    invariant "^2.2.4"
 
 "@react-native-community/datetimepicker@^3.0.2":
   version "3.4.3"
@@ -7084,6 +7096,11 @@ react-native-country-picker-modal@^2.0.0:
     prop-types "15.7.2"
     react-async-hook "3.6.1"
 
+react-native-date-picker@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-3.3.0.tgz#2fb5dd89c28c589e7105d1ab58d7f150fa73e7c6"
+  integrity sha512-7hllNNQtdg+vO92xNSjz6tsQBNOlr4VjYCG+4L65tPiYMolJ/JJeLbpA0WMtYtKKTitvFKr769ZaJeAGpx+3Wg==
+
 react-native-dotenv@^2.4.3:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-2.5.5.tgz#5450fe79859f8553e893129d9fccc855cd38ecd9"
@@ -7179,6 +7196,13 @@ react-native-maps@0.27.1:
   version "0.27.1"
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.27.1.tgz#2f10cd417bb2fd938c9e015b1c9b6d9b1a44b97f"
   integrity sha512-HygBkZBecTnIVRYrSiLRAvu4OmXOYso/A7c6Cy73HkOh9CgGV8Ap5eBea24tvmFGptjj5Hg8AJ94/YbmWK1Okw==
+
+react-native-modal-datetime-picker@^9.2.2:
+  version "9.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-modal-datetime-picker/-/react-native-modal-datetime-picker-9.2.2.tgz#b4a2b7b55b01f97adc7b47ccbe003336e0aa6403"
+  integrity sha512-ESA/ZWpfTT6PLsJChAS9lAfEeIIBW6M9jDIiRCfsHqtbo8oQvLfiLGlYYn89Omeh75aqCkirMPdJRhyh6ZDKhg==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-native-navigation-directions@^1.0.4:
   version "1.0.4"

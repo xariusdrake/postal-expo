@@ -189,7 +189,7 @@ function MoreInfoScreen(props) {
 								style={styles.setting}
 								hint="Chỉnh sửa tài khoản"
 								onPress={() =>
-									props.navigation.navigate("ProfileScreen2")
+									props.navigation.navigate("ProfileSetting")
 								}
 							/>
 							{/*<Text>{data.users[0].id}</Text>*/}

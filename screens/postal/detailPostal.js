@@ -280,7 +280,7 @@ function DetailPostalScreen(props) {
 	};
 
 	const postalCode = (postal) => {
-		return response.postal.code;
+		return response.postal.postcode;
 
 		// if (postal.type == 1) {
 		// 	return response.postal.code;
@@ -336,7 +336,8 @@ function DetailPostalScreen(props) {
 				<Divider />
 				<Spinner visible={loading} />
 				<Layout style={styles.header} level="1">
-					{response.postal.is_approved == 2 && (
+					{(response.is_search == 1 ||
+						response.postal.is_approved == 2) && (
 						<TouchableOpacity
 							style={{ paddingLeft: 10 }}
 							// style={{ flex: 1, alignItems: "center" }}
@@ -352,12 +353,15 @@ function DetailPostalScreen(props) {
 
 					<View style={styles.profileDetailsContainer}>
 						<Text style={styles.titleLabel} category="h4">
-							{(response.postal.name).replace("X. ", "Xã ").replace("P. ", "Phường ")}
+							{response.postal.name
+								.replace("X. ", "Xã ")
+								.replace("P. ", "Phường ")}
 						</Text>
 					</View>
 				</Layout>
 
-				{(response.postal.is_approved == 2 ||
+				{(response.is_search == 1 ||
+					response.postal.is_approved == 2 ||
 					response.postal.is_approved == 0) && (
 					<Text
 						style={{
@@ -385,7 +389,7 @@ function DetailPostalScreen(props) {
 					Số điện thoại:{" "}
 					{response.postal.phone != null
 						? response.postal.phone
-						: "Đang cập nhật"}
+						: "Đang cập nhật"}{" "}
 				</Text>
 
 				{response.postal.type != 99 && (
@@ -398,7 +402,9 @@ function DetailPostalScreen(props) {
 						category="s1"
 					>
 						Địa chỉ:{" "}
-						{getAddress != null ? translateAddress(getAddress) : "Đang cập nhật"}
+						{getAddress != null
+							? translateAddress(getAddress)
+							: "Đang cập nhật"}
 					</Text>
 				)}
 				{response.postal.type == 99 && (

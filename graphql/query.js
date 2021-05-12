@@ -614,6 +614,7 @@ export const MUTATION_CREATE_POSTAL = gql`
 		$image_url: String!
 		$phone: String!
 		$address: String!
+		$code_area: String!
 		$lat: String!
 		$lng: String!
 		$type: Int!
@@ -626,6 +627,7 @@ export const MUTATION_CREATE_POSTAL = gql`
 				image_url: $image_url
 				type: $type
 				address: $address
+				code_area: $code_area
 				lat: $lat
 				lng: $lng
 				uid: $uid

@@ -55,9 +55,8 @@ import DetailPostalScreen from "./screens/postal/detailPostal";
 import ScanQRScreen from "./screens/postal/scanQR";
 
 // ACCOUNT
-import ProfileScreen from "./screens/account";
-// import ProfileScreen1 from "./screens/account/profile-settings-1";
-import ProfileScreen2 from "./screens/account/profile-settings-2";
+// import ProfileScreen from "./screens/account";
+import ProfileSettingScreen from "./screens/account/profile-settings";
 import ChangePasswordScreen from "./screens/account/changePassword";
 import ChangePhoneNumberScreen from "./screens/account/phoneNumber/changePhoneNumber";
 import VerifyPhoneNumberScreen from "./screens/account/phoneNumber/verifyPhoneNumber";
@@ -315,10 +314,10 @@ function App() {
 								name="SearchExplore"
 								component={SearchExploreScreen}
 							/>
-							<RootStack.Screen
+							{/*<RootStack.Screen
 								name="Account"
 								component={ProfileScreen}
-							/>
+							/>*/}
 							{/*<RootStack.Screen
 								name="MapScreen"
 								component={MapScreen}
@@ -344,8 +343,8 @@ function App() {
 								component={VerifyPhoneNumberScreen}
 							/>
 							<RootStack.Screen
-								name="ProfileScreen2"
-								component={ProfileScreen2}
+								name="ProfileSetting"
+								component={ProfileSettingScreen}
 							/>
 							<RootStack.Screen
 								name="ChangePassword"

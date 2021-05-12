@@ -6,7 +6,7 @@ import {
 	Dimensions,
 	SafeAreaView,
 	View,
-	Platform
+	Platform,
 } from "react-native";
 import { connect } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -26,53 +26,94 @@ import { useLazyQuery } from "@apollo/client";
 import { QUERY_GET_ALL_POSTAL_PLACE } from "../../graphql/query";
 
 import Spinner from "react-native-loading-spinner-overlay";
+import axios from "axios";
 
 function SearchScreen(props) {
 	const navigation = useNavigation();
 
-	const [
-		getListPostal,
-		{
-			onCompleted,
-			networkStatus,
-			error: errorPostal,
-			called: calledPostal,
-			loading: loadingPostal,
-			data: dataPostal,
-		},
-	] = useLazyQuery(QUERY_GET_ALL_POSTAL_PLACE, {
-		onCompleted: () => {
-			// setLoading(false);
-			console.log(44, dataPostal.postals);
+	// const [
+	// 	getListPostal,
+	// 	{
+	// 		onCompleted,
+	// 		networkStatus,
+	// 		error: errorPostal,
+	// 		called: calledPostal,
+	// 		loading: loadingPostal,
+	// 		data: dataPostal,
+	// 	},
+	// ] = useLazyQuery(QUERY_GET_ALL_POSTAL_PLACE, {
+	// 	onCompleted: () => {
+	// 		// setLoading(false);
+	// 		console.log(44, dataPostal.postals);
 
-			setAllPostalList(dataPostal.postals);
-			console.log("onCompleted ", dataPostal.postals.length);
-		},
-		onError: () => {
-			console.log("onError");
-			console.log(errorPostal);
-		},
-	});
+	// 		setAllPostalList(dataPostal.postals);
+	// 		console.log("onCompleted ", dataPostal.postals.length);
+	// 	},
+	// 	onError: () => {
+	// 		console.log("onError");
+	// 		console.log(errorPostal);
+	// 	},
+	// });
 
+	const [loadingPostal, setLoadingPostal] = useState(false);
 	const [allPostalList, setAllPostalList] = useState({});
 	const [textSearch, setTextSearch] = useState("");
 	const [page, setPage] = useState(1);
 	// const [loading, setLoading] = useState(false);
 
 	async function findPostal() {
-
 		if (!loadingPostal) {
 			// setLoading(true);
 
 			console.log(73, textSearch);
-			
-			getListPostal({
-				variables: {
-					text: "%" + (textSearch.toLowerCase()).replace("xã", "x.").replace("phường", "p.") + "%",
-					// litmit: 10,
-					// offset: 0,
+
+			let s_name = ""
+			let s_postcode = ""
+
+			if (isNaN(textSearch) == true) {
+				s_name = textSearch
+					.toLowerCase()
+					.replace("xã", "x.")
+					.replace("phường", "p.");
+			} else {
+				s_postcode = textSearch;
+			}
+
+			setLoadingPostal(true)
+
+			axios({
+				method: "get",
+				url:
+					"https://api.mabuuchinh.vn/api/v1/MBC/GetPostalPaging?currentPage=1&limit=10&postcode=" +
+					s_postcode +
+					"&name=" +
+					s_name,
+				headers: {
+					accept: "text/plain",
 				},
-			});
+			})
+				.then((data) => {
+					setLoadingPostal(false)
+					console.log("data", data);
+					setAllPostalList(data.data.results);
+				})
+				.catch((e) => {
+					console.log("error", e);
+				});
+
+			// getListPostal({
+			// 	variables: {
+			// 		text:
+			// 			"%" +
+			// 			textSearch
+			// 				.toLowerCase()
+			// 				.replace("xã", "x.")
+			// 				.replace("phường", "p.") +
+			// 			"%",
+			// 		// litmit: 10,
+			// 		// offset: 0,
+			// 	},
+			// });
 		}
 	}
 
@@ -94,15 +135,14 @@ function SearchScreen(props) {
 	const renderIcon = (props) => <Icon {...props} name="home-outline" />;
 
 	let renderItem = ({ item, index }) => {
-
-		let name = (item.name).replace("X. ", "Xã ").replace("P. ", "Phường ");
+		let name = item.name.replace("X. ", "Xã ").replace("P. ", "Phường ");
 
 		return (
 			<ListItem
 				key={item.id}
 				title={`${name}`}
-				description={`${item.code}`}
-				onPress={() => navigation.navigate("Postal", { postal: item })}
+				description={`${item.postcode}`}
+				onPress={() => navigation.navigate("Postal", { postal: item, is_search: 1 })}
 				accessoryLeft={renderIcon}
 			/>
 		);
@@ -127,7 +167,7 @@ function SearchScreen(props) {
 			style={{
 				backgroundColor: "#fff",
 				height: Dimensions.get("window").height,
-				paddingTop: Platform.OS === 'android' ? 25 : 0
+				paddingTop: Platform.OS === "android" ? 25 : 0,
 			}}
 		>
 			<TopNavigation
@@ -166,7 +206,10 @@ function SearchScreen(props) {
 
 			{loadingPostal == true && (
 				<View style={{ ...styles.container }}>
-					<Text style={[styles.title, {marginTop: -200}]} category="h6">
+					<Text
+						style={[styles.title, { marginTop: -200 }]}
+						category="h6"
+					>
 						Đang tìm..
 					</Text>
 				</View>
@@ -184,7 +227,10 @@ function SearchScreen(props) {
 
 			{allPostalList.length == 0 && loadingPostal == false && (
 				<View style={{ ...styles.container }}>
-					<Text style={[styles.title, {marginTop: -200}]} category="h6">
+					<Text
+						style={[styles.title, { marginTop: -200 }]}
+						category="h6"
+					>
 						Không tìm thấy kết quả
 					</Text>
 				</View>
