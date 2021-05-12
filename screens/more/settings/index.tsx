@@ -177,9 +177,7 @@ function MoreInfoScreen(props) {
 												)
 											}
 										>
-											<Text style={{ color: "#0469c1" }}>
-												Xác thực
-											</Text>
+											<Text style={{ color: "#0469c1" }}>Xác thực</Text>
 										</Button>
 									</View>
 								)}

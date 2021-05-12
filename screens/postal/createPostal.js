@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	Dimensions,
 	SafeAreaView,
+	Alert,
 } from "react-native";
 import { connect } from "react-redux";
 
@@ -104,6 +105,25 @@ function createPostalLocationScreen(props) {
 
 			setNameInput(dataGet.postals[0].name);
 			setAddressInput(dataGet.postals[0].address);
+			setCodeArea(dataGet.postals[0].code_area);
+
+			setIndexLevel1(new IndexPath(parseInt(dataGet.postals[0].area_level1_index)));
+			setIndexLevel2(new IndexPath(parseInt(dataGet.postals[0].area_level2_index)));
+			setIndexLevel3(new IndexPath(parseInt(dataGet.postals[0].area_level3_index)));
+
+
+			// setIndexLevel1(dataGet.postals[0].area_level1_index);
+			// setIndexLevel2(dataGet.postals[0].area_level2_index);
+			// setIndexLevel3(dataGet.postals[0].area_level3_index);
+
+			console.log(114, indexLevel1, dataGet.postals[0].area_level1_index)
+
+			selectAreaLevel1(indexLevel1).then(() => {
+				selectAreaLevel2(indexLevel2).then(() => {
+					selectAreaLevel3(indexLevel3);
+				});
+			});
+
 			setPhoneInput(dataGet.postals[0].phone);
 			mapRef.current?.setAddressText(dataGet.postals[0].address);
 			setCurrentLat(dataGet.postals[0].lat);
@@ -164,6 +184,7 @@ function createPostalLocationScreen(props) {
 
 	const [indexLevel3, setIndexLevel3] = useState(new IndexPath(0));
 	const [displayLevel3, setDisplayLevel3] = useState("Chọn xã");
+	const [nameLevel3, setNameLevel3] = useState();
 	const [dataPostalLevel3, setDataPostalLevel3] = useState([]);
 	const [codeArea, setCodeArea] = useState(null);
 
@@ -270,6 +291,78 @@ function createPostalLocationScreen(props) {
 		);
 	}
 
+	async function selectAreaLevel1(index) {
+		setIndexLevel1(new IndexPath(index));
+
+		// console.log("indexLevel1 : ", indexLevel1);
+
+		setDisplayLevel1(DataPostalLevel1[index]["name"]);
+
+		// fetchGeocode(DataPostalLevel1[index.row]["name"])
+		await axios({
+			method: "get",
+			url:
+				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+				DataPostalLevel1[index]["code"],
+			headers: {
+				accept: "text/plain",
+			},
+		})
+			.then((data) => {
+				console.log("data selectAreaLevel1 list2", data);
+				setDataPostalLevel2(data.data);
+			})
+			.catch((e) => {
+				console.log("error", e);
+			});
+	}
+
+	async function selectAreaLevel2(index) {
+		setIndexLevel2(new IndexPath(index));
+		setDisplayLevel2(
+			dataPostalLevel2[index]["name"].replace("tỉnh " + displayLevel1, "")
+		);
+
+		// fetchGeocode(dataPostalLevel2[index.row]["name"])
+		await axios({
+			method: "get",
+			url:
+				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+				dataPostalLevel2[index]["postcode"],
+			headers: {
+				accept: "text/plain",
+			},
+		})
+			.then((data) => {
+				console.log("data", data);
+				setDataPostalLevel3(data.data);
+			})
+			.catch((e) => {
+				console.log("error", e);
+			});
+	}
+
+	async function selectAreaLevel3(index) {
+		setIndexLevel3(new IndexPath(index));
+		setDisplayLevel3(
+			dataPostalLevel3[index]["name"]
+				.replace("tỉnh " + displayLevel1, "")
+				.replace(displayLevel2, "")
+		);
+
+		setNameLevel3(dataPostalLevel3[index]["name"]);
+
+		console.log(
+			601,
+			dataPostalLevel3[index]["postcode"],
+			dataPostalLevel3[index]["name"]
+		);
+
+		setCodeArea(dataPostalLevel3[index]["postcode"]);
+
+		fetchGeocode(dataPostalLevel3[index]["name"]);
+	}
+
 	// if (queryLoading) return <Text>Loading...</Text>;
 	// if (queryError) {
 	//     console.log('queryError')
@@ -295,6 +388,26 @@ function createPostalLocationScreen(props) {
 			uid: props.infos.id,
 		});
 
+		if (!nameInput.trim()) {
+			Alert.alert("Vui lòng nhập tên địa điểm");
+			return;
+		} else if (!phoneInput.trim()) {
+			Alert.alert("Vui lòng nhập số điện thoại");
+			return;
+		} else if (!displayLevel1.trim()) {
+			Alert.alert("Vui lòng chọn tỉnh/thành phố");
+			return;
+		} else if (!displayLevel2.trim()) {
+			Alert.alert("Vui lòng chọn huyện");
+			return;
+		} else if (!displayLevel3.trim()) {
+			Alert.alert("Vui lòng chọn xã");
+			return;
+		} else if (!addressInput.trim()) {
+			Alert.alert("Vui lòng nhập địa chỉ");
+			return;
+		}
+
 		setLoading(true);
 
 		if (isUpdate == true) {
@@ -306,24 +419,34 @@ function createPostalLocationScreen(props) {
 					name: nameInput,
 					phone: phoneInput.toString(),
 					address: addressInput,
+					code_area: codeArea,
+					area_level1_index: parseInt(indexLevel1),
+					area_level2_index: parseInt(indexLevel2),
+					area_level3_index: parseInt(indexLevel3),
 					lat: currentLat.toString(),
 					lng: currentLong.toString(),
 					uid: props.infos.id,
 				},
 			});
 		} else {
-			createPostal({
-				variables: {
-					name: nameInput,
-					phone: phoneInput.toString(),
-					address: addressInput,
-					code_area: codeArea,
-					type: 99,
-					image_url: "https://i.imgur.com/fkmKq6F.png",
-					lat: currentLat.toString(),
-					lng: currentLong.toString(),
-					uid: props.infos.id,
-				},
+			fetchGeocode(addressInput + " ," + nameLevel3).then(() => {
+				console.log("done fetchGeocode.then");
+				createPostal({
+					variables: {
+						name: nameInput,
+						phone: phoneInput.toString(),
+						address: addressInput,
+						code_area: codeArea,
+						area_level1_index: parseInt(indexLevel1),
+						area_level2_index: parseInt(indexLevel2),
+						area_level3_index: parseInt(indexLevel3),
+						type: 99,
+						image_url: "https://i.imgur.com/fkmKq6F.png",
+						lat: currentLat.toString(),
+						lng: currentLong.toString(),
+						uid: props.infos.id,
+					},
+				});
 			});
 		}
 	}
@@ -524,28 +647,7 @@ function createPostalLocationScreen(props) {
 						value={displayLevel1}
 						selectedIndex={indexLevel1}
 						onSelect={(index) => {
-							setIndexLevel1(index);
-							setDisplayLevel1(
-								DataPostalLevel1[index.row]["name"]
-							);
-
-							// fetchGeocode(DataPostalLevel1[index.row]["name"])
-							axios({
-								method: "get",
-								url:
-									"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
-									DataPostalLevel1[index.row]["code"],
-								headers: {
-									accept: "text/plain",
-								},
-							})
-								.then((data) => {
-									console.log("data", data);
-									setDataPostalLevel2(data.data);
-								})
-								.catch((e) => {
-									console.log("error", e);
-								});
+							selectAreaLevel1(index.row);
 						}}
 						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
 					>
@@ -558,31 +660,33 @@ function createPostalLocationScreen(props) {
 						value={displayLevel2}
 						selectedIndex={indexLevel2}
 						onSelect={(index) => {
-							setIndexLevel2(index);
-							setDisplayLevel2(
-								dataPostalLevel2[index.row]["name"].replace(
-									"tỉnh " + displayLevel1,
-									""
-								)
-							);
+							selectAreaLevel2(index.row);
 
-							// fetchGeocode(dataPostalLevel2[index.row]["name"])
-							axios({
-								method: "get",
-								url:
-									"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
-									dataPostalLevel2[index.row]["postcode"],
-								headers: {
-									accept: "text/plain",
-								},
-							})
-								.then((data) => {
-									console.log("data", data);
-									setDataPostalLevel3(data.data);
-								})
-								.catch((e) => {
-									console.log("error", e);
-								});
+							// setIndexLevel2(index);
+							// setDisplayLevel2(
+							// 	dataPostalLevel2[index.row]["name"].replace(
+							// 		"tỉnh " + displayLevel1,
+							// 		""
+							// 	)
+							// );
+
+							// // fetchGeocode(dataPostalLevel2[index.row]["name"])
+							// axios({
+							// 	method: "get",
+							// 	url:
+							// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+							// 		dataPostalLevel2[index.row]["postcode"],
+							// 	headers: {
+							// 		accept: "text/plain",
+							// 	},
+							// })
+							// 	.then((data) => {
+							// 		console.log("data", data);
+							// 		setDataPostalLevel3(data.data);
+							// 	})
+							// 	.catch((e) => {
+							// 		console.log("error", e);
+							// 	});
 						}}
 						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
 					>
@@ -600,23 +704,27 @@ function createPostalLocationScreen(props) {
 						value={displayLevel3}
 						selectedIndex={indexLevel3}
 						onSelect={(index) => {
-							setIndexLevel3(index);
-							setDisplayLevel3(
-								dataPostalLevel3[index.row]["name"]
-									.replace("tỉnh " + displayLevel1, "")
-									.replace(displayLevel2, "")
-							);
+							selectAreaLevel3(index.row);
+							// setIndexLevel3(index);
+							// setDisplayLevel3(
+							// 	dataPostalLevel3[index.row]["name"]
+							// 		.replace("tỉnh " + displayLevel1, "")
+							// 		.replace(displayLevel2, "")
+							// );
 
-							console.log(
-								601,
-								dataPostalLevel3[index.row]["postcode"]
-							);
+							// setNameLevel3(dataPostalLevel3[index.row]["name"]);
 
-							setCodeArea(
-								dataPostalLevel3[index.row]["postcode"]
-							);
+							// console.log(
+							// 	601,
+							// 	dataPostalLevel3[index.row]["postcode"],
+							// 	dataPostalLevel3[index.row]["name"]
+							// );
 
-							// fetchGeocode(dataPostalLevel3[index.row]["name"])
+							// setCodeArea(
+							// 	dataPostalLevel3[index.row]["postcode"]
+							// );
+
+							// fetchGeocode(dataPostalLevel3[index.row]["name"]);
 						}}
 						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
 					>
@@ -624,7 +732,7 @@ function createPostalLocationScreen(props) {
 							<SelectItem
 								title={postal.name
 									.replace("tỉnh " + displayLevel1, "")
-									.replace(""+ displayLevel2, "")}
+									.replace("" + displayLevel2, "")}
 							/>
 						))}
 					</Select>

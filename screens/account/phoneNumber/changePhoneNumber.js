@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Animated, Image, SafeAreaView, View, Alert} from "react-native";
+import { Animated, Image, SafeAreaView, View, Alert } from "react-native";
 import { connect } from "react-redux";
 
 import {
@@ -49,9 +49,8 @@ function ChangePhoneNumberScreen(props) {
 					Alert.alert("Có lổi xảy ra. Vui lòng thử lại sau");
 				}, 800);
 			} else {
-
 				props.storeUserInfo(dataChange.update_users.returning[0]);
-				
+
 				props.navigation.navigate("More");
 				setTimeout(() => {
 					Alert.alert("Số điện thoại đã được thay đổi");
@@ -77,6 +76,11 @@ function ChangePhoneNumberScreen(props) {
 	);
 
 	const onClickSubmit = async () => {
+		if (!phoneInput.trim()) {
+			Alert.alert("Vui lòng nhập số điện thoại");
+			return;
+		}
+
 		changePhoneNumber({
 			variables: {
 				uid: props.infos.id,
@@ -153,4 +157,7 @@ function mapStateToProps(state) {
 	return { infos: state.infos };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChangePhoneNumberScreen);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(ChangePhoneNumberScreen);

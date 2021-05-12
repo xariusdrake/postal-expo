@@ -50,6 +50,10 @@ const REALTIME_QUERY_GET_ALL_MY_POSTAL = gql`
 			created_at
 			uid
 			address
+			code_area
+			area_level1_index
+			area_level2_index
+			area_level3_index
 		}
 	}
 `;

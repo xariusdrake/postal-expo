@@ -182,6 +182,18 @@ function EditProfileScreen(props) {
 	}
 
 	const onClickSubmit = async () => {
+
+		if (!fullnameInput.trim()) {
+			Alert.alert("Vui lòng nhập họ tên");
+			return;
+		} else if (!genderInput.trim()) {
+			Alert.alert("Vui lòng chọn giới tính");
+			return;
+		} else if (!birthdayInput.trim()) {
+			Alert.alert("Vui lòng nhập sinh nhật");
+			return;
+		}
+
 		// console.log(100, "onClickSubmit");
 
 		console.log("gender: " + genderInput);
@@ -321,7 +333,7 @@ const themedStyles = StyleService.create({
 	containerRadio: {
 		flexDirection: "row",
 		flexWrap: "wrap",
-		paddingBottom: 10
+		paddingBottom: 10,
 	},
 	containerInput: {
 		flexDirection: "row",

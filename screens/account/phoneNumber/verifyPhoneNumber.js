@@ -174,7 +174,7 @@ function VerifyPhoneNumberScreen(props) {
 				props.storeUserInfo(dataActive.update_users.returning[0]);
 
 				console.log(158, dataActive.update_users.returning[0]);
-				
+
 				setTimeout(() => {
 					Alert.alert("Đã xác thực tài khoản");
 				}, 800);
@@ -239,7 +239,7 @@ function VerifyPhoneNumberScreen(props) {
 			let randomCode = Math.floor(1000 + Math.random() * 9000);
 			console.log("randomCode: " + randomCode);
 			setCodeConfirm(randomCode);
-			setIsSent(true)
+			setIsSent(true);
 
 			createCodeConfirm({
 				variables: {
@@ -253,6 +253,12 @@ function VerifyPhoneNumberScreen(props) {
 	function onClickCheckCode() {
 		console.log(value);
 		console.log("onClickCheckCode");
+
+		if (!value.trim()) {
+			Alert.alert("Vui lòng nhập mã xác nhận");
+			return;
+		}
+
 		checkCodeConfirm({
 			variables: { code: parseInt(value), uid: props.infos.id },
 		});
