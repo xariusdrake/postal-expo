@@ -107,22 +107,36 @@ function createPostalLocationScreen(props) {
 			setAddressInput(dataGet.postals[0].address);
 			setCodeArea(dataGet.postals[0].code_area);
 
-			setIndexLevel1(new IndexPath(parseInt(dataGet.postals[0].area_level1_index)));
-			setIndexLevel2(new IndexPath(parseInt(dataGet.postals[0].area_level2_index)));
-			setIndexLevel3(new IndexPath(parseInt(dataGet.postals[0].area_level3_index)));
+			// setIndexLevel1(new IndexPath(parseInt(dataGet.postals[0].area_level1_index)));
+			// setIndexLevel2(new IndexPath(parseInt(dataGet.postals[0].area_level2_index)));
+			// setIndexLevel3(new IndexPath(parseInt(dataGet.postals[0].area_level3_index)));
 
+			// setIndexLevel1(parseInt(dataGet.postals[0].area_level1_index));
+			// setIndexLevel2(parseInt(dataGet.postals[0].area_level2_index));
+			// setIndexLevel3(parseInt(dataGet.postals[0].area_level3_index));
 
-			// setIndexLevel1(dataGet.postals[0].area_level1_index);
-			// setIndexLevel2(dataGet.postals[0].area_level2_index);
-			// setIndexLevel3(dataGet.postals[0].area_level3_index);
+			// console.log(114, indexLevel1, dataGet.postals[0].area_level1_index)
 
-			console.log(114, indexLevel1, dataGet.postals[0].area_level1_index)
+			updateF();
+			// selectAreaLevel1(
+			// 	parseInt(dataGet.postals[0].area_level1_index)
+			// ).then(() => {
+			// 	// selectAreaLevel2(indexLevel2).then(() => {
+			// 	// 	selectAreaLevel3(indexLevel3);
+			// 	// });
+			// });
 
-			selectAreaLevel1(indexLevel1).then(() => {
-				selectAreaLevel2(indexLevel2).then(() => {
-					selectAreaLevel3(indexLevel3);
-				});
-			});
+			// setTimeout(() => {
+			// 	selectAreaLevel2(
+			// 		parseInt(dataGet.postals[0].area_level2_index)
+			// 	).then(() => {
+			// 		// selectAreaLevel3(indexLevel3);
+			// 	});
+			// }, 5000);
+
+			// setTimeout(() => {
+			// 	selectAreaLevel3(indexLevel3);
+			// }, 4000);
 
 			setPhoneInput(dataGet.postals[0].phone);
 			mapRef.current?.setAddressText(dataGet.postals[0].address);
@@ -281,9 +295,9 @@ function createPostalLocationScreen(props) {
 				setCurrentLat(lat);
 				setCurrentLong(lng);
 
-				mapRef.current.fitToSuppliedMarkers(
-					markers.map(({ _id }) => _id)
-				);
+				// mapRef.current.fitToSuppliedMarkers(
+				// 	markers.map(({ _id }) => _id)
+				// );
 			},
 			(error) => {
 				console.error(error);
@@ -291,12 +305,103 @@ function createPostalLocationScreen(props) {
 		);
 	}
 
+	async function updateF() {
+		setIndexLevel1(new IndexPath(dataGet.postals[0].area_level1_index));
+
+		setDisplayLevel1(
+			DataPostalLevel1[dataGet.postals[0].area_level1_index]["name"]
+		);
+		console.log(
+			"selectAreaLevel1",
+			dataGet.postals[0].area_level1_index,
+			DataPostalLevel1[dataGet.postals[0].area_level1_index]["name"]
+		);
+
+		// fetchGeocode(DataPostalLevel1[index.row]["name"])
+		axios({
+			method: "get",
+			url:
+				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+				DataPostalLevel1[dataGet.postals[0].area_level1_index]["code"],
+			headers: {
+				accept: "text/plain",
+			},
+		})
+			.then((dataResponse1) => {
+				setDataPostalLevel2(dataResponse1.data);
+				console.log("selectAreaLevel2[1]", dataResponse1.data);
+				console.log("selectAreaLevel2[1][1]", dataPostalLevel2);
+				console.log(
+					"selectAreaLevel2[2]",
+					dataGet.postals[0].area_level2_index,
+					dataPostalLevel2[dataGet.postals[0].area_level2_index][
+						"name"
+					]
+				);
+
+				setIndexLevel2(
+					new IndexPath(dataGet.postals[0].area_level2_index)
+				);
+				setDisplayLevel2(
+					dataPostalLevel2[dataGet.postals[0].area_level2_index][
+						"name"
+					].replace("tỉnh " + displayLevel1)
+				);
+
+				// fetchGeocode(dataPostalLevel2[dataGet.postals[0].area_level2_index]["name"]);
+				axios({
+					method: "get",
+					url:
+						"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+						dataPostalLevel2[dataGet.postals[0].area_level2_index][
+							"postcode"
+						],
+					headers: {
+						accept: "text/plain",
+					},
+				})
+					.then((dataResponse2) => {
+						console.log("dataResponse2", dataResponse2);
+						setDataPostalLevel3(dataResponse2.data);
+						setIndexLevel3(
+							new IndexPath(dataGet.postals[0].area_level3_index)
+						);
+						setDisplayLevel3(
+							dataPostalLevel3[
+								dataGet.postals[0].area_level3_index
+							]["name"]
+								.replace("tỉnh " + displayLevel1, "")
+								.replace(displayLevel2, "")
+						);
+
+						setNameLevel3(
+							dataPostalLevel3[
+								dataGet.postals[0].area_level3_index
+							]["name"]
+						);
+
+						setCodeArea(
+							dataPostalLevel3[
+								dataGet.postals[0].area_level3_index
+							]["postcode"]
+						);
+
+						// fetchGeocode(dataPostalLevel3[dataGet.postals[0].area_level3_index]["name"]);
+					})
+					.catch((e) => {
+						console.log("error", e);
+					});
+			})
+			.catch((e) => {
+				// console.log("error", e);
+			});
+	}
+
 	async function selectAreaLevel1(index) {
 		setIndexLevel1(new IndexPath(index));
 
-		// console.log("indexLevel1 : ", indexLevel1);
-
 		setDisplayLevel1(DataPostalLevel1[index]["name"]);
+		console.log("selectAreaLevel1", index, DataPostalLevel1[index]["code"]);
 
 		// fetchGeocode(DataPostalLevel1[index.row]["name"])
 		await axios({
@@ -309,21 +414,28 @@ function createPostalLocationScreen(props) {
 			},
 		})
 			.then((data) => {
-				console.log("data selectAreaLevel1 list2", data);
+				console.log("data selectAreaLevel1 list2", data.data[0]);
 				setDataPostalLevel2(data.data);
 			})
 			.catch((e) => {
-				console.log("error", e);
+				// console.log("error", e);
 			});
 	}
 
 	async function selectAreaLevel2(index) {
+		console.log(332, "selectAreaLevel2", index);
+		console.log(333, "selectAreaLevel2", dataPostalLevel2);
+
 		setIndexLevel2(new IndexPath(index));
 		setDisplayLevel2(
 			dataPostalLevel2[index]["name"].replace("tỉnh " + displayLevel1, "")
 		);
 
-		// fetchGeocode(dataPostalLevel2[index.row]["name"])
+		console.log("setDisplayLevel2");
+		console.log(333333332, dataPostalLevel2);
+		// console.log('setDisplayLevel2', index, dataPostalLevel2[index]["code"])
+
+		fetchGeocode(dataPostalLevel2[index]["name"]);
 		await axios({
 			method: "get",
 			url:
@@ -340,6 +452,10 @@ function createPostalLocationScreen(props) {
 			.catch((e) => {
 				console.log("error", e);
 			});
+
+		setTimeout(() => {
+			console.log(3335, "selectAreaLevel233", dataPostalLevel2);
+		}, 5000);
 	}
 
 	async function selectAreaLevel3(index) {
@@ -693,7 +809,7 @@ function createPostalLocationScreen(props) {
 						{dataPostalLevel2.map((postal) => (
 							<SelectItem
 								title={postal.name.replace(
-									"tỉnh " + displayLevel1,
+									" tỉnh " + displayLevel1,
 									""
 								)}
 							/>

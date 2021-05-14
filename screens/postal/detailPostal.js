@@ -280,7 +280,7 @@ function DetailPostalScreen(props) {
 	};
 
 	const postalCode = (postal) => {
-		return response.postal.postcode;
+		return response.postal.postcode ? response.postal.postcode : response.postal.code;
 
 		// if (postal.type == 1) {
 		// 	return response.postal.code;
