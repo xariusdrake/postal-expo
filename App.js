@@ -35,7 +35,6 @@ import SignInScreen from "./screens/auth/signIn";
 import SignUpScreen from "./screens/auth/signUp";
 
 import ForgetPasswordScreen from "./screens/auth/forgetPassword";
-import ForgetPasswordStepEnterCode from "./screens/auth/forgetPassword/stepEnterCode";
 import ForgetPasswordStepNewPassword from "./screens/auth/forgetPassword/stepNewPassword";
 
 // EXPLORE
@@ -274,11 +273,6 @@ function MainStackScreen() {
 			<MainStack.Screen
 				name="ForgetPassword"
 				component={ForgetPasswordScreen}
-				options={{ headerShown: false }}
-			/>
-			<MainStack.Screen
-				name="ForgetPasswordStepEnterCode"
-				component={ForgetPasswordStepEnterCode}
 				options={{ headerShown: false }}
 			/>
 			<MainStack.Screen

@@ -119,9 +119,14 @@ function MoreInfoScreen(props) {
 	}
 
 	async function updateVersion() {
-		Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
-		await Updates.fetchUpdateAsync();
-		await Updates.reloadAsync();
+		if (newUpdate == true) {
+			console.log("updateVersion");
+			Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
+			await Updates.fetchUpdateAsync();
+			await Updates.reloadAsync();
+		} else {
+			Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
+		}
 	}
 
 	return (
@@ -177,7 +182,9 @@ function MoreInfoScreen(props) {
 												)
 											}
 										>
-											<Text style={{ color: "#0469c1" }}>Xác thực</Text>
+											<Text style={{ color: "#0469c1" }}>
+												Xác thực
+											</Text>
 										</Button>
 									</View>
 								)}
@@ -270,13 +277,13 @@ function MoreInfoScreen(props) {
 					</TouchableOpacity>
 					<Divider />
 
-					{newUpdate == true && (
-						<Setting
-							style={styles.setting}
-							hint="Cập nhật phiên bản mới"
-							onPress={() => updateVersion()}
-						/>
-					)}
+					{/*{newUpdate == true && (*/}
+					<Setting
+						style={styles.setting}
+						hint="Cập nhật phiên bản mới"
+						onPress={() => updateVersion()}
+					/>
+					{/*)}*/}
 
 					{/*<Setting
 					style={styles.setting}

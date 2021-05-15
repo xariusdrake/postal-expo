@@ -151,10 +151,9 @@ function DetailPostalScreen(props) {
 
 		console.log("valueSearch");
 		console.log(valueSearch);
+		setAddress(response.postal.address);
 
-		if (response.postal.type == 99) {
-			setAddress(response.postal.address);
-		} else {
+		if (response.postal.type != 99) {
 			Geocode.fromAddress(valueSearch).then(
 				(response) => {
 					console.log("from address");
@@ -167,9 +166,9 @@ function DetailPostalScreen(props) {
 							response.results[0].geometry.location.lng
 						);
 
-						let address = response.results[0].formatted_address;
-						address = address.replace(", Vietnam", "");
-						setAddress(address);
+						// let address = response.results[0].formatted_address;
+						// address = address.replace(", Vietnam", "");
+						// setAddress(address);
 					}
 				},
 				(error) => {
@@ -280,7 +279,9 @@ function DetailPostalScreen(props) {
 	};
 
 	const postalCode = (postal) => {
-		return response.postal.postcode ? response.postal.postcode : response.postal.code;
+		return response.postal.postcode
+			? response.postal.postcode
+			: response.postal.code;
 
 		// if (postal.type == 1) {
 		// 	return response.postal.code;
@@ -418,7 +419,11 @@ function DetailPostalScreen(props) {
 					>
 						Địa chỉ:{" "}
 						{response.postal.address != null
-							? translateAddress(response.postal.address)
+							? translateAddress(
+									response.postal.address +
+										", " +
+										response.postal.area_text
+							  )
 							: "Đang cập nhật"}
 					</Text>
 				)}

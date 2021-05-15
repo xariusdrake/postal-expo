@@ -5,6 +5,7 @@ import {
 	View,
 	TouchableWithoutFeedback,
 	Keyboard,
+	KeyboardAvoidingView,
 	Platform,
 	AsyncStorage,
 	TouchableOpacity,
@@ -111,6 +112,13 @@ function SignInScreen(props) {
 	const onClickLogin = async () => {
 		Keyboard.dismiss();
 
+		if (!phoneInput.trim()) {
+			Alert.alert("Vui lòng nhập số điện thoại");
+			return;
+		} else if (!passwordInput.trim()) {
+			Alert.alert("Vui lòng nhập mật khẩu");
+			return;
+		}
 		// if (isMin(phoneInput, appConfigs.VALIDATE.AUTH.MIN_USERNAME)) {
 		// 	Alert.alert("Tên tài khoản từ 6 đến 15 ký tự");
 		// 	return;
@@ -119,6 +127,7 @@ function SignInScreen(props) {
 		// 	// secondInput.focus();
 		// 	return;
 		// }
+
 		setLoading(true);
 
 		console.log(126, phoneInput, passwordInput);
@@ -137,145 +146,159 @@ function SignInScreen(props) {
 		return <AppLoading />;
 	} else {
 		return (
-			<ScrollView
-				showsVerticalScrollIndicator={false}
-				style={styles.scrollview}
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.container}
 			>
-				<Spinner visible={loadingLogin} />
-				<View style={{ ...styles.container }}>
-					<TouchableWithoutFeedback
-						onPress={Keyboard.dismiss}
-						style={{ width: "100%" }}
-					>
-						<View
-							style={{
-								flexDirection: "column",
-								margin: 50,
-								marginTop: -120,
-								paddingTop: 300,
-							}}
+				<ScrollView
+					showsVerticalScrollIndicator={false}
+					style={styles.scrollview}
+				>
+					<Spinner visible={loadingLogin} />
+					<View style={{ ...styles.container }}>
+						<TouchableWithoutFeedback
+							onPress={Keyboard.dismiss}
+							style={{ width: "100%" }}
 						>
-							<Text
+							<View
 								style={{
-									fontSize: 22,
-									color: "#000",
+									flexDirection: "column",
+									margin: 50,
+									marginTop: -120,
+									paddingTop: 300,
 								}}
 							>
-								Đăng nhập
-							</Text>
-
-							<Text style={[styles.textBlackSize14]}>
-								Số điện thoại
-							</Text>
-							<TextInput
-								value={phoneInput}
-								autoCapitalize="none"
-								underlineColorAndroid="#00000000"
-								returnKeyType={"next"}
-								onSubmitEditing={() => {}}
-								style={styles.customEditText}
-								clearButtonMode="while-editing"
-								enablesReturnKeyAutomatically={true}
-								blurOnSubmit={false}
-								placeholder={"Nhập số điện thoại"}
-								onChangeText={(text) => setPhoneInput(text)}
-								keyboardType="numeric"
-							/>
-
-							<Text style={styles.textBlackSize14}>Mật khẩu</Text>
-
-							<TextInput
-								value={passwordInput}
-								autoCapitalize="none"
-								secureTextEntry
-								underlineColorAndroid="#00000000"
-								returnKeyType={"next"}
-								onSubmitEditing={() => {}}
-								style={styles.customEditText}
-								clearButtonMode="while-editing"
-								enablesReturnKeyAutomatically={true}
-								blurOnSubmit={false}
-								placeholder={"Nhập mật khẩu"}
-								onChangeText={(text) => setPasswordInput(text)}
-							/>
-							<TouchableOpacity
-								style={[
-									styles.forgotContainer,
-									{ height: 44, marginTop: 16 },
-								]}
-								onPress={() =>
-									props.navigation.navigate("ForgetPassword")
-								}
-							>
-								<Text style={styles.forgotPass}>
-									Quên mật khẩu ?
+								<Text
+									style={{
+										fontSize: 22,
+										color: "#000",
+									}}
+								>
+									Đăng nhập
 								</Text>
-							</TouchableOpacity>
 
-							<View
-								style={{ flexDirection: "row", marginTop: 24 }}
-							>
+								<Text style={[styles.textBlackSize14]}>
+									Số điện thoại
+								</Text>
+								<TextInput
+									value={phoneInput}
+									autoCapitalize="none"
+									underlineColorAndroid="#00000000"
+									returnKeyType={"next"}
+									onSubmitEditing={() => {}}
+									style={styles.customEditText}
+									clearButtonMode="while-editing"
+									enablesReturnKeyAutomatically={true}
+									blurOnSubmit={false}
+									placeholder={"Nhập số điện thoại"}
+									onChangeText={(text) => setPhoneInput(text)}
+									keyboardType="numeric"
+								/>
+
+								<Text style={styles.textBlackSize14}>
+									Mật khẩu
+								</Text>
+
+								<TextInput
+									value={passwordInput}
+									autoCapitalize="none"
+									secureTextEntry
+									underlineColorAndroid="#00000000"
+									returnKeyType={"next"}
+									onSubmitEditing={() => {}}
+									style={styles.customEditText}
+									clearButtonMode="while-editing"
+									enablesReturnKeyAutomatically={true}
+									blurOnSubmit={false}
+									placeholder={"Nhập mật khẩu"}
+									onChangeText={(text) =>
+										setPasswordInput(text)
+									}
+								/>
 								<TouchableOpacity
-									style={styles.buttonBackgroundBlue}
-									activeOpacity={0.5}
-									onPress={() => onClickLogin()}
+									style={[
+										styles.forgotContainer,
+										{ height: 44, marginTop: 16 },
+									]}
+									onPress={() =>
+										props.navigation.navigate(
+											"ForgetPassword"
+										)
+									}
 								>
-									<View style={{ padding: 10 }}>
-										<Text
-											style={[
-												styles.textWhite,
-												{ fontSize: 16 },
-											]}
-										>
-											Đăng nhập
+									<Text style={styles.forgotPass}>
+										Quên mật khẩu ?
+									</Text>
+								</TouchableOpacity>
+
+								<View
+									style={{
+										flexDirection: "row",
+										marginTop: 24,
+									}}
+								>
+									<TouchableOpacity
+										style={styles.buttonBackgroundBlue}
+										activeOpacity={0.5}
+										onPress={() => onClickLogin()}
+									>
+										<View style={{ padding: 10 }}>
+											<Text
+												style={[
+													styles.textWhite,
+													{ fontSize: 16 },
+												]}
+											>
+												Đăng nhập
+											</Text>
+										</View>
+									</TouchableOpacity>
+								</View>
+
+								<View
+									style={{
+										flexDirection: "row",
+										marginTop: 20,
+										height: 40,
+									}}
+								>
+									<TouchableOpacity
+										style={styles.buttonBorderBlue}
+										activeOpacity={0.5}
+										onPress={() =>
+											props.navigation.navigate("SignUp")
+										}
+									>
+										<Text style={styles.textSignUp}>
+											Đăng ký
 										</Text>
-									</View>
-								</TouchableOpacity>
-							</View>
+									</TouchableOpacity>
+								</View>
 
-							<View
-								style={{
-									flexDirection: "row",
-									marginTop: 20,
-									height: 40,
-								}}
-							>
-								<TouchableOpacity
-									style={styles.buttonBorderBlue}
-									activeOpacity={0.5}
-									onPress={() =>
-										props.navigation.navigate("SignUp")
-									}
+								<View
+									style={{
+										flexDirection: "row",
+										marginTop: 20,
+										height: 40,
+									}}
 								>
-									<Text style={styles.textSignUp}>
-										Đăng ký
-									</Text>
-								</TouchableOpacity>
+									<TouchableOpacity
+										style={styles.buttonBorderBlue}
+										activeOpacity={0.5}
+										onPress={() =>
+											props.navigation.navigate("Explore")
+										}
+									>
+										<Text style={styles.textSignUp}>
+											Quay về
+										</Text>
+									</TouchableOpacity>
+								</View>
 							</View>
-
-							<View
-								style={{
-									flexDirection: "row",
-									marginTop: 20,
-									height: 40,
-								}}
-							>
-								<TouchableOpacity
-									style={styles.buttonBorderBlue}
-									activeOpacity={0.5}
-									onPress={() =>
-										props.navigation.navigate("Explore")
-									}
-								>
-									<Text style={styles.textSignUp}>
-										Quay về
-									</Text>
-								</TouchableOpacity>
-							</View>
-						</View>
-					</TouchableWithoutFeedback>
-				</View>
-			</ScrollView>
+						</TouchableWithoutFeedback>
+					</View>
+				</ScrollView>
+			</KeyboardAvoidingView>
 		);
 	}
 }

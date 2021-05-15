@@ -47,6 +47,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
     "react-native-confirmation-code-field": "^6.5.1",
     "react-native-date-picker": "^3.3.0",
+    "react-native-datepicker": "^1.7.2",
     "react-native-dotenv": "^2.4.3",
     "react-native-elements": "^2.3.2",
     "react-native-gesture-handler": "~1.6.0",

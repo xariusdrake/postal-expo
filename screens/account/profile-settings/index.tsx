@@ -35,11 +35,13 @@ import { connect } from "react-redux";
 import { MUTATION_UPDATE_PROFILE_DETAIL } from "../../../graphql/query";
 
 import { useMutation } from "@apollo/client";
-import { isEmpty, isMin } from "../../../functions/strings";
+import { isEmpty, isMin, isMax } from "../../../functions/strings";
 import Spinner from "react-native-loading-spinner-overlay";
 
-// const profile: Profile = Profile.jenniferGreen();
+import appConfigs from "../../../config";
 
+// const profile: Profile = Profile.jenniferGreen();
+import DatePicker from "react-native-datepicker";
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 const CalendarIcon = (props) => <Icon {...props} name="calendar" />;
 
@@ -182,25 +184,47 @@ function EditProfileScreen(props) {
 	}
 
 	const onClickSubmit = async () => {
-
 		if (!fullnameInput.trim()) {
 			Alert.alert("Vui lòng nhập họ tên");
 			return;
-		} else if (!genderInput.trim()) {
-			Alert.alert("Vui lòng chọn giới tính");
+		} else if (
+			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ||
+			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_FULLNAME)
+		) {
+			Alert.alert(
+				"Họ tên từ " +
+					appConfigs.VALIDATE.USER.MIN_FULLNAME +
+					" đến " +
+					appConfigs.VALIDATE.USER.MAX_FULLNAME +
+					" ký tự"
+			);
+			// } else if (!genderInput.trim()) {
+			// 	Alert.alert("Vui lòng chọn giới tính");
+			// 	return;
+		} else if (parseInt(genderInput) != 1 && parseInt(genderInput) != 2) {
+			console.log("genderInput: ", genderInput);
+			Alert.alert("Giới tính không hợp lệ. Vui lòng thử lại");
 			return;
-		} else if (!birthdayInput.trim()) {
-			Alert.alert("Vui lòng nhập sinh nhật");
-			return;
+
+			// } else if (!birthdayInput.trim()) {
+			// 	Alert.alert("Vui lòng nhập sinh nhật");
+			// 	return;
 		}
 
-		// console.log(100, "onClickSubmit");
+		// else if (isMax(addressInput, appConfigs.VALIDATE.USER.MAX_ADDRESS)) {
+		// 	Alert.alert(
+		// 		"Địa chỉ tối đa " +
+		// 			appConfigs.VALIDATE.USER.MAX_ADDRESS +
+		// 			" ký tự"
+		// 	);
+		// 	return;
+		// }
 
 		console.log("gender: " + genderInput);
-		console.log("gender: " + birthdayInput);
+		console.log("birthdayInput: " + birthdayInput);
 		setLoading(true);
 
-		let valueGender = genderInput + 1;
+		let valueGender = parseInt(genderInput) + 1;
 
 		updateInfo({
 			variables: {
@@ -275,15 +299,57 @@ function EditProfileScreen(props) {
 					onChangeText={(text) => setFullnameInput(text)}
 					style={{ paddingBottom: 15 }}
 				/>
-				<Datepicker
+				{/*				<Datepicker
 					style={{ paddingBottom: 15 }}
 					label="Ngày sinh"
 					date={date}
 					onSelect={(nextDate) => setDate(nextDate)}
 					accessoryRight={CalendarIcon}
+					minDate="01-01-1920"
+					maxDate="01-01-2022"
 					dateService={localeDateService}
 					{...localePickerState}
 				/>
+				*/}
+				<Text category="s2" style={{ paddingBottom: 10 }}>
+					Ngày sinh
+				</Text>
+				<View
+					style={{
+						borderRadius: 6,
+						borderColor: "rgb(131, 131, 131)",
+						overflow: "hidden",
+					}}
+				>
+					<DatePicker
+						locale={"vi"}
+						style={{ width: "100%" }}
+						date={birthdayInput} //initial date from state
+						mode="date" //The enum of date, datetime and time
+						placeholder="Chọn ngày tháng năm sinh"
+						format="DD-MM-YYYY"
+						minDate="01-01-1920"
+						maxDate="01-01-2022"
+						confirmBtnText="Chọn"
+						cancelBtnText="Đóng"
+						showIcon={false}
+						// customStyles={{
+						// 	// dateIcon: {
+						// 	// 	//display: 'none',
+						// 	// 	position: "absolute",
+						// 	// 	left: 0,
+						// 	// 	top: 4,
+						// 	// 	marginLeft: 0,
+						// 	// },
+						// 	dateInput: {
+						// 		marginLeft: 36,
+						// 	},
+						// }}
+						onDateChange={(birthdayInput) => {
+							setBirthdayInput(birthdayInput);
+						}}
+					/>
+				</View>
 
 				<Input
 					placeholder=""
@@ -291,7 +357,7 @@ function EditProfileScreen(props) {
 					autoCapitalize="words"
 					value={idNationInput}
 					onChangeText={(text) => setIdNationInput(text)}
-					style={{ paddingBottom: 5 }}
+					style={{ paddingTop: 15, paddingBottom: 5 }}
 					keyboardType="numeric"
 				/>
 				<Layout style={styles.containerRadio} level="1">

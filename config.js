@@ -1,18 +1,18 @@
 const appConfigs = {
     LOGGER: {
         REDUX: true,
-        PAGE_MESSAGE: true
+        PAGE_MESSAGE: true,
     },
     API: {
         // POSTAL: {
         //     URI: 'https://api.mabuuchinh.vn/api/v1/MBC'
         // },
         GRAPHQL: {
-            URI: 'https://postal.hasura.app/v1/graphql'
+            URI: "https://postal.hasura.app/v1/graphql",
         },
         VNPOST: {
-            URI: "https://api.mabuuchinh.vn/api/v1/MBC"
-        }
+            URI: "https://api.mabuuchinh.vn/api/v1/MBC",
+        },
         // SERVICE: {
         //     URI: 'http://localhost:3000'
         // },
@@ -21,16 +21,32 @@ const appConfigs = {
         // },
     },
     REQUEST: {
-        TIMEOUT: 30000
+        TIMEOUT: 30000,
     },
     VALIDATE: {
-        AUTH: {
+        USER: {
             MIN_USERNAME: 6,
             MAX_USERNAME: 20,
+            MIN_PHONE: 10,
+            MAX_PHONE: 11,
             MIN_PASSWORD: 6,
             MAX_PASSWORD: 30,
             MIN_FULLNAME: 6,
-            MAX_FULLNAME: 50
+            MAX_FULLNAME: 50,
+            MIN_ADDRESS: 2,
+            MAX_ADDRESS: 100,
+        },
+        AUTH: {
+            MIN_USERNAME: 6,
+            MAX_USERNAME: 20,
+            MIN_PHONE: 10,
+            MAX_PHONE: 11,
+            MIN_PASSWORD: 6,
+            MAX_PASSWORD: 30,
+            MIN_FULLNAME: 6,
+            MAX_FULLNAME: 50,
+            MIN_ADDRESS: 2,
+            MAX_ADDRESS: 100,
         },
         PROFILE: {
             MIN_USERNAME: 6,
@@ -41,31 +57,32 @@ const appConfigs = {
             MAX_FULLNAME: 50,
             MIN_ADDRESS: 6,
             MAX_ADDRESS: 30,
-            MAX_PHONE: 13
+            MAX_PHONE: 13,
         },
         POSTAL: {
             MIN_NAME: 3,
-            MAX_NAME: 40
+            MAX_NAME: 40,
         },
         MIN_USERNAME: 6,
         MAX_USERNAME: 15,
         MIN_PASSWORD: 6,
-        MAX_PASSWORD: 25
+        MAX_PASSWORD: 25,
     },
     AUTHENTICATED_DATA: {
-        EXPIRED_TIME: 365
+        EXPIRED_TIME: 365,
     },
     GOOGLE_MAP: {
         latitudeDelta: 0.009,
         longitudeDelta: 0.001,
-        API_KEY: 'AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA',
-        API_KEY_2:'AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA' // for geocode
+        API_KEY: "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA",
+        API_KEY_2: "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA", // for geocode
     },
     ESMS: {
-        BASE_URL: 'http://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_get',
-        API_KEY: '48828BB7CE8FDD81E72F0B525C9970',
-        SECRET_KEY: '1E474E8FED09D0D3DB9B74ADD60C7F'
-    }
-}
+        BASE_URL:
+            "http://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_get",
+        API_KEY: "48828BB7CE8FDD81E72F0B525C9970",
+        SECRET_KEY: "1E474E8FED09D0D3DB9B74ADD60C7F",
+    },
+};
 
-export default appConfigs
+export default appConfigs;

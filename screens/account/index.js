@@ -14,7 +14,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 
 function ProfileScreen(props) {
-	
 	console.log("info user");
 	console.log(props.infos);
 
@@ -61,7 +60,9 @@ function ProfileScreen(props) {
 			</View>
 
 			<View style={{ alignSelf: "flex-start", marginLeft: 30 }}>
-				<Text style={{ ...styles.h3mint, marginBottom: 6, marginTop: 6 }}>
+				<Text
+					style={{ ...styles.h3mint, marginBottom: 6, marginTop: 6 }}
+				>
 					Họ và tên
 				</Text>
 			</View>
@@ -92,7 +93,9 @@ function ProfileScreen(props) {
 			</View>
 
 			<View style={{ alignSelf: "flex-start", marginLeft: 30 }}>
-				<Text style={{ ...styles.h3mint, marginBottom: 6, marginTop: 6 }}>
+				<Text
+					style={{ ...styles.h3mint, marginBottom: 6, marginTop: 6 }}
+				>
 					Mật khẩu
 				</Text>
 			</View>

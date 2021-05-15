@@ -4,6 +4,7 @@ import {
 	ScrollView,
 	View,
 	TouchableWithoutFeedback,
+	KeyboardAvoidingView,
 	Keyboard,
 	Platform,
 	AsyncStorage,
@@ -23,7 +24,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useLazyQuery, useMutation, gql } from "@apollo/client";
 import { MUTATION_SIGNUP_USER } from "../../graphql/query";
 
-import { isEmpty, isMin } from "../../functions/strings";
+import { isEmpty, isMin, isMax } from "../../functions/strings";
 
 import appConfigs from "../../config";
 
@@ -83,9 +84,9 @@ function SignUpScreen(props) {
 		onCompleted: (dataCheckPhone) => {
 			console.log("dataCheckToken onCompleted");
 			console.log(dataCheckPhone);
-			console.log(dataCheckPhone.users[0].id);
+			// console.log(dataCheckPhone.users[0].id);
 
-			if (dataCheckPhone.users[0].id != null) {
+			if (dataCheckPhone.users.length > 0) {
 				Alert.alert("Số điện thoại đã được đăng ký!");
 			} else {
 				signUpUser({
@@ -148,19 +149,34 @@ function SignUpScreen(props) {
 
 		// let phoneno = /^\d{10}$/;
 
-		if (isMin(fullnameInput, appConfigs.VALIDATE.PROFILE.MIN_FULLNAME)) {
-			Alert.alert("Họ tên từ 6 đến 15 ký tự");
-			return;
-		} else if (isMin(phoneInput, appConfigs.VALIDATE.AUTH.MIN_USERNAME)) {
-			Alert.alert("Tên tài khoản từ 6 đến 15 ký tự");
-			// this.firstInput.focus();
-			return;
-			// } else if (phoneInput.match(phoneno) == false) {
-			// 	Alert.alert("Số điện thoại không đúng");
-		} else if (
-			isMin(passwordInput, appConfigs.VALIDATE.AUTH.MIN_PASSWORD)
+		if (
+			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ||
+			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_FULLNAME)
 		) {
-			Alert.alert("Mật khẩu từ 6 đến 15 ký tự");
+			Alert.alert(
+				"Họ tên từ " +
+					appConfigs.VALIDATE.USER.MIN_FULLNAME +
+					" đến " +
+					appConfigs.VALIDATE.USER.MIN_FULLNAME +
+					" ký tự"
+			);
+		} else if (
+			isMin(phoneInput, appConfigs.VALIDATE.USER.MIN_PHONE) ||
+			isMax(phoneInput, appConfigs.VALIDATE.USER.MAX_PHONE)
+		) {
+			Alert.alert("Số điện thoại không hợp lệ");
+			return;
+		} else if (
+			isMin(passwordInput, appConfigs.VALIDATE.USER.MIN_PASSWORD) ||
+			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_PASSWORD)
+		) {
+			Alert.alert(
+				"Mật khẩu từ " +
+					appConfigs.VALIDATE.USER.MIN_PASSWORD +
+					" đến " +
+					appConfigs.VALIDATE.USER.MAX_PASSWORD +
+					" ký tự"
+			);
 		} else if (passwordInput != rePasswordInput) {
 			Alert.alert("Mật khẩu bạn nhập không giống nhau");
 		}
@@ -175,145 +191,157 @@ function SignUpScreen(props) {
 		return <AppLoading />;
 	} else {
 		return (
-			<ScrollView
-				showsVerticalScrollIndicator={false}
-				style={styles.scrollview}
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.container}
 			>
-				<View style={{ ...styles.container }}>
-					<Spinner visible={loadingSignUp} />
-					<TouchableWithoutFeedback
-						onPress={Keyboard.dismiss}
-						style={{ width: "100%" }}
-					>
-						<View
-							style={{
-								flexDirection: "column",
-								margin: 50,
-								marginTop: -60,
-								paddingTop: 220,
-							}}
+				<ScrollView
+					showsVerticalScrollIndicator={false}
+					style={styles.scrollview}
+				>
+					<View style={{ ...styles.container }}>
+						<Spinner visible={loadingSignUp} />
+						<TouchableWithoutFeedback
+							onPress={Keyboard.dismiss}
+							style={{ width: "100%" }}
 						>
-							<Text
+							<View
 								style={{
-									fontSize: 22,
-									color: "#000",
+									flexDirection: "column",
+									margin: 50,
+									marginTop: -60,
+									paddingTop: 220,
 								}}
 							>
-								Tạo tài khoản
-							</Text>
-
-							<Text style={[styles.textBlackSize14]}>
-								Họ và tên
-							</Text>
-							<TextInput
-								autoCapitalize="none"
-								underlineColorAndroid="#00000000"
-								returnKeyType={"next"}
-								onSubmitEditing={() => {}}
-								style={styles.customEditText}
-								clearButtonMode="while-editing"
-								enablesReturnKeyAutomatically={true}
-								blurOnSubmit={false}
-								placeholder={"Nhập tài khoản"}
-								// ref={(input) => {}}
-								onChangeText={(e) => setFullnameInput(e)}
-							/>
-
-							<Text style={[styles.textBlackSize14]}>
-								Số điện thoại
-							</Text>
-							<TextInput
-								autoCapitalize="none"
-								underlineColorAndroid="#00000000"
-								returnKeyType={"next"}
-								onSubmitEditing={() => {}}
-								style={styles.customEditText}
-								clearButtonMode="while-editing"
-								enablesReturnKeyAutomatically={true}
-								blurOnSubmit={false}
-								placeholder={"Nhập số điện thoại"}
-								// ref={(input) => {}}
-								onChangeText={(text) => setPhoneInput(text)}
-								keyboardType={"phone-pad"}
-								keyboardType="numeric"
-							/>
-
-							<Text style={styles.textBlackSize14}>Mật khẩu</Text>
-
-							<TextInput
-								autoCapitalize="none"
-								secureTextEntry
-								underlineColorAndroid="#00000000"
-								returnKeyType={"next"}
-								onSubmitEditing={() => {}}
-								style={styles.customEditText}
-								clearButtonMode="while-editing"
-								enablesReturnKeyAutomatically={true}
-								blurOnSubmit={false}
-								placeholder={"Nhập mật khẩu"}
-								onChangeText={(text) => setPasswordInput(text)}
-							/>
-
-							<Text style={styles.textBlackSize14}>
-								Nhập lại mật khẩu
-							</Text>
-
-							<TextInput
-								autoCapitalize="none"
-								secureTextEntry
-								underlineColorAndroid="#00000000"
-								returnKeyType={"next"}
-								onSubmitEditing={() => {}}
-								style={styles.customEditText}
-								clearButtonMode="while-editing"
-								enablesReturnKeyAutomatically={true}
-								blurOnSubmit={false}
-								placeholder={"Nhập mật khẩu"}
-								onChangeText={(text) =>
-									setRePasswordInput(text)
-								}
-							/>
-
-							<TouchableOpacity
-								style={[
-									styles.forgotContainer,
-									{ height: 44, marginTop: 10 },
-								]}
-							>
 								<Text
-									style={styles.forgotPass}
-									onPress={() =>
-										props.navigation.navigate("SignIn")
-									}
+									style={{
+										fontSize: 22,
+										color: "#000",
+									}}
 								>
-									Quay về đăng nhập
+									Tạo tài khoản
 								</Text>
-							</TouchableOpacity>
 
-							<View
-								style={{ flexDirection: "row", marginTop: 24 }}
-							>
+								<Text style={[styles.textBlackSize14]}>
+									Họ và tên
+								</Text>
+								<TextInput
+									autoCapitalize="none"
+									underlineColorAndroid="#00000000"
+									returnKeyType={"next"}
+									onSubmitEditing={() => {}}
+									style={styles.customEditText}
+									clearButtonMode="while-editing"
+									enablesReturnKeyAutomatically={true}
+									blurOnSubmit={false}
+									placeholder={"Nhập tài khoản"}
+									// ref={(input) => {}}
+									onChangeText={(e) => setFullnameInput(e)}
+								/>
+
+								<Text style={[styles.textBlackSize14]}>
+									Số điện thoại
+								</Text>
+								<TextInput
+									autoCapitalize="none"
+									underlineColorAndroid="#00000000"
+									returnKeyType={"next"}
+									onSubmitEditing={() => {}}
+									style={styles.customEditText}
+									clearButtonMode="while-editing"
+									enablesReturnKeyAutomatically={true}
+									blurOnSubmit={false}
+									placeholder={"Nhập số điện thoại"}
+									// ref={(input) => {}}
+									onChangeText={(text) => setPhoneInput(text)}
+									keyboardType={"phone-pad"}
+									keyboardType="numeric"
+								/>
+
+								<Text style={styles.textBlackSize14}>
+									Mật khẩu
+								</Text>
+
+								<TextInput
+									autoCapitalize="none"
+									secureTextEntry
+									underlineColorAndroid="#00000000"
+									returnKeyType={"next"}
+									onSubmitEditing={() => {}}
+									style={styles.customEditText}
+									clearButtonMode="while-editing"
+									enablesReturnKeyAutomatically={true}
+									blurOnSubmit={false}
+									placeholder={"Nhập mật khẩu"}
+									onChangeText={(text) =>
+										setPasswordInput(text)
+									}
+								/>
+
+								<Text style={styles.textBlackSize14}>
+									Nhập lại mật khẩu
+								</Text>
+
+								<TextInput
+									autoCapitalize="none"
+									secureTextEntry
+									underlineColorAndroid="#00000000"
+									returnKeyType={"next"}
+									onSubmitEditing={() => {}}
+									style={styles.customEditText}
+									clearButtonMode="while-editing"
+									enablesReturnKeyAutomatically={true}
+									blurOnSubmit={false}
+									placeholder={"Nhập mật khẩu"}
+									onChangeText={(text) =>
+										setRePasswordInput(text)
+									}
+								/>
+
 								<TouchableOpacity
-									style={styles.buttonBackgroundBlue}
-									activeOpacity={0.5}
-									onPress={() => onClickSignUp()}
+									style={[
+										styles.forgotContainer,
+										{ height: 44, marginTop: 10 },
+									]}
 								>
-									<View style={{ padding: 10 }}>
-										<Text
-											style={[
-												styles.textWhite,
-												{ fontSize: 16 },
-											]}
-										>
-											Đăng ký
-										</Text>
-									</View>
+									<Text
+										style={styles.forgotPass}
+										onPress={() =>
+											props.navigation.navigate("SignIn")
+										}
+									>
+										Quay về đăng nhập
+									</Text>
 								</TouchableOpacity>
+
+								<View
+									style={{
+										flexDirection: "row",
+										marginTop: 24,
+									}}
+								>
+									<TouchableOpacity
+										style={styles.buttonBackgroundBlue}
+										activeOpacity={0.5}
+										onPress={() => onClickSignUp()}
+									>
+										<View style={{ padding: 10 }}>
+											<Text
+												style={[
+													styles.textWhite,
+													{ fontSize: 16 },
+												]}
+											>
+												Đăng ký
+											</Text>
+										</View>
+									</TouchableOpacity>
+								</View>
 							</View>
-						</View>
-					</TouchableWithoutFeedback>
-				</View>
-			</ScrollView>
+						</TouchableWithoutFeedback>
+					</View>
+				</ScrollView>
+			</KeyboardAvoidingView>
 		);
 	}
 }

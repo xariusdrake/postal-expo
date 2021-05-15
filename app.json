@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mã bưu chính quốc gia",
     "slug": "tracuumabuuchinh",
-    "version": "15",
+    "version": "17",
     "privacy": "unlisted",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -33,7 +33,7 @@
     },
     "android": {
       "package": "htn.tracuumabuuchinh",
-      "versionCode": 20,
+      "versionCode": 22,
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
@@ -72,7 +72,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "mabuuchinh",
-      "buildNumber": "9.2",
+      "buildNumber": "11",
       "config": {
         "googleMapsApiKey": "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA",
         "usesNonExemptEncryption": false

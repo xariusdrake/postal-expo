@@ -215,9 +215,9 @@ function VerifyPhoneNumberScreen(props) {
 			setTimeLeft(timeNew);
 		}, 1000);
 
-		// if (props.infos.is_actived == 0) {
-		// 	onCreateCodeConfirm();
-		// }
+		if (props.infos.is_actived == 0) {
+			onCreateCodeConfirm();
+		}
 	});
 
 	// function calculateTimeLeft() {
@@ -352,7 +352,7 @@ function VerifyPhoneNumberScreen(props) {
 					renderCell={renderCell}
 				/>
 
-				{isSent == false && (
+	{/*			{isSent == false && (
 					<TouchableOpacity onPress={() => onCreateCodeConfirm()}>
 						<View style={styles.nextButton}>
 							<Text style={styles.nextButtonText}>
@@ -360,7 +360,7 @@ function VerifyPhoneNumberScreen(props) {
 							</Text>
 						</View>
 					</TouchableOpacity>
-				)}
+				)}*/}
 
 				{isSent == true && (
 					<TouchableOpacity onPress={() => onClickCheckCode()}>

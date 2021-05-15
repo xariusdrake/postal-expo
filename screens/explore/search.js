@@ -67,8 +67,8 @@ function SearchScreen(props) {
 
 			console.log(73, textSearch);
 
-			let s_name = ""
-			let s_postcode = ""
+			let s_name = "";
+			let s_postcode = "";
 
 			if (isNaN(textSearch) == true) {
 				s_name = textSearch
@@ -79,7 +79,7 @@ function SearchScreen(props) {
 				s_postcode = textSearch;
 			}
 
-			setLoadingPostal(true)
+			setLoadingPostal(true);
 
 			axios({
 				method: "get",
@@ -93,7 +93,7 @@ function SearchScreen(props) {
 				},
 			})
 				.then((data) => {
-					setLoadingPostal(false)
+					setLoadingPostal(false);
 					console.log("data", data);
 					setAllPostalList(data.data.results);
 				})
@@ -142,7 +142,12 @@ function SearchScreen(props) {
 				key={item.id}
 				title={`${name}`}
 				description={`${item.postcode}`}
-				onPress={() => navigation.navigate("Postal", { postal: item, is_search: 1 })}
+				onPress={() =>
+					navigation.navigate("Postal", {
+						postal: item,
+						is_search: 1,
+					})
+				}
 				accessoryLeft={renderIcon}
 			/>
 		);
@@ -187,6 +192,9 @@ function SearchScreen(props) {
 					placeholder="Tên địa điểm, số mã bưu chính"
 					value={textSearch}
 					onChangeText={(textSearch) => setTextSearch(textSearch)}
+					onBlur={(e) => {
+						console.log("Triggered because this input lost focus");
+					}}
 					// icon={MicIcon}
 					// accessoryLeft={SearchIcon}
 				/>

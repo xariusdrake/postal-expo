@@ -31,10 +31,12 @@ import { connect } from "react-redux";
 import { MUTATION_CHANGE_PASSWORD_USER } from "../../graphql/query";
 
 import { useMutation } from "@apollo/client";
-import { isEmpty, isMin } from "../../functions/strings";
+import { isEmpty, isMin, isMax } from "../../functions/strings";
 import Spinner from "react-native-loading-spinner-overlay";
 
 // const profile: Profile = Profile.jenniferGreen();
+
+import appConfigs from "../../config"
 
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 
@@ -93,12 +95,18 @@ function ChangePasswordScreen(props) {
 		if (currentPasswordInput.length < 1) {
 			Alert.alert("Vui lòng nhập mật khẩu hiện tại");
 			return;
-		} else if (newPasswordInput.length < 1) {
-			Alert.alert("Vui lòng nhập mật khẩu mới");
-			return;
-		} else if (reNewPasswordInput.length < 1) {
-			Alert.alert("Vui lòng nhập lại mật khẩu mới");
-			return;
+		}
+		if (
+			isMin(newPasswordInput, appConfigs.VALIDATE.USER.MIN_PASSWORD) ||
+			isMax(newPasswordInput, appConfigs.VALIDATE.USER.MAX_PASSWORD)
+		) {
+			Alert.alert(
+				"Mật khẩu mới từ " +
+					appConfigs.VALIDATE.USER.MIN_PASSWORD +
+					" đến " +
+					appConfigs.VALIDATE.USER.MAX_PASSWORD +
+					" ký tự"
+			);
 		} else if (newPasswordInput != reNewPasswordInput) {
 			Alert.alert("Mật khẩu mới không giống nhau");
 			return;

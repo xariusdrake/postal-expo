@@ -126,7 +126,7 @@ function ForgetPasswordScreen(props) {
 									color: "#000",
 								}}
 							>
-								Đặt lại mật khẩu {props.route.params.uid}
+								Đặt lại mật khẩu
 							</Text>
 
 							<Text style={[styles.textBlackSize14]}>

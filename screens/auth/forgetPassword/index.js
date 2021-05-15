@@ -156,6 +156,11 @@ function ForgetPasswordScreen(props) {
 	const onSubmit = async () => {
 		Keyboard.dismiss();
 
+		if (!phoneInput.trim()) {
+			Alert.alert("Vui lòng nhập số điện thoại");
+			return;
+		}
+
 		console.log(126, phoneInput);
 
 		checkPhone({
@@ -167,6 +172,17 @@ function ForgetPasswordScreen(props) {
 
 	const checkCode = async () => {
 		Keyboard.dismiss();
+
+		if (!codeInput.trim()) {
+			Alert.alert("Vui lòng mã xác thực");
+			return;
+		} else if (codeInput.length != 4) {
+			Alert.alert("Xác xác thực gồm 4 ký tự. Vui lòng nhập lại");
+			return;
+		} else if (!phoneInput.trim()) {
+			Alert.alert("Có lỗi xảy ra. Vui lòng thử lại");
+			return;
+		}
 
 		checkCodeConfirm({
 			variables: {
@@ -262,7 +278,7 @@ function ForgetPasswordScreen(props) {
 									}
 								>
 									<Text style={styles.textSignUp}>
-										Quay về đăng nhập
+										Quay về
 									</Text>
 								</TouchableOpacity>
 							</View>

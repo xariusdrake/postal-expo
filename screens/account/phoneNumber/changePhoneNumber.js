@@ -25,6 +25,8 @@ import { isEmpty, isMin } from "../../../functions/strings";
 import { useMutation } from "@apollo/client";
 import { MUTATION_CHANGE_PHONE_NUMBER } from "../../../graphql/query";
 
+import appConfigs from "../../../config"
+
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 
 function ChangePhoneNumberScreen(props) {
@@ -76,8 +78,9 @@ function ChangePhoneNumberScreen(props) {
 	);
 
 	const onClickSubmit = async () => {
-		if (!phoneInput.trim()) {
-			Alert.alert("Vui lòng nhập số điện thoại");
+
+		if (isMin(phoneInput, appConfigs.VALIDATE.USER.MIN_PHONE) || isMax(phoneInput, appConfigs.VALIDATE.USER.MAX_PHONE)) {
+			Alert.alert("Số điện thoại không hợp lệ");
 			return;
 		}
 

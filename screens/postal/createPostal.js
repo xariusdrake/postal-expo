@@ -8,6 +8,10 @@ import {
 	Dimensions,
 	SafeAreaView,
 	Alert,
+	Keyboard,
+	KeyboardAvoidingView,
+	TouchableWithoutFeedback,
+	ScrollView,
 } from "react-native";
 import { connect } from "react-redux";
 
@@ -219,6 +223,13 @@ function createPostalLocationScreen(props) {
 	useEffect(() => {
 		if (!props.token) {
 			props.navigation.navigate("SignIn");
+			return;
+		} else if (props.infos.is_actived == 0) {
+			props.navigation.navigate("VerifyPhoneNumber");
+			setTimeout(() => {
+				Alert.alert("Vui lòng xác thực tài khoản trước");
+			}, 800);
+			return;
 		}
 
 		if (props.route.params.isUpdate == true) {
@@ -556,6 +567,7 @@ function createPostalLocationScreen(props) {
 						area_level1_index: parseInt(indexLevel1),
 						area_level2_index: parseInt(indexLevel2),
 						area_level3_index: parseInt(indexLevel3),
+						area_text: dataPostalLevel3[indexLevel3]["name"],
 						type: 99,
 						image_url: "https://i.imgur.com/fkmKq6F.png",
 						lat: currentLat.toString(),
@@ -656,309 +668,351 @@ function createPostalLocationScreen(props) {
 	);
 
 	return (
-		<SafeAreaView
-			style={{
-				backgroundColor: "#fff",
-				height: Dimensions.get("window").height,
-				paddingTop: Platform.OS === "android" ? 25 : 0,
-			}}
+		<KeyboardAvoidingView
+			behavior={Platform.OS === "ios" ? "padding" : "height"}
+			style={styles.container}
 		>
-			{isMain == true && (
-				<React.Fragment>
-					<TopNavigation
-						alignment="center"
-						title={
-							isUpdate == true
-								? "Chỉnh sửa"
-								: "Đăng ký mã bưu chính"
-						}
-						accessoryLeft={renderBackAction}
-						// accessoryRight={renderRightActions}
-					/>
-					<Divider />
-					<Spinner visible={loading} />
-					{/*
-					{currentLat != null && currentLong != null && (
-						<MapView
-							initialRegion={{
-								latitude: parseFloat(currentLat),
-								longitude: parseFloat(currentLong),
-								// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
-								// longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
-								latitudeDelta: 0.009,
-								longitudeDelta: 0.001,
-							}}
-							//hiển thị chấm xanh
-							// showsUserLocation={true}
-							// showsMyLocationButton={true}
-							// followsUserLocation={true}
-							// showsMyLocationButton={true}
-							// loadingEnabled={true}
-							style={styles.mapStyle}
-							// customMapStyle={mapStyle}
-						>
-							<MapView.Marker
-								key={"marker_here"}
-								draggable
-								coordinate={{
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				style={styles.scrollview}
+			>
+				<SafeAreaView
+					style={{
+						backgroundColor: "#fff",
+						height: Dimensions.get("window").height,
+						paddingTop: Platform.OS === "android" ? 25 : 0,
+					}}
+				>
+					<TouchableWithoutFeedback
+						onPress={Keyboard.dismiss}
+						style={{ width: "100%" }}
+					>
+						<View>
+							{isMain == true && (
+								<React.Fragment>
+									<TopNavigation
+										alignment="center"
+										title={
+											isUpdate == true
+												? "Chỉnh sửa"
+												: "Đăng ký mã bưu chính"
+										}
+										accessoryLeft={renderBackAction}
+										// accessoryRight={renderRightActions}
+									/>
+									<Divider />
+									<Spinner visible={loading} />
+									{/*
+						{currentLat != null && currentLong != null && (
+							<MapView
+								initialRegion={{
 									latitude: parseFloat(currentLat),
 									longitude: parseFloat(currentLong),
+									// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
+									// longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
+									latitudeDelta: 0.009,
+									longitudeDelta: 0.001,
 								}}
-								onSelect={(e) => console.log("onSelect", e)}
-								// onDrag={(e) => console.log("onDrag", e)}
-								// onDragStart={(e) => console.log("onDragStart", e)}
-								onDragEnd={(region) => onRegionChange(region)}
-								onPress={(e) => console.log("onPress", e)}
-							/>
-						</MapView>
-					)}
-					*/}
+								//hiển thị chấm xanh
+								// showsUserLocation={true}
+								// showsMyLocationButton={true}
+								// followsUserLocation={true}
+								// showsMyLocationButton={true}
+								// loadingEnabled={true}
+								style={styles.mapStyle}
+								// customMapStyle={mapStyle}
+							>
+								<MapView.Marker
+									key={"marker_here"}
+									draggable
+									coordinate={{
+										latitude: parseFloat(currentLat),
+										longitude: parseFloat(currentLong),
+									}}
+									onSelect={(e) => console.log("onSelect", e)}
+									// onDrag={(e) => console.log("onDrag", e)}
+									// onDragStart={(e) => console.log("onDragStart", e)}
+									onDragEnd={(region) => onRegionChange(region)}
+									onPress={(e) => console.log("onPress", e)}
+								/>
+							</MapView>
+						)}
+						*/}
 
-					<Text
-						style={{
-							marginTop: 5,
-							paddingTop: 6,
-							paddingHorizontal: 10,
-							paddingBottom: 8,
-						}}
-					>
-						Tên địa điểm
-					</Text>
-					<Input
-						style={{ paddingHorizontal: 10 }}
-						placeholder=""
-						value={nameInput}
-						onChangeText={(text) => setNameInput(text)}
-					/>
-					<Text
-						style={{
-							marginTop: 5,
-							paddingTop: 6,
-							paddingHorizontal: 10,
-							paddingBottom: 8,
-						}}
-					>
-						Số điện thoại
-					</Text>
-					<Input
-						style={{ paddingHorizontal: 10 }}
-						placeholder=""
-						value={phoneInput}
-						keyboardType="number-pad"
-						onChangeText={(text) => setPhoneInput(text)}
-						keyboardType="numeric"
-					/>
-					<Text
-						style={{
-							marginTop: 5,
-							paddingTop: 6,
-							paddingHorizontal: 10,
-							paddingBottom: 8,
-						}}
-					>
-						Địa chỉ
-					</Text>
-					<Select
-						placeholder="Chọn tỉnh thành"
-						value={displayLevel1}
-						selectedIndex={indexLevel1}
-						onSelect={(index) => {
-							selectAreaLevel1(index.row);
-						}}
-						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
-					>
-						{DataPostalLevel1.map((postal) => (
-							<SelectItem title={postal.name} />
-						))}
-					</Select>
-					<Select
-						placeholder="Chọn tỉnh thành"
-						value={displayLevel2}
-						selectedIndex={indexLevel2}
-						onSelect={(index) => {
-							selectAreaLevel2(index.row);
+									<Text
+										style={{
+											marginTop: 5,
+											paddingTop: 6,
+											paddingHorizontal: 10,
+											paddingBottom: 8,
+										}}
+									>
+										Tên địa điểm
+									</Text>
+									<Input
+										style={{ paddingHorizontal: 10 }}
+										placeholder=""
+										value={nameInput}
+										onChangeText={(text) =>
+											setNameInput(text)
+										}
+									/>
+									<Text
+										style={{
+											marginTop: 5,
+											paddingTop: 6,
+											paddingHorizontal: 10,
+											paddingBottom: 8,
+										}}
+									>
+										Số điện thoại
+									</Text>
+									<Input
+										style={{ paddingHorizontal: 10 }}
+										placeholder=""
+										value={phoneInput}
+										keyboardType="number-pad"
+										onChangeText={(text) =>
+											setPhoneInput(text)
+										}
+										keyboardType="numeric"
+									/>
+									<Text
+										style={{
+											marginTop: 5,
+											paddingTop: 6,
+											paddingHorizontal: 10,
+											paddingBottom: 8,
+										}}
+									>
+										Địa chỉ
+									</Text>
+									<Select
+										placeholder="Chọn tỉnh thành"
+										value={displayLevel1}
+										selectedIndex={indexLevel1}
+										onSelect={(index) => {
+											selectAreaLevel1(index.row);
+										}}
+										style={{
+											paddingHorizontal: 10,
+											paddingBottom: 10,
+										}}
+									>
+										{DataPostalLevel1.map((postal) => (
+											<SelectItem title={postal.name} />
+										))}
+									</Select>
+									<Select
+										placeholder="Chọn tỉnh thành"
+										value={displayLevel2}
+										selectedIndex={indexLevel2}
+										onSelect={(index) => {
+											selectAreaLevel2(index.row);
 
-							// setIndexLevel2(index);
-							// setDisplayLevel2(
-							// 	dataPostalLevel2[index.row]["name"].replace(
-							// 		"tỉnh " + displayLevel1,
-							// 		""
-							// 	)
-							// );
+											// setIndexLevel2(index);
+											// setDisplayLevel2(
+											// 	dataPostalLevel2[index.row]["name"].replace(
+											// 		"tỉnh " + displayLevel1,
+											// 		""
+											// 	)
+											// );
 
-							// // fetchGeocode(dataPostalLevel2[index.row]["name"])
-							// axios({
-							// 	method: "get",
-							// 	url:
-							// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
-							// 		dataPostalLevel2[index.row]["postcode"],
-							// 	headers: {
-							// 		accept: "text/plain",
-							// 	},
-							// })
-							// 	.then((data) => {
-							// 		console.log("data", data);
-							// 		setDataPostalLevel3(data.data);
-							// 	})
-							// 	.catch((e) => {
-							// 		console.log("error", e);
-							// 	});
-						}}
-						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
-					>
-						{dataPostalLevel2.map((postal) => (
-							<SelectItem
-								title={postal.name.replace(
-									" tỉnh " + displayLevel1,
-									""
-								)}
-							/>
-						))}
-					</Select>
-					<Select
-						placeholder="Chọn tỉnh thành"
-						value={displayLevel3}
-						selectedIndex={indexLevel3}
-						onSelect={(index) => {
-							selectAreaLevel3(index.row);
-							// setIndexLevel3(index);
-							// setDisplayLevel3(
-							// 	dataPostalLevel3[index.row]["name"]
-							// 		.replace("tỉnh " + displayLevel1, "")
-							// 		.replace(displayLevel2, "")
-							// );
+											// // fetchGeocode(dataPostalLevel2[index.row]["name"])
+											// axios({
+											// 	method: "get",
+											// 	url:
+											// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+											// 		dataPostalLevel2[index.row]["postcode"],
+											// 	headers: {
+											// 		accept: "text/plain",
+											// 	},
+											// })
+											// 	.then((data) => {
+											// 		console.log("data", data);
+											// 		setDataPostalLevel3(data.data);
+											// 	})
+											// 	.catch((e) => {
+											// 		console.log("error", e);
+											// 	});
+										}}
+										style={{
+											paddingHorizontal: 10,
+											paddingBottom: 10,
+										}}
+									>
+										{dataPostalLevel2.map((postal) => (
+											<SelectItem
+												title={postal.name.replace(
+													" tỉnh " + displayLevel1,
+													""
+												)}
+											/>
+										))}
+									</Select>
+									<Select
+										placeholder="Chọn tỉnh thành"
+										value={displayLevel3}
+										selectedIndex={indexLevel3}
+										onSelect={(index) => {
+											selectAreaLevel3(index.row);
+											// setIndexLevel3(index);
+											// setDisplayLevel3(
+											// 	dataPostalLevel3[index.row]["name"]
+											// 		.replace("tỉnh " + displayLevel1, "")
+											// 		.replace(displayLevel2, "")
+											// );
 
-							// setNameLevel3(dataPostalLevel3[index.row]["name"]);
+											// setNameLevel3(dataPostalLevel3[index.row]["name"]);
 
-							// console.log(
-							// 	601,
-							// 	dataPostalLevel3[index.row]["postcode"],
-							// 	dataPostalLevel3[index.row]["name"]
-							// );
+											// console.log(
+											// 	601,
+											// 	dataPostalLevel3[index.row]["postcode"],
+											// 	dataPostalLevel3[index.row]["name"]
+											// );
 
-							// setCodeArea(
-							// 	dataPostalLevel3[index.row]["postcode"]
-							// );
+											// setCodeArea(
+											// 	dataPostalLevel3[index.row]["postcode"]
+											// );
 
-							// fetchGeocode(dataPostalLevel3[index.row]["name"]);
-						}}
-						style={{ paddingHorizontal: 10, paddingBottom: 10 }}
-					>
-						{dataPostalLevel3.map((postal) => (
-							<SelectItem
-								title={postal.name
-									.replace("tỉnh " + displayLevel1, "")
-									.replace("" + displayLevel2, "")}
-							/>
-						))}
-					</Select>
-					<Text
-						style={{
-							marginTop: 5,
-							paddingTop: 6,
-							paddingHorizontal: 10,
-							paddingBottom: 8,
-						}}
-					>
-						Địa chỉ (số nhà, đường)
-					</Text>
-					<Input
-						style={{ paddingHorizontal: 10 }}
-						placeholder=""
-						value={addressInput}
-						onChangeText={(text) => setAddressInput(text)}
-					/>
+											// fetchGeocode(dataPostalLevel3[index.row]["name"]);
+										}}
+										style={{
+											paddingHorizontal: 10,
+											paddingBottom: 10,
+										}}
+									>
+										{dataPostalLevel3.map((postal) => (
+											<SelectItem
+												title={postal.name
+													.replace(
+														"tỉnh " + displayLevel1,
+														""
+													)
+													.replace(
+														"" + displayLevel2,
+														""
+													)}
+											/>
+										))}
+									</Select>
+									<Text
+										style={{
+											marginTop: 5,
+											paddingTop: 6,
+											paddingHorizontal: 10,
+											paddingBottom: 8,
+										}}
+									>
+										Địa chỉ (số nhà, đường)
+									</Text>
+									<Input
+										style={{ paddingHorizontal: 10 }}
+										placeholder=""
+										value={addressInput}
+										onChangeText={(text) =>
+											setAddressInput(text)
+										}
+									/>
 
-					{/*<Text
-						style={{
-							marginTop: 5,
-							paddingTop: 6,
-							paddingHorizontal: 10,
-							paddingBottom: 8,
-						}}
-					>
-						Địa chỉ
-					</Text>
-					<TouchableOpacity onPress={() => setIsMain(false)}>
-						<View style={styles.input}>
-							<Text style={styles.input_text}>
-								{addressInput
-									? addressInput
-									: "Nhập địa chỉ của bạn"}
+									{/*<Text
+								style={{
+									marginTop: 5,
+									paddingTop: 6,
+									paddingHorizontal: 10,
+									paddingBottom: 8,
+								}}
+							>
+								Địa chỉ
 							</Text>
+							<TouchableOpacity onPress={() => setIsMain(false)}>
+								<View style={styles.input}>
+									<Text style={styles.input_text}>
+										{addressInput
+											? addressInput
+											: "Nhập địa chỉ của bạn"}
+									</Text>
+								</View>
+							</TouchableOpacity>*/}
+
+									<Button
+										style={{
+											marginHorizontal: 10,
+											marginTop: 15,
+										}}
+										onPress={() => onClickCreate()}
+									>
+										{isUpdate == true ? "Lưu" : "Đăng ký"}
+									</Button>
+								</React.Fragment>
+							)}
+
+							{isMain == false && (
+								<React.Fragment>
+									<TopNavigation
+										alignment="center"
+										title="Nhập địa chỉ của bạn"
+										accessoryLeft={renderBackMain}
+										accessoryRight={renderRightLocation}
+									/>
+									<Divider />
+
+									<GooglePlacesAutocomplete
+										// ref={mapRef}
+										placeholder="Tìm kiếm"
+										query={{
+											key:
+												appConfigs.GOOGLE_MAP.API_KEY_2,
+											language: "vi", // language of the results
+											components: "country:vn",
+										}}
+										onPress={(data, details = null) => {
+											console.log(data);
+											console.log(348, data.description);
+											setAddressInput(data.description);
+											fetchGeocode(data.description);
+											// setIsMain(true);
+										}}
+										onFail={(error) => console.error(error)}
+										// requestUrl={{
+										// 	url:
+										// 		"https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api",
+										// 	useOnPlatform: "web",
+										// }} // this in only required for use on the web. See https://git.io/JflFv more for details.
+										// currentLocation={true}
+										// currentLocationLabel="Hiện tại"
+										styles={{
+											textInputContainer: {
+												borderColor: "#e4e6ef",
+												padding: 10,
+												backgroundColor: "#e4e6ef",
+											},
+											textInput: {
+												borderColor: "#e4e6ef",
+												height: 38,
+												color: "#5d5d5d",
+												fontSize: 16,
+											},
+											predefinedPlacesDescription: {
+												color: "#1faadb",
+											},
+										}}
+									/>
+								</React.Fragment>
+							)}
 						</View>
-					</TouchableOpacity>*/}
-
-					<Button
-						style={{ marginHorizontal: 10, marginTop: 15 }}
-						onPress={() => onClickCreate()}
-					>
-						{isUpdate == true ? "Lưu" : "Đăng ký"}
-					</Button>
-				</React.Fragment>
-			)}
-
-			{isMain == false && (
-				<React.Fragment>
-					<TopNavigation
-						alignment="center"
-						title="Nhập địa chỉ của bạn"
-						accessoryLeft={renderBackMain}
-						accessoryRight={renderRightLocation}
-					/>
-					<Divider />
-
-					<GooglePlacesAutocomplete
-						// ref={mapRef}
-						placeholder="Tìm kiếm"
-						query={{
-							key: appConfigs.GOOGLE_MAP.API_KEY_2,
-							language: "vi", // language of the results
-							components: "country:vn",
-						}}
-						onPress={(data, details = null) => {
-							console.log(data);
-							console.log(348, data.description);
-							setAddressInput(data.description);
-							fetchGeocode(data.description);
-							// setIsMain(true);
-						}}
-						onFail={(error) => console.error(error)}
-						// requestUrl={{
-						// 	url:
-						// 		"https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api",
-						// 	useOnPlatform: "web",
-						// }} // this in only required for use on the web. See https://git.io/JflFv more for details.
-						// currentLocation={true}
-						// currentLocationLabel="Hiện tại"
-						styles={{
-							textInputContainer: {
-								borderColor: "#e4e6ef",
-								padding: 10,
-								backgroundColor: "#e4e6ef",
-							},
-							textInput: {
-								borderColor: "#e4e6ef",
-								height: 38,
-								color: "#5d5d5d",
-								fontSize: 16,
-							},
-							predefinedPlacesDescription: {
-								color: "#1faadb",
-							},
-						}}
-					/>
-				</React.Fragment>
-			)}
-		</SafeAreaView>
+					</TouchableWithoutFeedback>
+				</SafeAreaView>
+			</ScrollView>
+		</KeyboardAvoidingView>
 	);
 }
 
 // STYLES
 const styles = StyleSheet.create({
 	container: {
-		flexDirection: "row",
-		alignItems: "center",
+		flex: 1,
+		flexDirection: "column",
 	},
 	head: {
 		backgroundColor: "#fff",
