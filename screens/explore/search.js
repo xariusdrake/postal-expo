@@ -31,29 +31,33 @@ import axios from "axios";
 function SearchScreen(props) {
 	const navigation = useNavigation();
 
-	// const [
-	// 	getListPostal,
-	// 	{
-	// 		onCompleted,
-	// 		networkStatus,
-	// 		error: errorPostal,
-	// 		called: calledPostal,
-	// 		loading: loadingPostal,
-	// 		data: dataPostal,
-	// 	},
-	// ] = useLazyQuery(QUERY_GET_ALL_POSTAL_PLACE, {
-	// 	onCompleted: () => {
-	// 		// setLoading(false);
-	// 		console.log(44, dataPostal.postals);
+	const [
+		getListPostal,
+		{
+			onCompleted,
+			networkStatus,
+			error: errorPostal,
+			called: calledPostal,
+			loading: loadingPostalPersonal,
+			data: dataPostal,
+		},
+	] = useLazyQuery(QUERY_GET_ALL_POSTAL_PLACE, {
+		fetchPolicy: "no-cache",
+		onCompleted: (dataPostal) => {
+			console.log(44, dataPostal);
+			setLoadingPostal(false);
+			// setLoading(false);
+			// console.log(44, dataPostal);
 
-	// 		setAllPostalList(dataPostal.postals);
-	// 		console.log("onCompleted ", dataPostal.postals.length);
-	// 	},
-	// 	onError: () => {
-	// 		console.log("onError");
-	// 		console.log(errorPostal);
-	// 	},
-	// });
+			// setAllPostalList(dataPostal.postals);
+			setAllPostalList(allPostalList.concat(dataPostal.postals));
+			// console.log("onCompleted ", dataPostal.postals.length);
+		},
+		onError: () => {
+			console.log("onError");
+			console.log(errorPostal);
+		},
+	});
 
 	const [loadingPostal, setLoadingPostal] = useState(false);
 	const [allPostalList, setAllPostalList] = useState({});
@@ -71,10 +75,9 @@ function SearchScreen(props) {
 			let s_postcode = "";
 
 			if (isNaN(textSearch) == true) {
-				s_name = textSearch
-					.toLowerCase()
-					.replace("xã", "x.")
-					.replace("phường", "p.");
+				s_name = textSearch.toLowerCase();
+				// .replace("xã", "x.")
+				// .replace("phường", "p.");
 			} else {
 				s_postcode = textSearch;
 			}
@@ -93,27 +96,26 @@ function SearchScreen(props) {
 				},
 			})
 				.then((data) => {
-					setLoadingPostal(false);
+					// setLoadingPostal(false);
 					console.log("data", data);
 					setAllPostalList(data.data.results);
+
+					getListPostal({
+						variables: {
+							text:
+								"%" +
+								textSearch.toLowerCase() +
+								// .replace("xã", "x.")
+								// .replace("phường", "p.") +
+								"%",
+							// litmit: 10,
+							// offset: 0,
+						},
+					});
 				})
 				.catch((e) => {
 					console.log("error", e);
 				});
-
-			// getListPostal({
-			// 	variables: {
-			// 		text:
-			// 			"%" +
-			// 			textSearch
-			// 				.toLowerCase()
-			// 				.replace("xã", "x.")
-			// 				.replace("phường", "p.") +
-			// 			"%",
-			// 		// litmit: 10,
-			// 		// offset: 0,
-			// 	},
-			// });
 		}
 	}
 
@@ -132,7 +134,8 @@ function SearchScreen(props) {
 	// 	// }
 	// };
 
-	const renderIcon = (props) => <Icon {...props} name="home-outline" />;
+	const renderIconState = (props) => <Icon {...props} name="home-outline" />;
+	const renderIconPersonal = (props) => <Icon {...props} name="person-outline" />;
 
 	let renderItem = ({ item, index }) => {
 		let name = item.name.replace("X. ", "Xã ").replace("P. ", "Phường ");
@@ -141,14 +144,14 @@ function SearchScreen(props) {
 			<ListItem
 				key={item.id}
 				title={`${name}`}
-				description={`${item.postcode}`}
+				description={`${item.postcode ? item.postcode : item.code}`}
 				onPress={() =>
 					navigation.navigate("Postal", {
 						postal: item,
 						is_search: 1,
 					})
 				}
-				accessoryLeft={renderIcon}
+				accessoryLeft={item.type == 99 ? renderIconPersonal : renderIconState}
 			/>
 		);
 	};

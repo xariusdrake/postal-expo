@@ -27,6 +27,9 @@ export const QUERY_LOGIN_USER = gql`
 				area_level1_index
 				area_level2_index
 				area_level3_index
+				area_level1_code
+				area_level2_code
+				area_level3_code
 				area_text
 				image_url
 				lng
@@ -65,6 +68,9 @@ export const QUERY_CHECK_USER_TOKEN = gql`
 				area_level1_index
 				area_level2_index
 				area_level3_index
+				area_level1_code
+				area_level2_code
+				area_level3_code
 				area_text
 				image_url
 				lng
@@ -103,6 +109,9 @@ export const QUERY_GET_INFO_USER = gql`
 				area_level1_index
 				area_level2_index
 				area_level3_index
+				area_level1_code
+				area_level2_code
+				area_level3_code
 				area_text
 				image_url
 				lng
@@ -345,6 +354,9 @@ export const QUERY_GET_ALL_POSTAL_PLACE = gql`
 			area_level1_index
 			area_level2_index
 			area_level3_index
+			area_level1_code
+			area_level2_code
+			area_level3_code
 			area_text
 			image_url
 			lng
@@ -372,6 +384,9 @@ export const QUERY_GET_POSTAL = gql`
 			area_level1_index
 			area_level2_index
 			area_level3_index
+			area_level1_code
+			area_level2_code
+			area_level3_code
 			area_text
 			image_url
 			lng
@@ -393,14 +408,17 @@ export const MUTATION_UPDATE_POSTAL = gql`
 		$id: Int!
 		$name: String!
 		$phone: String!
-		$address: address!
+		$address: String!
 		$code_area: String!
 		$area_level1_index: Int!
 		$area_level2_index: Int!
 		$area_level3_index: Int!
+		$area_level1_code: String!
+		$area_level2_code: String!
+		$area_level3_code: String!
 		$area_text: String!
 		$lat: String!
-		$long: String!
+		$lng: String!
 	) {
 		update_postals(
 			where: { id: { _eq: $id } }
@@ -412,9 +430,12 @@ export const MUTATION_UPDATE_POSTAL = gql`
 				area_level1_index: $area_level1_index
 				area_level2_index: $area_level2_index
 				area_level3_index: $area_level3_index
+				area_level1_code: $area_level1_code
+				area_level2_code: $area_level2_code
+				area_level3_code: $area_level3_code
 				area_text: $area_text
 				lat: $lat
-				long: $long
+				lng: $lng
 			}
 		) {
 			returning {
@@ -564,6 +585,9 @@ export const QUERY_GET_POSTAL_DETAIL = gql`
 			area_level1_index
 			area_level2_index
 			area_level3_index
+			area_level1_code
+			area_level2_code
+			area_level3_code
 			area_text
 			image_url
 			lng
@@ -608,6 +632,9 @@ export const QUERY_GET_POSTAL_BY_BARCODE = gql`
 			area_level1_index
 			area_level2_index
 			area_level3_index
+			area_level1_code
+			area_level2_code
+			area_level3_code
 			area_text
 			image_url
 			lng
@@ -676,6 +703,9 @@ export const MUTATION_CREATE_POSTAL = gql`
 		$area_level1_index: Int!
 		$area_level2_index: Int!
 		$area_level3_index: Int!
+		$area_level1_code: String!
+		$area_level2_code: String!
+		$area_level3_code: String!
 		$area_text: String!
 		$lat: String!
 		$lng: String!
@@ -693,6 +723,9 @@ export const MUTATION_CREATE_POSTAL = gql`
 				area_level1_index: $area_level1_index
 				area_level2_index: $area_level2_index
 				area_level3_index: $area_level3_index
+				area_level1_code: $area_level1_code
+				area_level2_code: $area_level2_code
+				area_level3_code: $area_level3_code
 				area_text: $area_text
 				lat: $lat
 				lng: $lng

@@ -109,7 +109,11 @@ function createPostalLocationScreen(props) {
 
 			setNameInput(dataGet.postals[0].name);
 			setAddressInput(dataGet.postals[0].address);
+
 			setCodeArea(dataGet.postals[0].code_area);
+			setCodeLevel1(dataGet.postals[0].area_level1_code);
+			setCodeLevel2(dataGet.postals[0].area_level2_code);
+			setCodeLevel3(dataGet.postals[0].area_level3_code);
 
 			// setIndexLevel1(new IndexPath(parseInt(dataGet.postals[0].area_level1_index)));
 			// setIndexLevel2(new IndexPath(parseInt(dataGet.postals[0].area_level2_index)));
@@ -194,16 +198,20 @@ function createPostalLocationScreen(props) {
 	});
 
 	const [indexLevel1, setIndexLevel1] = useState(new IndexPath(0));
+	const [codeLevel1, setCodeLevel1] = useState();
 	const [displayLevel1, setDisplayLevel1] = useState("Chọn tỉnh/thành phố");
 
 	const [indexLevel2, setIndexLevel2] = useState(new IndexPath(0));
+	const [codeLevel2, setCodeLevel2] = useState();
 	const [displayLevel2, setDisplayLevel2] = useState("Chọn huyện");
 	const [dataPostalLevel2, setDataPostalLevel2] = useState([]);
 
 	const [indexLevel3, setIndexLevel3] = useState(new IndexPath(0));
+	const [codeLevel3, setCodeLevel3] = useState();
 	const [displayLevel3, setDisplayLevel3] = useState("Chọn xã");
 	const [nameLevel3, setNameLevel3] = useState();
 	const [dataPostalLevel3, setDataPostalLevel3] = useState([]);
+
 	const [codeArea, setCodeArea] = useState(null);
 
 	const [nameInput, setNameInput] = useState("");
@@ -285,7 +293,7 @@ function createPostalLocationScreen(props) {
 				// console.log(105, response);
 
 				const address = response.results[0].formatted_address;
-				setAddressInput(address);
+				// setAddressInput(address);
 				mapRef.current?.setAddressText(address);
 				setLoadingAddress(false);
 				console.log(222, response);
@@ -306,9 +314,9 @@ function createPostalLocationScreen(props) {
 				setCurrentLat(lat);
 				setCurrentLong(lng);
 
-				// mapRef.current.fitToSuppliedMarkers(
-				// 	markers.map(({ _id }) => _id)
-				// );
+				mapRef.current.fitToSuppliedMarkers(
+					markers.map(({ _id }) => _id)
+				);
 			},
 			(error) => {
 				console.error(error);
@@ -322,6 +330,10 @@ function createPostalLocationScreen(props) {
 		setDisplayLevel1(
 			DataPostalLevel1[dataGet.postals[0].area_level1_index]["name"]
 		);
+
+		console.log("selectAreaLevel1[0]");
+		console.log(dataGet.postals[0]);
+		console.log(DataPostalLevel1);
 		console.log(
 			"selectAreaLevel1",
 			dataGet.postals[0].area_level1_index,
@@ -333,28 +345,48 @@ function createPostalLocationScreen(props) {
 			method: "get",
 			url:
 				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
-				DataPostalLevel1[dataGet.postals[0].area_level1_index]["code"],
+				dataGet.postals[0].area_level1_code,
 			headers: {
 				accept: "text/plain",
 			},
 		})
 			.then((dataResponse1) => {
+				console.log("dataResponse1");
 				setDataPostalLevel2(dataResponse1.data);
-				console.log("selectAreaLevel2[1]", dataResponse1.data);
-				console.log("selectAreaLevel2[1][1]", dataPostalLevel2);
-				console.log(
-					"selectAreaLevel2[2]",
-					dataGet.postals[0].area_level2_index,
-					dataPostalLevel2[dataGet.postals[0].area_level2_index][
-						"name"
-					]
-				);
+
+				// console.log(346, dataPostalLevel2);
+
+				// console.log("selectAreaLevel2[1]", dataResponse1.data);
+				// console.log("selectAreaLevel2[1][1]", dataPostalLevel2);
+				// console.log(
+				// 	"selectAreaLevel2[2]",
+				// 	dataGet.postals[0].area_level2_index
+				// 	// dataPostalLevel2[dataGet.postals[0].area_level2_index][
+				// 	// 	"name"
+				// 	// ]
+				// );
 
 				setIndexLevel2(
 					new IndexPath(dataGet.postals[0].area_level2_index)
 				);
+
+				// console.log(
+				// 	357,
+				// 	dataGet.postals[0].area_level2_index,
+				// 	// dataPostalLevel2[dataGet.postals[0].area_level2_index][
+				// 	// 	"name"
+				// 	// ]
+				// );
+
+				console.log(
+					377,
+					dataResponse1.data[dataGet.postals[0].area_level2_index][
+						"name"
+					]
+				);
+
 				setDisplayLevel2(
-					dataPostalLevel2[dataGet.postals[0].area_level2_index][
+					dataResponse1.data[dataGet.postals[0].area_level2_index][
 						"name"
 					].replace("tỉnh " + displayLevel1)
 				);
@@ -364,38 +396,50 @@ function createPostalLocationScreen(props) {
 					method: "get",
 					url:
 						"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
-						dataPostalLevel2[dataGet.postals[0].area_level2_index][
-							"postcode"
-						],
+						dataGet.postals[0].area_level2_code,
 					headers: {
 						accept: "text/plain",
 					},
 				})
 					.then((dataResponse2) => {
+						console.log("dataResponse2");
 						console.log("dataResponse2", dataResponse2);
 						setDataPostalLevel3(dataResponse2.data);
+
+						// setTimeout(function () {
+						// 	console.log(391, dataPostalLevel2);
+						// }, 5000);
+
 						setIndexLevel3(
 							new IndexPath(dataGet.postals[0].area_level3_index)
 						);
+
 						setDisplayLevel3(
-							dataPostalLevel3[
+							dataResponse2.data[
 								dataGet.postals[0].area_level3_index
 							]["name"]
-								.replace("tỉnh " + displayLevel1, "")
-								.replace(displayLevel2, "")
+							// .replace("tỉnh " + displayLevel1)
 						);
 
-						setNameLevel3(
-							dataPostalLevel3[
-								dataGet.postals[0].area_level3_index
-							]["name"]
-						);
+						// setDisplayLevel3(
+						// 	dataPostalLevel3[
+						// 		dataGet.postals[0].area_level3_index
+						// 	]["name"]
+						// 		.replace("tỉnh " + displayLevel1, "")
+						// 		.replace(displayLevel2, "")
+						// );
 
-						setCodeArea(
-							dataPostalLevel3[
-								dataGet.postals[0].area_level3_index
-							]["postcode"]
-						);
+						// setNameLevel3(
+						// 	dataPostalLevel3[
+						// 		dataGet.postals[0].area_level3_index
+						// 	]["name"]
+						// );
+
+						// setCodeArea(
+						// 	dataPostalLevel3[
+						// 		dataGet.postals[0].area_level3_index
+						// 	]["postcode"]
+						// );
 
 						// fetchGeocode(dataPostalLevel3[dataGet.postals[0].area_level3_index]["name"]);
 					})
@@ -409,9 +453,22 @@ function createPostalLocationScreen(props) {
 	}
 
 	async function selectAreaLevel1(index) {
+		console.log("selectAreaLevel1=>index", index);
+
 		setIndexLevel1(new IndexPath(index));
 
 		setDisplayLevel1(DataPostalLevel1[index]["name"]);
+		setCodeLevel1(DataPostalLevel1[index]["code"]);
+
+		setIndexLevel2(new IndexPath(0));
+		setDisplayLevel2("Chọn huyện");
+		setDataPostalLevel2([]);
+		setCodeLevel2("");
+		setIndexLevel3(new IndexPath(0));
+		setDisplayLevel3("Chọn xã");
+		setDataPostalLevel3([]);
+		setCodeLevel3("");
+
 		console.log("selectAreaLevel1", index, DataPostalLevel1[index]["code"]);
 
 		// fetchGeocode(DataPostalLevel1[index.row]["name"])
@@ -425,7 +482,7 @@ function createPostalLocationScreen(props) {
 			},
 		})
 			.then((data) => {
-				console.log("data selectAreaLevel1 list2", data.data[0]);
+				console.log("data selectAreaLevel1 list2", data);
 				setDataPostalLevel2(data.data);
 			})
 			.catch((e) => {
@@ -441,12 +498,18 @@ function createPostalLocationScreen(props) {
 		setDisplayLevel2(
 			dataPostalLevel2[index]["name"].replace("tỉnh " + displayLevel1, "")
 		);
+		setCodeLevel2(dataPostalLevel2[index]["postcode"]);
+
+		setIndexLevel3(new IndexPath(0));
+		setDisplayLevel3("Chọn xã");
+		setDataPostalLevel3([]);
+		setCodeLevel3("");
 
 		console.log("setDisplayLevel2");
 		console.log(333333332, dataPostalLevel2);
 		// console.log('setDisplayLevel2', index, dataPostalLevel2[index]["code"])
 
-		fetchGeocode(dataPostalLevel2[index]["name"]);
+		// fetchGeocode(dataPostalLevel2[index]["name"]);
 		await axios({
 			method: "get",
 			url:
@@ -457,16 +520,12 @@ function createPostalLocationScreen(props) {
 			},
 		})
 			.then((data) => {
-				console.log("data", data);
+				// console.log("data", data);
 				setDataPostalLevel3(data.data);
 			})
 			.catch((e) => {
 				console.log("error", e);
 			});
-
-		setTimeout(() => {
-			console.log(3335, "selectAreaLevel233", dataPostalLevel2);
-		}, 5000);
 	}
 
 	async function selectAreaLevel3(index) {
@@ -478,6 +537,7 @@ function createPostalLocationScreen(props) {
 		);
 
 		setNameLevel3(dataPostalLevel3[index]["name"]);
+		setCodeLevel3(dataPostalLevel3[index]["postcode"]);
 
 		console.log(
 			601,
@@ -502,18 +562,7 @@ function createPostalLocationScreen(props) {
 	// }
 
 	function onClickCreate() {
-		console.log(132, props.infos);
-
-		console.log(264, {
-			name: nameInput,
-			phone: phoneInput.toString(),
-			address: addressInput,
-			type: 99,
-			image_url: "https://i.imgur.com/fkmKq6F.png",
-			lat: currentLat.toString(),
-			lng: currentLong.toString(),
-			uid: props.infos.id,
-		});
+		// console.log(132, props.infos);
 
 		if (!nameInput.trim()) {
 			Alert.alert("Vui lòng nhập tên địa điểm");
@@ -521,19 +570,36 @@ function createPostalLocationScreen(props) {
 		} else if (!phoneInput.trim()) {
 			Alert.alert("Vui lòng nhập số điện thoại");
 			return;
-		} else if (!displayLevel1.trim()) {
+		} else if (!codeLevel1.trim()) {
 			Alert.alert("Vui lòng chọn tỉnh/thành phố");
 			return;
-		} else if (!displayLevel2.trim()) {
+		} else if (!codeLevel2.trim()) {
 			Alert.alert("Vui lòng chọn huyện");
 			return;
-		} else if (!displayLevel3.trim()) {
+		} else if (!codeLevel3.trim()) {
 			Alert.alert("Vui lòng chọn xã");
 			return;
 		} else if (!addressInput.trim()) {
 			Alert.alert("Vui lòng nhập địa chỉ");
 			return;
 		}
+
+		console.log(264, {
+			// id: props.route.params.postal.id,
+			name: nameInput,
+			phone: phoneInput.toString(),
+			address: addressInput,
+			code_area: codeArea,
+			area_level1_index: parseInt(indexLevel1) - 1,
+			area_level2_index: parseInt(indexLevel2) - 1,
+			area_level3_index: parseInt(indexLevel3) - 1,
+			area_level1_code: codeLevel1,
+			area_level2_code: codeLevel2,
+			area_level3_code: codeLevel3,
+			area_text: dataPostalLevel3[indexLevel3 - 1]["name"],
+			lat: currentLat.toString(),
+			lng: currentLong.toString(),
+		});
 
 		setLoading(true);
 
@@ -547,12 +613,15 @@ function createPostalLocationScreen(props) {
 					phone: phoneInput.toString(),
 					address: addressInput,
 					code_area: codeArea,
-					area_level1_index: parseInt(indexLevel1),
-					area_level2_index: parseInt(indexLevel2),
-					area_level3_index: parseInt(indexLevel3),
+					area_text: dataPostalLevel3[indexLevel3 - 1]["name"],
+					area_level1_index: parseInt(indexLevel1) - 1,
+					area_level2_index: parseInt(indexLevel2) - 1,
+					area_level3_index: parseInt(indexLevel3) - 1,
+					area_level1_code: codeLevel1,
+					area_level2_code: codeLevel2,
+					area_level3_code: codeLevel3,
 					lat: currentLat.toString(),
 					lng: currentLong.toString(),
-					uid: props.infos.id,
 				},
 			});
 		} else {
@@ -564,10 +633,16 @@ function createPostalLocationScreen(props) {
 						phone: phoneInput.toString(),
 						address: addressInput,
 						code_area: codeArea,
-						area_level1_index: parseInt(indexLevel1),
-						area_level2_index: parseInt(indexLevel2),
-						area_level3_index: parseInt(indexLevel3),
-						area_text: dataPostalLevel3[indexLevel3]["name"],
+						area_text: dataPostalLevel3[indexLevel3 - 1]["name"],
+						// area_level1_index: parseInt(indexLevel1),
+						// area_level2_index: parseInt(indexLevel2),
+						// area_level3_index: parseInt(indexLevel3),
+						area_level1_index: parseInt(indexLevel1) - 1,
+						area_level2_index: parseInt(indexLevel2) - 1,
+						area_level3_index: parseInt(indexLevel3) - 1,
+						area_level1_code: codeLevel1,
+						area_level2_code: codeLevel2,
+						area_level3_code: codeLevel3,
 						type: 99,
 						image_url: "https://i.imgur.com/fkmKq6F.png",
 						lat: currentLat.toString(),
@@ -668,20 +743,20 @@ function createPostalLocationScreen(props) {
 	);
 
 	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={styles.container}
+		<SafeAreaView
+			style={{
+				backgroundColor: "#fff",
+				height: Dimensions.get("window").height,
+				paddingTop: Platform.OS === "android" ? 25 : 0,
+			}}
 		>
-			<ScrollView
-				showsVerticalScrollIndicator={false}
-				style={styles.scrollview}
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.container}
 			>
-				<SafeAreaView
-					style={{
-						backgroundColor: "#fff",
-						height: Dimensions.get("window").height,
-						paddingTop: Platform.OS === "android" ? 25 : 0,
-					}}
+				<ScrollView
+					showsVerticalScrollIndicator={false}
+					style={styles.scrollview}
 				>
 					<TouchableWithoutFeedback
 						onPress={Keyboard.dismiss}
@@ -702,42 +777,71 @@ function createPostalLocationScreen(props) {
 									/>
 									<Divider />
 									<Spinner visible={loading} />
-									{/*
-						{currentLat != null && currentLong != null && (
-							<MapView
-								initialRegion={{
-									latitude: parseFloat(currentLat),
-									longitude: parseFloat(currentLong),
-									// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
-									// longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
-									latitudeDelta: 0.009,
-									longitudeDelta: 0.001,
-								}}
-								//hiển thị chấm xanh
-								// showsUserLocation={true}
-								// showsMyLocationButton={true}
-								// followsUserLocation={true}
-								// showsMyLocationButton={true}
-								// loadingEnabled={true}
-								style={styles.mapStyle}
-								// customMapStyle={mapStyle}
-							>
-								<MapView.Marker
-									key={"marker_here"}
-									draggable
-									coordinate={{
-										latitude: parseFloat(currentLat),
-										longitude: parseFloat(currentLong),
-									}}
-									onSelect={(e) => console.log("onSelect", e)}
-									// onDrag={(e) => console.log("onDrag", e)}
-									// onDragStart={(e) => console.log("onDragStart", e)}
-									onDragEnd={(region) => onRegionChange(region)}
-									onPress={(e) => console.log("onPress", e)}
-								/>
-							</MapView>
-						)}
-						*/}
+									{currentLat != null && currentLong != null && (
+										<MapView
+											initialRegion={{
+												latitude: parseFloat(
+													currentLat
+												),
+												longitude: parseFloat(
+													currentLong
+												),
+												// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
+												// longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
+												latitudeDelta: 0.009,
+												longitudeDelta: 0.001,
+											}}
+											//hiển thị chấm xanh
+											// showsUserLocation={true}
+											// showsMyLocationButton={true}
+											// followsUserLocation={true}
+											// showsMyLocationButton={true}
+											// loadingEnabled={true}
+											style={styles.mapStyle}
+											onMapReady={() => {
+												// mapRef.fitToSuppliedMarkers(...)
+												// mapRef.current.fitToSuppliedMarkers(
+												// 	[
+												// 		"storeMarker", //'truckMarker',
+												// 	],
+												// 	{
+												// 		edgePadding: {
+												// 			top: 50,
+												// 			right: 50,
+												// 			bottom: 50,
+												// 			left: 50,
+												// 		},
+												// 	}
+												// );
+											}}
+											// customMapStyle={mapStyle}
+										>
+											<MapView.Marker
+												identifier={"storeMarker"}
+												key={"marker_here"}
+												draggable
+												coordinate={{
+													latitude: parseFloat(
+														currentLat
+													),
+													longitude: parseFloat(
+														currentLong
+													),
+												}}
+												onSelect={(e) =>
+													console.log("onSelect", e)
+												}
+												// onDrag={(e) => console.log("onDrag", e)}
+												// onDragStart={(e) => console.log("onDragStart", e)}
+												onDragEnd={(region) =>
+													onRegionChange(region)
+												}
+												onPress={(e) =>
+													console.log("onPress", e)
+												}
+											/>
+										</MapView>
+									)}
 
 									<Text
 										style={{
@@ -804,7 +908,7 @@ function createPostalLocationScreen(props) {
 										))}
 									</Select>
 									<Select
-										placeholder="Chọn tỉnh thành"
+										placeholder="Chọn huyện"
 										value={displayLevel2}
 										selectedIndex={indexLevel2}
 										onSelect={(index) => {
@@ -1002,9 +1106,9 @@ function createPostalLocationScreen(props) {
 							)}
 						</View>
 					</TouchableWithoutFeedback>
-				</SafeAreaView>
-			</ScrollView>
-		</KeyboardAvoidingView>
+				</ScrollView>
+			</KeyboardAvoidingView>
+		</SafeAreaView>
 	);
 }
 

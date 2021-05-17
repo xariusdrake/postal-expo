@@ -155,7 +155,7 @@ function MyPostalScreen(props) {
 			<ListItem
 				key={item.id}
 				title={item.name}
-				description={item.address}
+				description={item.address + ', ' + item.area_text}
 				onPress={() => {
 					// console.log("click move place");
 
