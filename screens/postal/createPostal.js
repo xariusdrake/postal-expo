@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
 	View,
 	StyleSheet,
@@ -66,7 +66,8 @@ const MenuIcon = (props) => <Icon {...props} name="more-vertical" />;
 const InfoIcon = (props) => <Icon {...props} name="info" />;
 
 function createPostalLocationScreen(props) {
-	const mapRef = React.useRef();
+	const mapRef = useRef(null);
+	let refX = useRef();
 
 	const [
 		createPostal,
@@ -147,7 +148,7 @@ function createPostalLocationScreen(props) {
 			// }, 4000);
 
 			setPhoneInput(dataGet.postals[0].phone);
-			mapRef.current?.setAddressText(dataGet.postals[0].address);
+			// mapRef.current?.setAddressText(dataGet.postals[0].address);
 			setCurrentLat(dataGet.postals[0].lat);
 			setCurrentLong(dataGet.postals[0].lng);
 		},
@@ -203,12 +204,12 @@ function createPostalLocationScreen(props) {
 
 	const [indexLevel2, setIndexLevel2] = useState(new IndexPath(0));
 	const [codeLevel2, setCodeLevel2] = useState();
-	const [displayLevel2, setDisplayLevel2] = useState("Chọn huyện");
+	const [displayLevel2, setDisplayLevel2] = useState("Chọn quận/huyện");
 	const [dataPostalLevel2, setDataPostalLevel2] = useState([]);
 
 	const [indexLevel3, setIndexLevel3] = useState(new IndexPath(0));
 	const [codeLevel3, setCodeLevel3] = useState();
-	const [displayLevel3, setDisplayLevel3] = useState("Chọn xã");
+	const [displayLevel3, setDisplayLevel3] = useState("Chọn phường/xã");
 	const [nameLevel3, setNameLevel3] = useState();
 	const [dataPostalLevel3, setDataPostalLevel3] = useState([]);
 
@@ -294,7 +295,7 @@ function createPostalLocationScreen(props) {
 
 				const address = response.results[0].formatted_address;
 				// setAddressInput(address);
-				mapRef.current?.setAddressText(address);
+				// mapRef.current?.setAddressText(address);
 				setLoadingAddress(false);
 				console.log(222, response);
 				console.log(333, address);
@@ -314,9 +315,25 @@ function createPostalLocationScreen(props) {
 				setCurrentLat(lat);
 				setCurrentLong(lng);
 
-				mapRef.current.fitToSuppliedMarkers(
-					markers.map(({ _id }) => _id)
-				);
+				let markers = {
+					latitude: parseFloat(lat),
+					longitude: parseFloat(lng),
+				};
+
+				// mapRef.current.fitToCoordinates(true)
+
+				// mapRef.fitToSuppliedMarkers(
+				// 	markers.map(({ _id }) => _id)
+				// );
+				// refX.fitToSuppliedMarkers(members.map(m => m.id), true);
+				mapRef.current.animateToRegion({
+					latitude: parseFloat(lat),
+					longitude: parseFloat(lng),
+					latitudeDelta: 0.0122,
+					longitudeDelta: 0.0121,
+					// latitudeDelta: 0.009,
+					// longitudeDelta: 0.001,
+				});
 			},
 			(error) => {
 				console.error(error);
@@ -344,7 +361,7 @@ function createPostalLocationScreen(props) {
 		axios({
 			method: "get",
 			url:
-				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
 				dataGet.postals[0].area_level1_code,
 			headers: {
 				accept: "text/plain",
@@ -395,7 +412,7 @@ function createPostalLocationScreen(props) {
 				axios({
 					method: "get",
 					url:
-						"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+						"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
 						dataGet.postals[0].area_level2_code,
 					headers: {
 						accept: "text/plain",
@@ -461,21 +478,21 @@ function createPostalLocationScreen(props) {
 		setCodeLevel1(DataPostalLevel1[index]["code"]);
 
 		setIndexLevel2(new IndexPath(0));
-		setDisplayLevel2("Chọn huyện");
+		setDisplayLevel2("Chọn quận/huyện");
 		setDataPostalLevel2([]);
 		setCodeLevel2("");
 		setIndexLevel3(new IndexPath(0));
-		setDisplayLevel3("Chọn xã");
+		setDisplayLevel3("Chọn phường/xã");
 		setDataPostalLevel3([]);
 		setCodeLevel3("");
 
 		console.log("selectAreaLevel1", index, DataPostalLevel1[index]["code"]);
 
-		// fetchGeocode(DataPostalLevel1[index.row]["name"])
+		fetchGeocode(DataPostalLevel1[index]["name"]);
 		await axios({
 			method: "get",
 			url:
-				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
 				DataPostalLevel1[index]["code"],
 			headers: {
 				accept: "text/plain",
@@ -501,7 +518,7 @@ function createPostalLocationScreen(props) {
 		setCodeLevel2(dataPostalLevel2[index]["postcode"]);
 
 		setIndexLevel3(new IndexPath(0));
-		setDisplayLevel3("Chọn xã");
+		setDisplayLevel3("Chọn phường/xã");
 		setDataPostalLevel3([]);
 		setCodeLevel3("");
 
@@ -509,17 +526,18 @@ function createPostalLocationScreen(props) {
 		console.log(333333332, dataPostalLevel2);
 		// console.log('setDisplayLevel2', index, dataPostalLevel2[index]["code"])
 
-		// fetchGeocode(dataPostalLevel2[index]["name"]);
+		fetchGeocode(dataPostalLevel2[index]["name"]);
 		await axios({
 			method: "get",
 			url:
-				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
+				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
 				dataPostalLevel2[index]["postcode"],
 			headers: {
 				accept: "text/plain",
 			},
 		})
 			.then((data) => {
+				console.log(data);
 				// console.log("data", data);
 				setDataPostalLevel3(data.data);
 			})
@@ -574,10 +592,10 @@ function createPostalLocationScreen(props) {
 			Alert.alert("Vui lòng chọn tỉnh/thành phố");
 			return;
 		} else if (!codeLevel2.trim()) {
-			Alert.alert("Vui lòng chọn huyện");
+			Alert.alert("Vui lòng chọn quận/huyện");
 			return;
 		} else if (!codeLevel3.trim()) {
-			Alert.alert("Vui lòng chọn xã");
+			Alert.alert("Vui lòng chọn phường/xã");
 			return;
 		} else if (!addressInput.trim()) {
 			Alert.alert("Vui lòng nhập địa chỉ");
@@ -779,6 +797,7 @@ function createPostalLocationScreen(props) {
 									<Spinner visible={loading} />
 									{currentLat != null && currentLong != null && (
 										<MapView
+											ref={mapRef}
 											initialRegion={{
 												latitude: parseFloat(
 													currentLat
@@ -793,27 +812,127 @@ function createPostalLocationScreen(props) {
 											}}
 											//hiển thị chấm xanh
 											// showsUserLocation={true}
-											// showsMyLocationButton={true}
-											// followsUserLocation={true}
-											// showsMyLocationButton={true}
-											// loadingEnabled={true}
+											showsMyLocationButton={true}
+											followsUserLocation={true}
+											loadingEnabled={true}
 											style={styles.mapStyle}
-											onMapReady={() => {
-												// mapRef.fitToSuppliedMarkers(...)
-												// mapRef.current.fitToSuppliedMarkers(
-												// 	[
-												// 		"storeMarker", //'truckMarker',
-												// 	],
-												// 	{
-												// 		edgePadding: {
-												// 			top: 50,
-												// 			right: 50,
-												// 			bottom: 50,
-												// 			left: 50,
-												// 		},
-												// 	}
-												// );
-											}}
+											// onMapReady={() => {
+											// 	// mapRef.fitToSuppliedMarkers(...)
+											// 	// mapRef.current.fitToSuppliedMarkers(
+											// 	// 	[
+											// 	// 		"storeMarker", //'truckMarker',
+											// 	// 	],
+											// 	// 	{
+											// 	// 		edgePadding: {
+											// 	// 			top: 50,
+											// 	// 			right: 50,
+											// 	// 			bottom: 50,
+											// 	// 			left: 50,
+											// 	// 		},
+											// 	// 	}
+											// 	// );
+											// }}
+											// fitToCoordinates={{
+											// 	coordinates: {
+											// 		latitude: parseFloat(
+											// 			currentLat
+											// 		),
+											// 		longitude: parseFloat(
+											// 			currentLong
+											// 		),
+											// 	},
+											// }}
+											// onLayout={() => {
+											// 	// mapRef.fitToSuppliedMarkers(
+											// 	// 	{
+											// 	// 		latitude: parseFloat(
+											// 	// 			currentLat
+											// 	// 		),
+											// 	// 		longitude: parseFloat(
+											// 	// 			currentLong
+											// 	// 		),
+											// 	// 	},
+											// 	// 	false // not animated
+											// 	// );
+											// 	console.log(1)
+											// 	// mapRef.fitToCoordinates(
+											// 	// 	{
+											// 	// 		latitude: parseFloat(
+											// 	// 			currentLat
+											// 	// 		),
+											// 	// 		longitude: parseFloat(
+											// 	// 			currentLong
+											// 	// 		),
+											// 	// 	},
+											// 	// 	{
+											// 	// 		edgePadding: {
+											// 	// 			top: 10,
+											// 	// 			right: 10,
+											// 	// 			bottom: 10,
+											// 	// 			left: 10,
+											// 	// 		},
+											// 	// 		animated: false,
+											// 	// 	}
+											// 	// )
+											// }}
+											// onLayout={() =>
+											// 	mapRef.current.fitToCoordinates(
+											// 		{
+											// 			latitude: parseFloat(
+											// 				currentLat
+											// 			),
+											// 			longitude: parseFloat(
+											// 				currentLong
+											// 			),
+											// 		},
+											// 		{
+											// 			edgePadding: {
+											// 				top: 10,
+											// 				right: 10,
+											// 				bottom: 10,
+											// 				left: 10,
+											// 			},
+											// 			animated: true,
+											// 		}
+											// 	)
+											// }
+											// onLayout={() => {
+											// 	console.log("mapReady...");
+
+											// 	// This orientates the map with the origin on bottom and destination on top
+											// 	// You can see that when the map first loads,
+											// 	// but the map isn't fit to the points
+											// 	// mapRef.current.setCamera({
+											// 	// 	,
+											// 	// });
+
+											// 	// 5 seconds after the map loads,
+											// 	// this runs and does fit the map to the points,
+											// 	// but it sets the heading back to 0
+											// 	// setTimeout(() => {
+											// 	// 	console.log(
+											// 	// 		"fitting to coordinates"
+											// 	// 	);
+											// 	// 	mapRef.current.fitToCoordinates(
+											// 	// 		[
+											// 	// 			{
+											// 	// 				latitude: parseFloat(
+											// 	// 					currentLat
+											// 	// 				),
+											// 	// 				longitude: parseFloat(
+											// 	// 					currentLong
+											// 	// 				),
+											// 	// 			},
+											// 	// 			// destination,
+											// 	// 		],
+											// 	// 		{
+											// 	// 			animated: true,
+											// 	// 		}
+											// 	// 	);
+											// 	// }, 1000);
+											// }}
+											// scrollEnabled={true}
+											// fitToElements={true}
 											// customMapStyle={mapStyle}
 										>
 											<MapView.Marker
@@ -908,7 +1027,7 @@ function createPostalLocationScreen(props) {
 										))}
 									</Select>
 									<Select
-										placeholder="Chọn huyện"
+										placeholder="Chọn quận/huyện"
 										value={displayLevel2}
 										selectedIndex={indexLevel2}
 										onSelect={(index) => {

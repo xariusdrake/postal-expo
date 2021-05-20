@@ -176,41 +176,6 @@ function ExploreScreen(props) {
 		}
 	}
 
-	function TestThisShit() {
-		// axios({
-		// 	method: "get",
-		// 	url:
-		// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
-		// 	headers: { "Content-Type": "application/json" },
-		// 	// params: {
-		// 	// 	category_id: 3,
-		// 	// 	page: this.page,
-		// 	// },
-		// })
-		// 	.then((response) => {
-		// 		console.log(response);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log(error);
-		// 	});
-
-		axios(
-			"https://reqres.in/api/users?page=2",
-			{
-				method: "get",
-				headers: {
-					"Content-Type": "application/json",
-					// "Content-type": "Application/json",
-					// Accept: "Application/json",
-					// Authorization: jwt,
-				},
-				data: {},
-			}
-		).then((res) => {
-			console.log(188, res);
-		});
-	}
-
 	// async function checkUpdate() {
 	// 	console.log("UpdateApp");
 	// 	try {
@@ -254,50 +219,6 @@ function ExploreScreen(props) {
 
 	useEffect(() => {
 		askPermissions();
-		// checkUpdate();
-
-		// fetch(
-		// 	"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52"
-		// )
-		// 	.then((res) => console.log(596, res))
-		// 	.then((json) => console.log(json));
-
-		// axios
-		// 	.get(
-		// 		`http://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52`
-		// 	)
-		// 	.then((res) => {
-		// 		console.log(18822, res);
-		// 		Alert.alert("WORK");
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log(123, error);
-		// 		Alert.alert("ERR");
-		// 	});
-
-		// fetch("https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52")
-		// 	.then((response) => response.json())
-		// 	.then((json) => {
-		// 		return json.movies;
-		// 	})
-		// 	.catch((error) => {
-		// 		console.error(error);
-		// 	});
-
-		TestThisShit();
-		// axios({
-		// 	method: "get",
-		// 	// baseURL: baseUrl,
-		// 	url:
-		// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=51-52",
-		// 	headers: {
-		// 		accept: "text/plain",
-		// 		// 'x-app-key': baseUrl == appConfigs.API.URL.EID_URL ? appConfigs.API.SECRET_KEY : '',
-		// 		// 'x-app-key': appConfigs.API.SECRET_KEY,
-		// 		// 'Authorization': 'Bearer ' + token || '',
-		// 	},
-		// 	// params: params,
-		// });
 	}, []);
 
 	const renderIconSearch = (props) => (
@@ -325,8 +246,11 @@ function ExploreScreen(props) {
 		// 	"DownloadInfo"
 		// );
 
+		// direct to file: https://drive.google.com/file/d/1Dhg1PAiXbXpz_-qADqJC5kRAkAJmlFOa/view?usp=sharing
+		// folder: https://drive.google.com/drive/folders/1FAoriBztHnGqqAiSpoDOjc3WcvOLe-lp?usp=sharing
+
 		Linking.openURL(
-			"https://drive.google.com/drive/folders/1FAoriBztHnGqqAiSpoDOjc3WcvOLe-lp?usp=sharing"
+			"https://drive.google.com/file/d/1Dhg1PAiXbXpz_-qADqJC5kRAkAJmlFOa/view?usp=sharing"
 		);
 	};
 
