@@ -445,6 +445,24 @@ export const MUTATION_UPDATE_POSTAL = gql`
 	}
 `;
 
+
+export const MUTATION_CREATE_REPORT_POSTAL = gql`
+	mutation Mobile_CreateReportPostal(
+		$postal_id: Int!
+		$type: Int!
+		$message: String
+		$uid: Int!
+	) {
+		insert_postal_reports(
+			objects: { postal_id: $postal_id, type: $type, message: $message, uid: $uid }
+		) {
+			returning {
+				id
+			}
+		}
+	}
+`;
+
 export const MUTATION_CREATE_CODE_CONFIRM = gql`
 	mutation Mobile_MutationCreateCodeConfirm(
 		$code: Int!
@@ -738,6 +756,28 @@ export const MUTATION_CREATE_POSTAL = gql`
 		}
 	}
 `;
+
+export const MUTATION_UPDATE_STATUS_POSTAL = gql`
+	mutation Mobile_MutationDeletePostal($id: Int!, $is_approved: Int!) {
+		update_postals(where: { id: { _eq: $id } }, _set: { is_approved: $is_approved }) {
+			returning {
+				id
+			}
+		}
+	}
+`;
+
+export const MUTATION_UPDATE_ACTIVE_POSTAL = gql`
+	mutation Mobile_MutationDeletePostal($id: Int!, $is_actived: Int!) {
+		update_postals(where: { id: { _eq: $id } }, _set: { is_actived: $is_actived }) {
+			returning {
+				id
+				is_actived
+			}
+		}
+	}
+`;
+
 
 export const MUTATION_DELETE_POSTAL = gql`
 	mutation Mobile_MutationDeletePostal($id: Int!) {

@@ -50,6 +50,7 @@ import CreatePostalScreen from "./screens/postal/createPostal";
 import CreatePostalLocationScreen from "./screens/postal/createPostalLocation";
 
 import DetailPostalScreen from "./screens/postal/detailPostal";
+import ReportPostalScreen from "./screens/postal/reportPostal";
 // import EditPostalScreen from "./screens/postal/editPostal";
 import ScanQRScreen from "./screens/postal/scanQR";
 
@@ -299,6 +300,10 @@ function App() {
 							<RootStack.Screen
 								name="Postal"
 								component={DetailPostalScreen}
+							/>
+							<RootStack.Screen
+								name="ReportPostal"
+								component={ReportPostalScreen}
 							/>
 							<RootStack.Screen
 								name="Filter"

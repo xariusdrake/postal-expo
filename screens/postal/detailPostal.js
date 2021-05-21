@@ -28,6 +28,8 @@ import {
 	Avatar,
 	Button,
 	Modal,
+	OverflowMenu,
+	MenuItem,
 } from "@ui-kitten/components";
 
 import Geocode from "react-geocode";
@@ -50,6 +52,8 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import {
 	MUTATION_DELETE_POSTAL,
 	QUERY_GET_INFO_USER,
+	// MUTATION_UPDATE_STATUS_POSTAL,
+	MUTATION_UPDATE_ACTIVE_POSTAL,
 } from "../../graphql/query";
 
 const keyboardOffset = (height: number): number =>
@@ -60,11 +64,41 @@ const keyboardOffset = (height: number): number =>
 
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 const EditIcon = (props) => <Icon {...props} name="edit-outline" />;
+const ArchiveIcon = (props) => <Icon {...props} name="archive-outline" />;
 const DeleteIcon = (props) => <Icon {...props} name="trash-outline" />;
+const ReportIcon = (props) => <Icon {...props} name="alert-circle-outline" />;
 
 Geocode.setApiKey(appConfigs.GOOGLE_MAP.API_KEY_2);
 
 function DetailPostalScreen(props) {
+	const [
+		updateActivePostal,
+		{
+			error: errorActive,
+			called: calledActive,
+			loading: loadingActive,
+			data: dataActive,
+		},
+	] = useMutation(MUTATION_UPDATE_ACTIVE_POSTAL, {
+		fetchPolicy: "no-cache",
+		onCompleted: (dataActive) => {
+			setLoading(false);
+
+			console.log(87, dataActive);
+
+			// if (dataActive.update_postals.returning[0].is_actived == -1) {
+			setValueActive(dataActive.update_postals.returning[0].is_actived);
+			// }
+
+			setTimeout(function () {
+				Alert.alert("", "Đã cập nhật");
+			}, 700);
+		},
+		onError: (errorActive) => {
+			setLoading(false);
+			Alert.alert("", "Có lỗi xảy ra. Vui lòng thử lại sau!");
+		},
+	});
 	const [
 		deletePostal,
 		{
@@ -119,7 +153,10 @@ function DetailPostalScreen(props) {
 
 	var response = props.route.params;
 
+	const [menuVisible, setMenuVisible] = useState(false);
+
 	const [getAddress, setAddress] = useState(null);
+	const [getValueActive, setValueActive] = useState(null);
 
 	const [visibleModal, setVisibleModal] = useState(false);
 	const [getLatitude, setLatitude] = useState(null);
@@ -131,6 +168,7 @@ function DetailPostalScreen(props) {
 
 	useEffect(() => {
 		(async () => {
+			setValueActive(response.postal.is_actived);
 			if (response.postal.type == 99) {
 				if (response.postal.lat > 0) {
 					setLatitude(Number(response.postal.lat));
@@ -197,14 +235,55 @@ function DetailPostalScreen(props) {
 		// console.log(90, getLocation);
 	};
 
+	const onClickChangeActive = (value) => {
+		toggleMenu();
+
+		let messageLabel;
+		let submitLabel;
+
+		if (value == -1) {
+			messageLabel =
+				"Bạn có muốn gỡ mã bưu chính này xuống không? Bạn có thể khôi phục lại sau.";
+			submitLabel = "Tạm dừng";
+		} else if (value == 1) {
+			messageLabel = "Bạn có muốn khôi phục không?";
+			submitLabel = "Khôi phục";
+		} else {
+			return;
+		}
+
+		Alert.alert(
+			"",
+			messageLabel,
+			[
+				{
+					text: "Đóng",
+				},
+				{
+					text: submitLabel,
+					onPress: () => {
+						setLoading(true);
+						updateActivePostal({
+							variables: {
+								id: response.postal.id,
+								is_actived: value,
+							},
+						});
+					},
+				},
+			],
+			{ cancelable: false }
+		);
+	};
+
 	const onClickDelete = () => {
+		toggleMenu();
 		Alert.alert(
 			"",
 			"Bạn có chắc chắn muốn xoá địa điểm này không?",
 			[
 				{
 					text: "Đóng",
-					// onPress: () => console.log("Ask me later pressed"),
 				},
 				{
 					text: "Xoá",
@@ -222,11 +301,20 @@ function DetailPostalScreen(props) {
 		setVisibleModal(true);
 	};
 
+	const toggleMenu = () => {
+		setMenuVisible(!menuVisible);
+	};
+
 	const renderBackAction = () => (
 		<TopNavigationAction
 			icon={BackIcon}
 			onPress={() => props.navigation.goBack()}
 		/>
+	);
+	const MenuIcon = (props) => <Icon {...props} name="more-vertical" />;
+
+	const renderMenuAction = () => (
+		<TopNavigationAction icon={MenuIcon} onPress={toggleMenu} />
 	);
 
 	const renderRightActions = () => {
@@ -244,9 +332,74 @@ function DetailPostalScreen(props) {
 									});
 								}}
 							/>
+							<OverflowMenu
+								anchor={renderMenuAction}
+								visible={menuVisible}
+								onBackdropPress={toggleMenu}
+							>
+								{getValueActive == 1 && (
+									<MenuItem
+										accessoryLeft={ArchiveIcon}
+										onPress={() => onClickChangeActive(-1)}
+										title="Tạm dừng"
+									/>
+								)}
+								{getValueActive == -1 && (
+									<MenuItem
+										accessoryLeft={ArchiveIcon}
+										onPress={() => onClickChangeActive(1)}
+										title="Khôi phục"
+									/>
+								)}
+
+								<MenuItem
+									accessoryLeft={DeleteIcon}
+									onPress={onClickDelete}
+									title="Xoá"
+								/>
+								{/*	<TopNavigationAction
+									icon={DeleteIcon}
+									
+								/>*/}
+							</OverflowMenu>
+						</React.Fragment>
+					)}
+				{response.postal.uid != null &&
+					props.infos.id != response.postal.uid && (
+						<React.Fragment>
 							<TopNavigationAction
-								icon={DeleteIcon}
-								onPress={onClickDelete}
+								icon={ReportIcon}
+								onPress={() => {
+									Alert.alert(
+										"",
+										"Bạn có chắc chắn muốn báo cáo địa điểm này?",
+										[
+											{
+												text: "Đóng",
+											},
+											{
+												text: "Báo cáo",
+												onPress: () => {
+													if (!props.token) {
+														props.navigation.navigate(
+															"SignIn"
+														);
+														return;
+													} else {
+														props.navigation.navigate(
+															"ReportPostal",
+															{
+																postal:
+																	response.postal,
+															}
+														);
+													}
+												},
+											},
+										],
+										{ cancelable: false }
+									);
+								}}
 							/>
 						</React.Fragment>
 					)}
@@ -353,7 +506,7 @@ function DetailPostalScreen(props) {
 					)}
 
 					<View style={styles.profileDetailsContainer}>
-						<Text style={styles.titleLabel} category="h4">
+						<Text category="h4">
 							{response.postal.name
 								.replace("X. ", "Xã ")
 								.replace("P. ", "Phường ")}
@@ -611,11 +764,6 @@ const themedStyles = StyleService.create({
 	},
 	image: {
 		height: 240,
-	},
-	titleLabel: {
-		// paddingRight: 40,
-		// marginHorizontal: 24,
-		// marginVertical: 16,
 	},
 	typeLabel: {
 		marginLeft: 20,

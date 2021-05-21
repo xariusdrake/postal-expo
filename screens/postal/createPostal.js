@@ -11,7 +11,7 @@ import {
 	Keyboard,
 	KeyboardAvoidingView,
 	TouchableWithoutFeedback,
-	ScrollView,
+	ScrollView
 } from "react-native";
 import { connect } from "react-redux";
 
@@ -64,6 +64,8 @@ const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 const MenuIcon = (props) => <Icon {...props} name="more-vertical" />;
 
 const InfoIcon = (props) => <Icon {...props} name="info" />;
+
+
 
 function createPostalLocationScreen(props) {
 	const mapRef = useRef(null);
@@ -197,6 +199,10 @@ function createPostalLocationScreen(props) {
 			console.log(loadingUser);
 		},
 	});
+
+	const [mapWidth, setMapWidth] = useState(Dimensions.get("window").width);
+	const [mapHeight, setMapHeight] = useState(200);
+	const [mapFull, setMapFull] = useState(false);
 
 	const [indexLevel1, setIndexLevel1] = useState(new IndexPath(0));
 	const [codeLevel1, setCodeLevel1] = useState();
@@ -674,6 +680,23 @@ function createPostalLocationScreen(props) {
 
 	function onClickUpdate() {}
 
+	const onClickZoom = () => {
+		if (mapFull == false) {
+			setMapHeight(Dimensions.get("window").height);
+			setMapFull(true)
+		} else {
+			setMapHeight(200);
+			setMapFull(false)
+		}
+	};
+
+	const ZoomIcon = (props) => (
+	<Icon
+		{...props}
+		name={mapFull == false ? "maximize-outline" : "minimize-outline"}
+	/>
+);
+
 	if (!props.token) {
 		props.navigation.navigate("SignIn");
 	}
@@ -710,24 +733,11 @@ function createPostalLocationScreen(props) {
 		<TopNavigationAction icon={MenuIcon} onPress={toggleMenu} />
 	);
 
-	// const renderRightActions = () => (
-	// 	<React.Fragment>
-	// 		{isUpdate == true && (
-	// 			<OverflowMenu
-	// 				anchor={renderMenuAction}
-	// 				visible={menuVisible}
-	// 				onBackdropPress={toggleMenu}
-	// 			>
-	// 				<MenuItem
-	// 					accessoryLeft={InfoIcon}
-	// 					title="Xoá"
-	// 					onSelect={() => console.log("work")}
-	// 				/>
-	// 			</OverflowMenu>
-	// 		)}
-	// 		{/*isUpdate == false && <TopNavigationAction icon={SubmitIcon} />*/}
-	// 	</React.Fragment>
-	// );
+	const renderRightActions = () => (
+		<React.Fragment>
+			<TopNavigationAction icon={ZoomIcon} onPress={onClickZoom} />
+		</React.Fragment>
+	);
 
 	const renderRightLocation = () => (
 		<Button size="small" onPress={() => setIsMain(true)}>
@@ -738,10 +748,26 @@ function createPostalLocationScreen(props) {
 	const onRegionChange = (region) => {
 		console.log(26999999, region);
 		console.log(11111111, region.nativeEvent.coordinate);
-		fetchAddress(
-			region.nativeEvent.coordinate.latitude,
-			region.nativeEvent.coordinate.longitude
-		);
+
+		let lat = region.nativeEvent.coordinate.latitude;
+		let lng = region.nativeEvent.coordinate.longitude;
+
+		setCurrentLat(lat);
+		setCurrentLong(lng);
+
+		mapRef.current.animateToRegion({
+			latitude: parseFloat(lat),
+			longitude: parseFloat(lng),
+			latitudeDelta: 0.0122,
+			longitudeDelta: 0.0121,
+			// latitudeDelta: 0.009,
+			// longitudeDelta: 0.001,
+		});
+
+		// fetchAddress(
+		// 	region.nativeEvent.coordinate.latitude,
+		// 	region.nativeEvent.coordinate.longitude
+		// );
 		// console.log(27000000, region.latitude)
 	};
 
@@ -791,7 +817,7 @@ function createPostalLocationScreen(props) {
 												: "Đăng ký mã bưu chính"
 										}
 										accessoryLeft={renderBackAction}
-										// accessoryRight={renderRightActions}
+										accessoryRight={renderRightActions}
 									/>
 									<Divider />
 									<Spinner visible={loading} />
@@ -810,12 +836,20 @@ function createPostalLocationScreen(props) {
 												latitudeDelta: 0.009,
 												longitudeDelta: 0.001,
 											}}
+											
 											//hiển thị chấm xanh
-											// showsUserLocation={true}
+											showsUserLocation={isUpdate == true ? false : true}
+											userLocationAnnotationTitle={isUpdate == true ? null : 'Vị trí của bạn'}
 											showsMyLocationButton={true}
 											followsUserLocation={true}
 											loadingEnabled={true}
-											style={styles.mapStyle}
+											style={{
+												width: mapWidth,
+												height: mapHeight,
+											}}
+											showsBuildings={true}
+											isAccessibilityElement={true}
+
 											// onMapReady={() => {
 											// 	// mapRef.fitToSuppliedMarkers(...)
 											// 	// mapRef.current.fitToSuppliedMarkers(
@@ -1250,10 +1284,10 @@ const styles = StyleSheet.create({
 		height: 50,
 		// position: "absolute",
 	},
-	mapStyle: {
-		width: Dimensions.get("window").width,
-		height: 200,
-	},
+	// mapStyle: {
+	// 	width: Dimensions.get("window").width,
+	// 	height: 200,
+	// },
 	input: {
 		backgroundColor: "rgb(247, 249, 252)",
 		borderColor: "#rgb(228, 233, 242)",

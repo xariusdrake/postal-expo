@@ -109,7 +109,7 @@ function MyPostalScreen(props) {
 	const approvedLabel = () => {
 		return (
 			<Button size="tiny" status="success">
-				Đã duyệt
+				Đang hoạt động
 			</Button>
 		);
 	};
@@ -122,10 +122,19 @@ function MyPostalScreen(props) {
 		);
 	};
 
+	const archiveLabel = () => {
+		return (
+			<Button size="tiny" status="danger">
+				Đã gỡ xuống
+			</Button>
+		);
+	};
+
+
 	const nonActive = () => {
 		return (
 			<Button size="tiny" status="danger">
-				Đã bị tạm dừng
+				Đã bị khoá
 			</Button>
 		);
 	};
@@ -147,7 +156,9 @@ function MyPostalScreen(props) {
 			} else {
 				labelStatus = "";
 			}
-		} else {
+		} else if (item.is_actived == -1) {
+			labelStatus = archiveLabel;
+		} else if (item.is_actived == 0) {
 			labelStatus = nonActive;
 		}
 
