@@ -81,6 +81,7 @@
     "redux": "^4.0.5",
     "request": "^2.88.2",
     "sentry-expo": "^3.0.4",
+    "subscriptions-transport-ws": "^0.9.18",
     "terra-search-field": "^3.65.0"
   },
   "devDependencies": {

@@ -24,8 +24,10 @@ postal
 		0: đã bị từ chối duyệt
 		1: đang chờ duyệt
 		2: đã đuợc duyệt (đang hiển thị công khai)
-		3: đã tạm dừng (gỡ xuống)
-
+		-1: đã tạm dừng (gỡ xuống)
+	is_actived
+		1: đang hoạt động
+		0: đã bị khoá
 
 postal_reports
 	type
@@ -36,3 +38,11 @@ postal_reports
 		1: active
 
 	is_deleted
+
+
+
+user
+	is_actived
+		0: chưa kích hoạt tài khoản
+		1: đã kích hoạt tài khoản
+		-1: đã bị khoá tài khoản

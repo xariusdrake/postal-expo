@@ -841,7 +841,7 @@ function createPostalLocationScreen(props) {
 											showsUserLocation={isUpdate == true ? false : true}
 											userLocationAnnotationTitle={isUpdate == true ? null : 'Vị trí của bạn'}
 											showsMyLocationButton={true}
-											followsUserLocation={true}
+											// followsUserLocation={true}
 											loadingEnabled={true}
 											style={{
 												width: mapWidth,

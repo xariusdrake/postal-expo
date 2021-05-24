@@ -18,6 +18,7 @@ export const QUERY_LOGIN_USER = gql`
 			token
 			is_actived
 			is_deleted
+			block_message
 			postals(where: { is_deleted: { _eq: 0 } }) {
 				id
 				name

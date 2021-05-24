@@ -92,6 +92,11 @@ function SignInScreen(props) {
 
 				console.log(126, user);
 
+				if (user.is_actived == -1) {
+					Alert.alert("Tài khoản của bạn đã bị khoá" + (!!user.block_message ? ("\n Lý do: " + user.block_message) : ''));
+					return
+				}
+
 				props.storeData(user.token);
 				props.storeUserInfo(user);
 

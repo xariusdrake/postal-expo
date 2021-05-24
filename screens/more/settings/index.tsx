@@ -87,6 +87,13 @@ function MoreInfoScreen(props) {
 	}
 
 	useEffect(() => {
+		if (props.infos.is_actived == -1) {
+			logout();
+			setTimeout(function () {
+				Alert.alert("Tài khoản mật khẩu của bạn đã bị khoá.");
+			}, 3000);
+		}
+
 		// if (!!props.infos.id) {
 		// 	liveUserInfo()
 		// }
@@ -272,7 +279,7 @@ function MoreInfoScreen(props) {
 							category="s1"
 							style={{ color: "#0469c1" }}
 						>
-							Phiên bản 2.4.4
+							Phiên bản 2.4.6
 						</Text>
 					</TouchableOpacity>
 					<Divider />

@@ -31,29 +31,42 @@ import {
 } from "../../graphql/query";
 
 const REALTIME_QUERY_GET_ALL_MY_POSTAL = gql`
-	subscription Mobie_GetAllMyPostal($uid: Int!) {
-		postals(where: { uid: { _eq: $uid }, is_deleted: { _eq: 0 } }) {
+	subscription Mobile_QueryGetInfoUser($uid: Int!) {
+		users(where: { id: { _eq: $uid } }) {
 			id
-			image_url
-			is_actived
-			is_approved
-			is_deleted
-			lat
-			lng
-			name
+			fullname
 			phone
-			postal_code
-			region_id
-			status
-			type
-			email
-			created_at
-			uid
+			gender
+			birthday
 			address
-			code_area
-			area_level1_index
-			area_level2_index
-			area_level3_index
+			token
+			is_actived
+			is_deleted
+			postals(where: { is_deleted: { _eq: 0 } }) {
+				id
+				name
+				phone
+				address
+				code_area
+				area_level1_index
+				area_level2_index
+				area_level3_index
+				area_level1_code
+				area_level2_code
+				area_level3_code
+				area_text
+				image_url
+				lng
+				lat
+				code
+				phone
+				region
+				type
+				uid
+				is_approved
+				is_actived
+				created_at
+			}
 		}
 	}
 `;
