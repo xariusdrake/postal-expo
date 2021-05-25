@@ -64,6 +64,7 @@ import VerifyPhoneNumberScreen from "./screens/account/phoneNumber/verifyPhoneNu
 // MORE
 // import MoreScreen from "./screens/more";
 import MoreScreen from "./screens/more/settings";
+import NotificationScreen from "./screens/more/notifications";
 import IntroModalScreen from "./screens/more/intro";
 import DocumentModalScreen from "./screens/more/document";
 import GuideModalScreen from "./screens/more/guide";
@@ -348,6 +349,10 @@ function App() {
 							<RootStack.Screen
 								name="ChangePassword"
 								component={ChangePasswordScreen}
+							/>
+							<RootStack.Screen
+								name="Notification"
+								component={NotificationScreen}
 							/>
 							<RootStack.Screen
 								name="IntroModal"

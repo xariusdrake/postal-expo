@@ -23,7 +23,7 @@ import SMS from "../../../functions/sms";
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { MUTATION_FORGET_PASSWORD_CHANGE } from "../../../graphql/query";
 
-import { isEmpty, isMin } from "../../../functions/strings";
+import { isEmpty, isMin, isPassword } from "../../../functions/strings";
 
 import appConfigs from "../../../config";
 
@@ -63,6 +63,9 @@ function ForgetPasswordScreen(props) {
 		onError: (errorChange) => {
 			console.log("onError");
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log(errorChange);
 		},
 	});
@@ -73,14 +76,14 @@ function ForgetPasswordScreen(props) {
 	const onSubmit = async () => {
 		console.log(100, "onClickSubmit");
 
-		if (passwordInput.length < 1) {
-			Alert.alert("Vui lòng nhập mật khẩu hiện tại");
-			return;
-		} else if (passwordInput.length < 1) {
-			Alert.alert("Vui lòng nhập mật khẩu mới");
-			return;
-		} else if (passwordInput.length < 1) {
-			Alert.alert("Vui lòng nhập lại mật khẩu mới");
+		if (isPassword(passwordInput) == false) {
+			Alert.alert(
+				"Mật khẩu từ " +
+					appConfigs.VALIDATE.USER.MIN_PASSWORD +
+					" đến " +
+					appConfigs.VALIDATE.USER.MAX_PASSWORD +
+					" ký tự"
+			);
 			return;
 		} else if (passwordInput != rePasswordInput) {
 			Alert.alert("Mật khẩu mới không giống nhau");

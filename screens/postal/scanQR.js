@@ -60,6 +60,10 @@ function ScanQRScreen(props) {
 			}
 		},
 		onError: () => {
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError");
 			console.log(errorPostal);
 		},

@@ -11,7 +11,7 @@ import {
 	Keyboard,
 	KeyboardAvoidingView,
 	TouchableWithoutFeedback,
-	ScrollView
+	ScrollView,
 } from "react-native";
 import { connect } from "react-redux";
 
@@ -47,6 +47,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 
 import { useMutation, useLazyQuery } from "@apollo/client";
+
+import { isEmpty, isMin, isMax, isPhoneNumber } from "../../functions/strings";
+
 import {
 	MUTATION_CREATE_POSTAL,
 	QUERY_GET_POSTAL,
@@ -64,8 +67,6 @@ const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 const MenuIcon = (props) => <Icon {...props} name="more-vertical" />;
 
 const InfoIcon = (props) => <Icon {...props} name="info" />;
-
-
 
 function createPostalLocationScreen(props) {
 	const mapRef = useRef(null);
@@ -89,6 +90,9 @@ function createPostalLocationScreen(props) {
 		},
 		onError: (queryError) => {
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError");
 			console.log(queryError);
 		},
@@ -155,6 +159,7 @@ function createPostalLocationScreen(props) {
 			setCurrentLong(dataGet.postals[0].lng);
 		},
 		onError: (errorGet) => {
+			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorPostal);
 		},
@@ -175,7 +180,12 @@ function createPostalLocationScreen(props) {
 			console.log(dataUpdate);
 			setLoading(false);
 		},
-		onError: (errorPostal) => {},
+		onError: (errorPostal) => {
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
+		},
 	});
 
 	const [
@@ -195,6 +205,9 @@ function createPostalLocationScreen(props) {
 		},
 		onError: (loadingUser) => {
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("loadingUser");
 			console.log(loadingUser);
 		},
@@ -591,8 +604,23 @@ function createPostalLocationScreen(props) {
 		if (!nameInput.trim()) {
 			Alert.alert("Vui lòng nhập tên địa điểm");
 			return;
+		} else if (
+			isMin(nameInput, appConfigs.VALIDATE.POSTAL.MIN_NAME) == false ||
+			isMax(nameInput, appConfigs.VALIDATE.POSTAL.MAX_NAME) == false
+		) {
+			Alert.alert(
+				"Tên địa điểm từ " +
+					appConfigs.VALIDATE.POSTAL.MIN_NAME +
+					" đến " +
+					appConfigs.VALIDATE.POSTAL.MAX_NAME +
+					" ký tự"
+			);
+			return;
 		} else if (!phoneInput.trim()) {
 			Alert.alert("Vui lòng nhập số điện thoại");
+			return;
+		} else if (isPhoneNumber(phoneInput) == false) {
+			Alert.alert("Số điện thoại không hợp lệ");
 			return;
 		} else if (!codeLevel1.trim()) {
 			Alert.alert("Vui lòng chọn tỉnh/thành phố");
@@ -683,19 +711,19 @@ function createPostalLocationScreen(props) {
 	const onClickZoom = () => {
 		if (mapFull == false) {
 			setMapHeight(Dimensions.get("window").height);
-			setMapFull(true)
+			setMapFull(true);
 		} else {
 			setMapHeight(200);
-			setMapFull(false)
+			setMapFull(false);
 		}
 	};
 
 	const ZoomIcon = (props) => (
-	<Icon
-		{...props}
-		name={mapFull == false ? "maximize-outline" : "minimize-outline"}
-	/>
-);
+		<Icon
+			{...props}
+			name={mapFull == false ? "maximize-outline" : "minimize-outline"}
+		/>
+	);
 
 	if (!props.token) {
 		props.navigation.navigate("SignIn");
@@ -836,10 +864,15 @@ function createPostalLocationScreen(props) {
 												latitudeDelta: 0.009,
 												longitudeDelta: 0.001,
 											}}
-											
 											//hiển thị chấm xanh
-											showsUserLocation={isUpdate == true ? false : true}
-											userLocationAnnotationTitle={isUpdate == true ? null : 'Vị trí của bạn'}
+											showsUserLocation={
+												isUpdate == true ? false : true
+											}
+											userLocationAnnotationTitle={
+												isUpdate == true
+													? null
+													: "Vị trí của bạn"
+											}
 											showsMyLocationButton={true}
 											// followsUserLocation={true}
 											loadingEnabled={true}

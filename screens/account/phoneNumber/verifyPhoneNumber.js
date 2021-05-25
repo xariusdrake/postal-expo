@@ -120,6 +120,8 @@ function VerifyPhoneNumberScreen(props) {
 			}
 		},
 		onError: (errorCode) => {
+			Alert.alert("Có lỗi xảy ra!");
+
 			console.log("onError");
 			console.log(errorCode);
 		},
@@ -145,6 +147,7 @@ function VerifyPhoneNumberScreen(props) {
 			}
 		},
 		onError: (errorConfirm) => {
+			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorConfirm);
 		},
@@ -182,6 +185,7 @@ function VerifyPhoneNumberScreen(props) {
 			}
 		},
 		onError: (errorConfirm) => {
+			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorActive);
 		},

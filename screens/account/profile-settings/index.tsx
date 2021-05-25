@@ -133,6 +133,7 @@ function EditProfileScreen(props) {
 			}
 		},
 		onError: (errorInfo) => {
+			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorInfo);
 		},
@@ -188,8 +189,9 @@ function EditProfileScreen(props) {
 			Alert.alert("Vui lòng nhập họ tên");
 			return;
 		} else if (
-			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ||
-			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_FULLNAME)
+			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ==
+				false ||
+			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_FULLNAME) == false
 		) {
 			Alert.alert(
 				"Họ tên từ " +
@@ -198,6 +200,7 @@ function EditProfileScreen(props) {
 					appConfigs.VALIDATE.USER.MAX_FULLNAME +
 					" ký tự"
 			);
+			return;
 			// } else if (!genderInput.trim()) {
 			// 	Alert.alert("Vui lòng chọn giới tính");
 			// 	return;

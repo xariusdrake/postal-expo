@@ -48,30 +48,34 @@ function SignInScreen(props) {
 			saveUserData();
 		},
 		onError: (errorLogin) => {
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
+
 			console.log("onError");
 			console.log(errorLogin);
 		},
 	});
 
-	const [
-		checkUserToken,
-		{
-			error: errorCheckToken,
-			called: calledCheckToken,
-			loading: loadingCheckToken,
-			data: dataCheckToken,
-		},
-	] = useLazyQuery(QUERY_CHECK_USER_TOKEN, {
-		// fetchPolicy: "no-cache",
-		onCompleted: (dataCheckToken) => {
-			console.log("dataCheckToken onCompleted");
-			console.log(dataCheckToken);
-		},
-		onError: (errorCheckToken) => {
-			console.log("onError errorCheckToken");
-			console.log(errorCheckToken);
-		},
-	});
+	// const [
+	// 	checkUserToken,
+	// 	{
+	// 		error: errorCheckToken,
+	// 		called: calledCheckToken,
+	// 		loading: loadingCheckToken,
+	// 		data: dataCheckToken,
+	// 	},
+	// ] = useLazyQuery(QUERY_CHECK_USER_TOKEN, {
+	// 	// fetchPolicy: "no-cache",
+	// 	onCompleted: (dataCheckToken) => {
+	// 		console.log("dataCheckToken onCompleted");
+	// 		console.log(dataCheckToken);
+	// 	},
+	// 	onError: (errorCheckToken) => {
+	// 		console.log("onError errorCheckToken");
+	// 		console.log(errorCheckToken);
+	// 	},
+	// });
 
 	const [phoneInput, setPhoneInput] = useState("");
 	const [passwordInput, setPasswordInput] = useState("");
@@ -93,8 +97,13 @@ function SignInScreen(props) {
 				console.log(126, user);
 
 				if (user.is_actived == -1) {
-					Alert.alert("Tài khoản của bạn đã bị khoá" + (!!user.block_message ? ("\n Lý do: " + user.block_message) : ''));
-					return
+					Alert.alert(
+						"Tài khoản của bạn đã bị khoá" +
+							(!!user.block_message
+								? "\n Lý do: " + user.block_message
+								: "")
+					);
+					return;
 				}
 
 				props.storeData(user.token);

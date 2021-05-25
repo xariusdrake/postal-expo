@@ -31,12 +31,12 @@ import { connect } from "react-redux";
 import { MUTATION_CHANGE_PASSWORD_USER } from "../../graphql/query";
 
 import { useMutation } from "@apollo/client";
-import { isEmpty, isMin, isMax } from "../../functions/strings";
+import { isEmpty, isMin, isMax, isPassword } from "../../functions/strings";
 import Spinner from "react-native-loading-spinner-overlay";
 
 // const profile: Profile = Profile.jenniferGreen();
 
-import appConfigs from "../../config"
+import appConfigs from "../../config";
 
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 
@@ -75,6 +75,9 @@ function ChangePasswordScreen(props) {
 		onError: (errorChange) => {
 			console.log("onError");
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log(errorChange);
 		},
 	});
@@ -97,8 +100,10 @@ function ChangePasswordScreen(props) {
 			return;
 		}
 		if (
-			isMin(newPasswordInput, appConfigs.VALIDATE.USER.MIN_PASSWORD) ||
-			isMax(newPasswordInput, appConfigs.VALIDATE.USER.MAX_PASSWORD)
+			isMin(newPasswordInput, appConfigs.VALIDATE.USER.MIN_PASSWORD) ==
+				false ||
+			isMax(newPasswordInput, appConfigs.VALIDATE.USER.MAX_PASSWORD) ==
+				false
 		) {
 			Alert.alert(
 				"Mật khẩu mới từ " +
@@ -107,6 +112,7 @@ function ChangePasswordScreen(props) {
 					appConfigs.VALIDATE.USER.MAX_PASSWORD +
 					" ký tự"
 			);
+			return;
 		} else if (newPasswordInput != reNewPasswordInput) {
 			Alert.alert("Mật khẩu mới không giống nhau");
 			return;

@@ -24,7 +24,15 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useLazyQuery, useMutation, gql } from "@apollo/client";
 import { MUTATION_SIGNUP_USER } from "../../graphql/query";
 
-import { isEmpty, isMin, isMax } from "../../functions/strings";
+import {
+	isEmpty,
+	isMin,
+	isMax,
+	allLetter,
+	allNumeric,
+	isPhoneNumber,
+	isPassword,
+} from "../../functions/strings";
 
 import appConfigs from "../../config";
 
@@ -55,6 +63,8 @@ function SignUpScreen(props) {
 			console.log(dataSignUp.insert_users);
 			console.log(dataSignUp.insert_users.returning[0]);
 
+			setLoading(false);
+
 			props.storeData(dataSignUp.insert_users.returning[0].token);
 			props.storeUserInfo(dataSignUp.insert_users.returning[0]);
 
@@ -66,6 +76,10 @@ function SignUpScreen(props) {
 			props.navigation.navigate("Explore");
 		},
 		onError: (errorSignUp) => {
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onErrorX");
 			console.log(errorSignUp);
 		},
@@ -87,7 +101,11 @@ function SignUpScreen(props) {
 			// console.log(dataCheckPhone.users[0].id);
 
 			if (dataCheckPhone.users.length > 0) {
-				Alert.alert("Số điện thoại đã được đăng ký!");
+				setLoading(false);
+
+				setTimeout(function () {
+					Alert.alert("Số điện thoại đã được đăng ký!");
+				}, 700);
 			} else {
 				signUpUser({
 					variables: {
@@ -99,6 +117,10 @@ function SignUpScreen(props) {
 			}
 		},
 		onError: (errorCheckPhone) => {
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError errorCheckToken");
 			console.log(errorCheckPhone);
 		},
@@ -149,27 +171,26 @@ function SignUpScreen(props) {
 
 		// let phoneno = /^\d{10}$/;
 
-		if (
-			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ||
-			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_FULLNAME)
+		if (allLetter(fullnameInput) == false) {
+			Alert.alert("Họ tên chỉ bao gồm chữ");
+			return;
+		} else if (
+			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ==
+				false ||
+			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_FULLNAME) == false
 		) {
 			Alert.alert(
 				"Họ tên từ " +
 					appConfigs.VALIDATE.USER.MIN_FULLNAME +
 					" đến " +
-					appConfigs.VALIDATE.USER.MIN_FULLNAME +
+					appConfigs.VALIDATE.USER.MAX_FULLNAME +
 					" ký tự"
 			);
-		} else if (
-			isMin(phoneInput, appConfigs.VALIDATE.USER.MIN_PHONE) ||
-			isMax(phoneInput, appConfigs.VALIDATE.USER.MAX_PHONE)
-		) {
+			return;
+		} else if (isPhoneNumber(phoneInput) == false) {
 			Alert.alert("Số điện thoại không hợp lệ");
 			return;
-		} else if (
-			isMin(passwordInput, appConfigs.VALIDATE.USER.MIN_PASSWORD) ||
-			isMax(fullnameInput, appConfigs.VALIDATE.USER.MAX_PASSWORD)
-		) {
+		} else if (isPassword(passwordInput) == false) {
 			Alert.alert(
 				"Mật khẩu từ " +
 					appConfigs.VALIDATE.USER.MIN_PASSWORD +
@@ -177,12 +198,15 @@ function SignUpScreen(props) {
 					appConfigs.VALIDATE.USER.MAX_PASSWORD +
 					" ký tự"
 			);
+			return;
 		} else if (passwordInput != rePasswordInput) {
 			Alert.alert("Mật khẩu bạn nhập không giống nhau");
+			return;
 		}
 
 		console.log(111, fullnameInput, phoneInput, passwordInput);
 
+		setLoading(true);
 		checkPhone({ variables: { phone: phoneInput.toString() } });
 	};
 
@@ -200,7 +224,7 @@ function SignUpScreen(props) {
 					style={styles.scrollview}
 				>
 					<View style={{ ...styles.container }}>
-						<Spinner visible={loadingSignUp} />
+						<Spinner visible={loading} />
 						<TouchableWithoutFeedback
 							onPress={Keyboard.dismiss}
 							style={{ width: "100%" }}

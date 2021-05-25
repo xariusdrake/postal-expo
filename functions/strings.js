@@ -1,3 +1,5 @@
+import appConfigs from "../config";
+
 export function isEmpty(obj) {
 	// null and undefined are "empty"
 	if (obj == null) return true;
@@ -23,12 +25,12 @@ export function isEmpty(obj) {
 }
 
 export function isMin(text, num) {
-	if (text == null) {
-		return true;
-	}
+	// if (text == null) {
+	// 	return false;
+	// }
 
 	// text = text.trim();
-	if (text.length < num) {
+	if (text.length >= num) {
 		return true;
 	}
 
@@ -36,12 +38,13 @@ export function isMin(text, num) {
 }
 
 export function isMax(text, num) {
-	if (text == null) {
-		return true;
-	}
+	// if (text == null) {
+	// 	return false;
+	// }
 
 	// text = text.trim();
-	if (text.length > num) {
+	// console.log(46, text, text.length, appConfigs.VALIDATE.USER.MIN_PHONE, appConfigs.VALIDATE.USER.MAX_PHONE)
+	if (text.length <= num) {
 		return true;
 	}
 
@@ -53,5 +56,63 @@ export function isEmptyValue(value) {
 		return true;
 	} else {
 		return false;
+	}
+}
+
+export function allLetter(input) {
+	var letters = /^[a-zA-Z\s]*$/;
+	if (input.match(letters)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+export function allNumeric(input) {
+	var numbers = /^[0-9]+$/;
+
+	if (input.match(numbers)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+export function isFullname(input) {
+	if (allLetter(input) == false) {
+		return false;
+	} else if (
+		isMin(input, appConfigs.VALIDATE.USER.MIN_FULLNAME) == false ||
+		isMax(input, appConfigs.VALIDATE.USER.MAX_FULLNAME) == false
+	) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+export function isPhoneNumber(input) {
+	if (allNumeric(input) == false) {
+		return false;
+	} else if (input.substring(0, 1) != 0) {
+		return false;
+	} else if (
+		isMin(input, appConfigs.VALIDATE.USER.MIN_PHONE) == false ||
+		isMax(input, appConfigs.VALIDATE.USER.MAX_PHONE) == false
+	) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+export function isPassword(input) {
+	if (
+		isMin(input, appConfigs.VALIDATE.USER.MIN_PASSWORD) == false ||
+		isMax(input, appConfigs.VALIDATE.USER.MAX_PASSWORD) == false
+	) {
+		return false;
+	} else {
+		return true;
 	}
 }

@@ -96,7 +96,9 @@ function DetailPostalScreen(props) {
 		},
 		onError: (errorActive) => {
 			setLoading(false);
-			Alert.alert("", "Có lỗi xảy ra. Vui lòng thử lại sau!");
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra!");
+			}, 700);
 		},
 	});
 	const [
@@ -119,10 +121,12 @@ function DetailPostalScreen(props) {
 		},
 		onError: (errorDelete) => {
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 
 			console.log("onError");
 			console.log(errorLogin);
-			Alert.alert("", "Có lỗi xảy ra. Vui lòng thử lại sau!");
 		},
 	});
 
@@ -144,6 +148,9 @@ function DetailPostalScreen(props) {
 		},
 		onError: (errorUser) => {
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError");
 			console.log(errorUser);
 		},

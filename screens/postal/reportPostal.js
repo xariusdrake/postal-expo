@@ -72,6 +72,8 @@ function ReportPostalScreen(props) {
 			}
 		},
 		onError: (errorReport) => {
+			
+			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorReport);
 		},
@@ -116,7 +118,10 @@ function ReportPostalScreen(props) {
 		if (parseInt(typeInput.row) != 0 && parseInt(typeInput.row) != 1) {
 			Alert.alert("Vui lòng chọn loại báo cáo");
 		} else if (
-			isMax(messageInput, appConfigs.VALIDATE.POSTAL_REPORT.MAX_MESSAGE)
+			isMax(
+				messageInput,
+				appConfigs.VALIDATE.POSTAL_REPORT.MAX_MESSAGE
+			) == false
 		) {
 			Alert.alert(
 				"Nội dung lời nhắn, tối đa " +

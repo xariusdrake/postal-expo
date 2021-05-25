@@ -44,6 +44,9 @@ export const QUERY_LOGIN_USER = gql`
 				is_actived
 				created_at
 			}
+			notifications(where: { is_seen: { _eq: 0 } }) {
+				id
+			}
 		}
 	}
 `;
@@ -125,6 +128,9 @@ export const QUERY_GET_INFO_USER = gql`
 				is_approved
 				is_actived
 				created_at
+			}
+			notifications(where: { is_seen: { _eq: 0 } }) {
+				id
 			}
 		}
 	}
@@ -446,7 +452,6 @@ export const MUTATION_UPDATE_POSTAL = gql`
 	}
 `;
 
-
 export const MUTATION_CREATE_REPORT_POSTAL = gql`
 	mutation Mobile_CreateReportPostal(
 		$postal_id: Int!
@@ -455,7 +460,12 @@ export const MUTATION_CREATE_REPORT_POSTAL = gql`
 		$uid: Int!
 	) {
 		insert_postal_reports(
-			objects: { postal_id: $postal_id, type: $type, message: $message, uid: $uid }
+			objects: {
+				postal_id: $postal_id
+				type: $type
+				message: $message
+				uid: $uid
+			}
 		) {
 			returning {
 				id
@@ -760,7 +770,10 @@ export const MUTATION_CREATE_POSTAL = gql`
 
 export const MUTATION_UPDATE_STATUS_POSTAL = gql`
 	mutation Mobile_MutationDeletePostal($id: Int!, $is_approved: Int!) {
-		update_postals(where: { id: { _eq: $id } }, _set: { is_approved: $is_approved }) {
+		update_postals(
+			where: { id: { _eq: $id } }
+			_set: { is_approved: $is_approved }
+		) {
 			returning {
 				id
 			}
@@ -770,7 +783,10 @@ export const MUTATION_UPDATE_STATUS_POSTAL = gql`
 
 export const MUTATION_UPDATE_ACTIVE_POSTAL = gql`
 	mutation Mobile_MutationDeletePostal($id: Int!, $is_actived: Int!) {
-		update_postals(where: { id: { _eq: $id } }, _set: { is_actived: $is_actived }) {
+		update_postals(
+			where: { id: { _eq: $id } }
+			_set: { is_actived: $is_actived }
+		) {
 			returning {
 				id
 				is_actived
@@ -779,10 +795,40 @@ export const MUTATION_UPDATE_ACTIVE_POSTAL = gql`
 	}
 `;
 
-
 export const MUTATION_DELETE_POSTAL = gql`
 	mutation Mobile_MutationDeletePostal($id: Int!) {
 		update_postals(where: { id: { _eq: $id } }, _set: { is_deleted: 1 }) {
+			returning {
+				id
+			}
+		}
+	}
+`;
+
+export const QUERY_LIST_NOTIFICATION = gql`
+	query Mobile_QueryListNotification($uid: Int!) {
+		notifications(
+			where: { uid: { _eq: $uid }, is_deleted: { _eq: 0 } }
+			order_by: { id: desc }
+		) {
+			id
+			title
+			description
+			type
+			uid
+			is_seen
+			created_at
+			updated_at
+		}
+	}
+`;
+
+export const MUTATION_SEEN_ALL_NOTIFICATION = gql`
+	mutation Mobile_MutationSeenAllNotification($uid: Int!) {
+		update_notifications(
+			where: { uid: { _eq: $uid }, is_deleted: { _eq: 0 } }
+			_set: { is_seen: 1 }
+		) {
 			returning {
 				id
 			}

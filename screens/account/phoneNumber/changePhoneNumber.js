@@ -20,12 +20,12 @@ import styles, {
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 import PhoneInput from "react-native-phone-number-input";
-import { isEmpty, isMin } from "../../../functions/strings";
+import { isEmpty, isMin, isPhoneNumber } from "../../../functions/strings";
 
 import { useMutation } from "@apollo/client";
 import { MUTATION_CHANGE_PHONE_NUMBER } from "../../../graphql/query";
 
-import appConfigs from "../../../config"
+import appConfigs from "../../../config";
 
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 
@@ -62,6 +62,9 @@ function ChangePhoneNumberScreen(props) {
 		onError: (errorChange) => {
 			console.log("onError");
 			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log(errorChange);
 		},
 	});
@@ -78,8 +81,7 @@ function ChangePhoneNumberScreen(props) {
 	);
 
 	const onClickSubmit = async () => {
-
-		if (isMin(phoneInput, appConfigs.VALIDATE.USER.MIN_PHONE) || isMax(phoneInput, appConfigs.VALIDATE.USER.MAX_PHONE)) {
+		if (isPhoneNumber(phoneInput) == false) {
 			Alert.alert("Số điện thoại không hợp lệ");
 			return;
 		}

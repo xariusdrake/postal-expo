@@ -223,6 +223,14 @@ function MoreInfoScreen(props) {
 							/>
 							<Setting
 								style={styles.setting}
+								hint={"Thông báo"}
+								// hint={("thông báo") + (<Text>DASDASD</Text>)}
+								onPress={() =>
+									props.navigation.navigate("Notification")
+								}
+							/>
+							<Setting
+								style={styles.setting}
 								hint="Đăng xuất"
 								onPress={logout}
 							/>

@@ -65,6 +65,7 @@ function ForgetPasswordScreen(props) {
 			}
 		},
 		onError: (errorCheckPhone) => {
+			Alert.alert("Có lỗi xảy ra");
 			console.log("onError errorCheckPhone");
 			console.log(errorCheckPhone);
 		},
@@ -115,6 +116,7 @@ function ForgetPasswordScreen(props) {
 			}
 		},
 		onError: (errorCode) => {
+			Alert.alert("Có lỗi xảy ra");
 			console.log("onError");
 			console.log(errorCode);
 		},
@@ -143,6 +145,7 @@ function ForgetPasswordScreen(props) {
 			}
 		},
 		onError: (errorCodeConfirm) => {
+			Alert.alert("Có lỗi xảy ra");
 			console.log("onError");
 			console.log(errorCodeConfirm);
 		},

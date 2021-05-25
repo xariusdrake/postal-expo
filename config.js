@@ -36,8 +36,12 @@ const appConfigs = {
             MIN_ADDRESS: 2,
             MAX_ADDRESS: 100,
         },
+        POSTAL: {
+            MIN_NAME: 6,
+            MAX_NAME: 40,
+        },
         POSTAL_REPORT: {
-            MIN_MESSAGE: 3,
+            MIN_MESSAGE: 0,
             MAX_MESSAGE: 200
         },
         AUTH: {

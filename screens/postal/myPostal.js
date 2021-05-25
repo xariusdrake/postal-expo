@@ -91,6 +91,10 @@ function MyPostalScreen(props) {
 			// setAllPostalList(data.postals);
 		},
 		onError: (errorUser) => {
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError");
 			console.log(errorUser);
 		},
@@ -143,7 +147,6 @@ function MyPostalScreen(props) {
 		);
 	};
 
-
 	const nonActive = () => {
 		return (
 			<Button size="tiny" status="danger">
@@ -179,7 +182,7 @@ function MyPostalScreen(props) {
 			<ListItem
 				key={item.id}
 				title={item.name}
-				description={item.address + ', ' + item.area_text}
+				description={item.address + ", " + item.area_text}
 				onPress={() => {
 					// console.log("click move place");
 
@@ -245,8 +248,20 @@ function MyPostalScreen(props) {
 						accessoryRight={renderRightActions}
 					/>
 					<Divider />
-					<Spinner visible={loadingUser} />
-					{props.infos.postals.length > 0 && (
+					{/*<Spinner visible={loadingUser} />*/}
+
+					{loadingUser == true && (
+						<View style={{ ...styles.container }}>
+							<Text
+								style={[styles.title, { marginTop: -200 }]}
+								category="h6"
+							>
+								Đang cập nhật...
+							</Text>
+						</View>
+					)}
+
+					{ loadingUser == false && props.infos.postals.length > 0 && (
 						<List
 							data={props.infos.postals}
 							ItemSeparatorComponent={Divider}
@@ -254,7 +269,7 @@ function MyPostalScreen(props) {
 						/>
 					)}
 
-					{props.infos.postals.length == 0 && (
+					{ loadingUser == false && props.infos.postals.length == 0 && (
 						<View style={[styles.container]}>
 							<Text style={styles.title} category="h6">
 								Bạn chưa có địa điểm bưu chính
