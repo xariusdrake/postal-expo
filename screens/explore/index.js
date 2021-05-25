@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	SafeAreaView,
 	Dimensions,
@@ -8,6 +8,9 @@ import {
 	Alert,
 	Linking,
 } from "react-native";
+
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
 
 import { StatusBar } from "expo-status-bar";
 // import * as Notifications from "expo-notifications";
@@ -56,37 +59,46 @@ import DocumentModalScreen from "../more/document";
 // import * as data_four from "./data/data_four.json";
 
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
+import { MUTATION_UPDATE_NOTIFI_PUSHTOKEN } from "../../graphql/query";
 
-const MUTATION_ADD_POSTAL = gql`
-	mutation Mutation_AddPostal(
-		$id_tinh: Int
-		$id_huyen: Int
-		$parent_id: Int
-		$name: String!
-		$code: String
-		$district: Int
-		$region: Int
-		$type: Int!
-		$note: String
-	) {
-		insert_postals_one(
-			object: {
-				id_tinh: $id_tinh
-				id_huyen: $id_huyen
-				parent_id: $parent_id
-				name: $name
-				code: $code
-				district: $district
-				region: $region
-				type: $type
-				note: $note
-			}
-		) {
-			id
-			name
-		}
-	}
-`;
+// const MUTATION_ADD_POSTAL = gql`
+// 	mutation Mutation_AddPostal(
+// 		$id_tinh: Int
+// 		$id_huyen: Int
+// 		$parent_id: Int
+// 		$name: String!
+// 		$code: String
+// 		$district: Int
+// 		$region: Int
+// 		$type: Int!
+// 		$note: String
+// 	) {
+// 		insert_postals_one(
+// 			object: {
+// 				id_tinh: $id_tinh
+// 				id_huyen: $id_huyen
+// 				parent_id: $parent_id
+// 				name: $name
+// 				code: $code
+// 				district: $district
+// 				region: $region
+// 				type: $type
+// 				note: $note
+// 			}
+// 		) {
+// 			id
+// 			name
+// 		}
+// 	}
+// `;
+
+Notifications.setNotificationHandler({
+	handleNotification: async () => ({
+		shouldShowAlert: true,
+		shouldPlaySound: false,
+		shouldSetBadge: false,
+	}),
+});
 
 // Notifications.setNotificationHandler({
 // 	handleNotification: async () => ({
@@ -96,35 +108,57 @@ const MUTATION_ADD_POSTAL = gql`
 // 	}),
 // });
 
+async function schedulePushNotification() {
+	await Notifications.scheduleNotificationAsync({
+		content: {
+			title: "You've got mail! 📬",
+			body: "Here is the notification body",
+			data: { data: "goes here" },
+		},
+		trigger: { seconds: 2 },
+	});
+}
+
 const channelId = "DownloadInfo";
 
 function ExploreScreen(props) {
 	const navigation = useNavigation();
 
+	// const [
+	// 	createPostal,
+	// 	{ loading: queryLoading, error: queryError, data: dataCreatePostal },
+	// ] = useMutation(MUTATION_ADD_POSTAL, {
+	// 	onCompleted: (dataCreatePostal) => {
+	// 		// console.log(dataCreatePostal)
+	// 		// console.log(
+	// 		// 	dataCreatePostal.insert_postals_new_one.id +
+	// 		// 		" - " +
+	// 		// 		dataCreatePostal.insert_postals_new_one.name
+	// 		// );
+	// 		// console.log("onCompleted");
+	// 		// console.log(dataCreatePostal);
+	// 		// if (dataCreatePostal.insert_postals.returning[0].id) {
+	// 		// 	getInfoUser({ variables: { uid: props.infos.id } });
+	// 		// } else {
+	// 		// 	console.log("some errror in response");
+	// 		// }
+	// 		// setAllPostalList(data.postals);
+	// 	},
+	// 	onError: (queryError) => {
+	// 		// setLoading(false);
+	// 		console.log("onError");
+	// 		console.log(queryError);
+	// 	},
+	// });
+
 	const [
-		createPostal,
-		{ loading: queryLoading, error: queryError, data: dataCreatePostal },
-	] = useMutation(MUTATION_ADD_POSTAL, {
-		onCompleted: (dataCreatePostal) => {
-			// console.log(dataCreatePostal)
-			// console.log(
-			// 	dataCreatePostal.insert_postals_new_one.id +
-			// 		" - " +
-			// 		dataCreatePostal.insert_postals_new_one.name
-			// );
-			// console.log("onCompleted");
-			// console.log(dataCreatePostal);
-			// if (dataCreatePostal.insert_postals.returning[0].id) {
-			// 	getInfoUser({ variables: { uid: props.infos.id } });
-			// } else {
-			// 	console.log("some errror in response");
-			// }
-			// setAllPostalList(data.postals);
-		},
-		onError: (queryError) => {
-			// setLoading(false);
+		updateNotifPushtoken,
+		{ loading: queryNT, error: errorNT, data: dataNT },
+	] = useMutation(MUTATION_UPDATE_NOTIFI_PUSHTOKEN, {
+		onCompleted: (dataNT) => {},
+		onError: (errorNT) => {
 			console.log("onError");
-			console.log(queryError);
+			console.log(errorNT);
 		},
 	});
 
@@ -132,6 +166,11 @@ function ExploreScreen(props) {
 	const [hasPermissionCamera, setHasPermissionCamera] = useState(null);
 
 	const [selectedIndex, setSelectedIndex] = useState(0);
+
+	const [expoPushToken, setExpoPushToken] = useState("");
+	const [notification, setNotification] = useState(false);
+	const notificationListener = useRef();
+	const responseListener = useRef();
 
 	async function askPermissions() {
 		var responseLocation = await Permissions.askAsync(Permissions.LOCATION);
@@ -174,6 +213,42 @@ function ExploreScreen(props) {
 			console.log("camera false");
 			// Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
 		}
+	}
+
+	async function registerForPushNotificationsAsync() {
+		let token;
+		if (Constants.isDevice) {
+			const {
+				status: existingStatus,
+			} = await Notifications.getPermissionsAsync();
+			let finalStatus = existingStatus;
+			if (existingStatus !== "granted") {
+				const {
+					status,
+				} = await Notifications.requestPermissionsAsync();
+				finalStatus = status;
+			}
+			if (finalStatus !== "granted") {
+				alert("Failed to get push token for push notification!");
+				return;
+			}
+			token = (await Notifications.getExpoPushTokenAsync()).data;
+			console.log(token);
+			updateNotifPushtoken({ variables: { uid: 85, pushtoken: token } });
+		} else {
+			alert("Must use physical device for Push Notifications");
+		}
+
+		if (Platform.OS === "android") {
+			Notifications.setNotificationChannelAsync("default", {
+				name: "default",
+				importance: Notifications.AndroidImportance.MAX,
+				vibrationPattern: [0, 250, 250, 250],
+				lightColor: "#FF231F7C",
+			});
+		}
+
+		return token;
 	}
 
 	// async function checkUpdate() {
@@ -219,6 +294,31 @@ function ExploreScreen(props) {
 
 	useEffect(() => {
 		askPermissions();
+
+		registerForPushNotificationsAsync().then((token) =>
+			setExpoPushToken(token)
+		);
+
+		notificationListener.current = Notifications.addNotificationReceivedListener(
+			(notification) => {
+				setNotification(notification);
+			}
+		);
+
+		responseListener.current = Notifications.addNotificationResponseReceivedListener(
+			(response) => {
+				console.log(response);
+			}
+		);
+
+		return () => {
+			Notifications.removeNotificationSubscription(
+				notificationListener.current
+			);
+			Notifications.removeNotificationSubscription(
+				responseListener.current
+			);
+		};
 	}, []);
 
 	const renderIconSearch = (props) => (
@@ -374,6 +474,7 @@ function ExploreScreen(props) {
 									</Text>
 								</View>
 							</TouchableOpacity>
+
 							<TouchableOpacity
 								onPress={async () => {
 									console.log("downloadToFolder");
@@ -419,6 +520,54 @@ function ExploreScreen(props) {
 					<Tab title="Hướng dẫn" style={{ height: 40 }}>
 						<Layout style={styles.tabContainer}>
 							<GuideModalScreen no_header={true} />
+						</Layout>
+					</Tab>
+					<Tab title="DEBUG" style={{ height: 40 }}>
+						<Layout style={styles.container}>
+							<View
+								style={{
+									flex: 1,
+									alignItems: "center",
+									justifyContent: "space-around",
+								}}
+							>
+								<Text>
+									Your expo push token: {expoPushToken}
+								</Text>
+								<View
+									style={{
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<Text>
+										Title:{" "}
+										{notification &&
+											notification.request.content
+												.title}{" "}
+									</Text>
+									<Text>
+										Body:{" "}
+										{notification &&
+											notification.request.content.body}
+									</Text>
+									<Text>
+										Data:{" "}
+										{notification &&
+											JSON.stringify(
+												notification.request.content
+													.data
+											)}
+									</Text>
+								</View>
+								<Button
+									onPress={async () => {
+										await schedulePushNotification();
+									}}
+								>
+									Press to schedule a notification
+								</Button>
+							</View>
 						</Layout>
 					</Tab>
 				</TabView>

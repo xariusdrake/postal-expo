@@ -136,6 +136,18 @@ export const QUERY_GET_INFO_USER = gql`
 	}
 `;
 
+export const MUTATION_UPDATE_NOTIFI_PUSHTOKEN = gql`
+mutation Mobile_UpdateNotifPushtoken($uid: Int!, $pushtoken: String!) {
+  update_users(where: {id: {_eq: $uid}}, _set: {notif_pushtoken: $pushtoken}) {
+    returning {
+      id
+    }
+  }
+}
+
+
+`
+
 export const MUTATION_SIGNUP_USER = gql`
 	mutation Mobile_SignUpUser(
 		$fullname: String!

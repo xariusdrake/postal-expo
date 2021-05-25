@@ -287,7 +287,7 @@ function MoreInfoScreen(props) {
 							category="s1"
 							style={{ color: "#0469c1" }}
 						>
-							Phiên bản 2.4.6
+							Phiên bản 2.4.7
 						</Text>
 					</TouchableOpacity>
 					<Divider />
