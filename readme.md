@@ -26,6 +26,7 @@ postal
 		2: đã đuợc duyệt (đang hiển thị công khai)
 		-1: đã tạm dừng (gỡ xuống)
 	is_actived
+		-1: creator tự gỡ xuống
 		1: đang hoạt động
 		0: đã bị khoá
 
@@ -46,3 +47,10 @@ user
 		0: chưa kích hoạt tài khoản
 		1: đã kích hoạt tài khoản
 		-1: đã bị khoá tài khoản
+
+
+user_log
+	TYPE
+		POSTAL_APPROVE
+		POSTAL_ACTIVE
+	

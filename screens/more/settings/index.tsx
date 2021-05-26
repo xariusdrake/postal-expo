@@ -42,6 +42,7 @@ const SUBSCRIPTION_USER_INFO = gql`
 `;
 
 function MoreInfoScreen(props) {
+	
 	// const [
 	// 	liveUserInfo,
 	// 	{

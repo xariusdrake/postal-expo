@@ -100,40 +100,44 @@ function NotificationScreen(props) {
 		getNotification({ variables: { uid: uid } });
 	}, []);
 
-	function timeDifference(current, previous) {
-		var msPerMinute = 60 * 1000;
-		var msPerHour = msPerMinute * 60;
-		var msPerDay = msPerHour * 24;
-		var msPerMonth = msPerDay * 30;
-		var msPerYear = msPerDay * 365;
+	function converTime(date) {
+		var date = new Date(Date.parse(date));
 
-		var elapsed = current - previous;
+		return date
 
-		if (elapsed < msPerMinute) {
-			return Math.round(elapsed / 1000) + " giây trước";
-		} else if (elapsed < msPerHour) {
-			return Math.round(elapsed / msPerMinute) + " phút trước";
-		} else if (elapsed < msPerDay) {
-			return Math.round(elapsed / msPerHour) + " giờ trước";
-		} else if (elapsed < msPerMonth) {
-			return (
-				"approximately " +
-				Math.round(elapsed / msPerDay) +
-				" ngày trước"
-			);
-		} else if (elapsed < msPerYear) {
-			return (
-				"approximately " +
-				Math.round(elapsed / msPerMonth) +
-				" months ago"
-			);
-		} else {
-			return (
-				"approximately " +
-				Math.round(elapsed / msPerYear) +
-				" years ago"
-			);
-		}
+		// var msPerMinute = 60 * 1000;
+		// var msPerHour = msPerMinute * 60;
+		// var msPerDay = msPerHour * 24;
+		// var msPerMonth = msPerDay * 30;
+		// var msPerYear = msPerDay * 365;
+
+		// var elapsed = current - previous;
+
+		// if (elapsed < msPerMinute) {
+		// 	return Math.round(elapsed / 1000) + " giây trước";
+		// } else if (elapsed < msPerHour) {
+		// 	return Math.round(elapsed / msPerMinute) + " phút trước";
+		// } else if (elapsed < msPerDay) {
+		// 	return Math.round(elapsed / msPerHour) + " giờ trước";
+		// } else if (elapsed < msPerMonth) {
+		// 	return (
+		// 		"approximately " +
+		// 		Math.round(elapsed / msPerDay) +
+		// 		" ngày trước"
+		// 	);
+		// } else if (elapsed < msPerYear) {
+		// 	return (
+		// 		"approximately " +
+		// 		Math.round(elapsed / msPerMonth) +
+		// 		" months ago"
+		// 	);
+		// } else {
+		// 	return (
+		// 		"approximately " +
+		// 		Math.round(elapsed / msPerYear) +
+		// 		" years ago"
+		// 	);
+		// }
 	}
 
 	let renderItem = ({ item, index }) => {
@@ -179,7 +183,11 @@ function NotificationScreen(props) {
 		</React.Fragment>
 	);
 
-	const renderItemAccessory = (props) => <Text appearance="hint">x</Text>;
+	const renderItemAccessory = () => (
+		<React.Fragment>
+			<Text>{converTime("2021-05-26T07:41:27.265247+00:00")}</Text>
+		</React.Fragment>
+	);
 
 	return (
 		<SafeAreaView

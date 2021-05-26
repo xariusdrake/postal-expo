@@ -35,7 +35,7 @@ import { connect } from "react-redux";
 import { MUTATION_UPDATE_PROFILE_DETAIL } from "../../../graphql/query";
 
 import { useMutation } from "@apollo/client";
-import { isEmpty, isMin, isMax } from "../../../functions/strings";
+import { isEmpty, isMin, isMax, allLetter, allNumeric } from "../../../functions/strings";
 import Spinner from "react-native-loading-spinner-overlay";
 
 import appConfigs from "../../../config";
@@ -188,6 +188,9 @@ function EditProfileScreen(props) {
 		if (!fullnameInput.trim()) {
 			Alert.alert("Vui lòng nhập họ tên");
 			return;
+		} else if (allLetter(fullnameInput) == false) {
+			Alert.alert("Họ tên chỉ bao gồm chữ");
+			return;
 		} else if (
 			isMin(fullnameInput, appConfigs.VALIDATE.USER.MIN_FULLNAME) ==
 				false ||
@@ -204,6 +207,9 @@ function EditProfileScreen(props) {
 			// } else if (!genderInput.trim()) {
 			// 	Alert.alert("Vui lòng chọn giới tính");
 			// 	return;
+		} else if (allNumeric(idNationInput) == false) {
+			Alert.alert("Số CMT/CCCD chỉ bao gồm số");
+			return;
 		} else if (parseInt(genderInput) != 1 && parseInt(genderInput) != 2) {
 			console.log("genderInput: ", genderInput);
 			Alert.alert("Giới tính không hợp lệ. Vui lòng thử lại");
@@ -213,6 +219,8 @@ function EditProfileScreen(props) {
 			// 	Alert.alert("Vui lòng nhập sinh nhật");
 			// 	return;
 		}
+
+
 
 		// else if (isMax(addressInput, appConfigs.VALIDATE.USER.MAX_ADDRESS)) {
 		// 	Alert.alert(
@@ -356,7 +364,7 @@ function EditProfileScreen(props) {
 
 				<Input
 					placeholder=""
-					label="Số CMT/CCCD/Hộ chiếu"
+					label="Số CMT/CCCD"
 					autoCapitalize="words"
 					value={idNationInput}
 					onChangeText={(text) => setIdNationInput(text)}

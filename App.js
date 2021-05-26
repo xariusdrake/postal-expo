@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Footer, FooterTab } from "native-base";
 
 import { Image, View, StyleSheet } from "react-native";
@@ -12,7 +12,7 @@ import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 // import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import * as Updates from 'expo-updates';
+import * as Updates from "expo-updates";
 
 import * as Sentry from "sentry-expo";
 
@@ -142,7 +142,6 @@ const client = new ApolloClient({
 // const customUpdater = new ExpoCustomUpdater();
 
 // customUpdater.doUpdateIfAvailable();
-
 
 function MyTabs() {
 	return (
@@ -287,12 +286,19 @@ function MainStackScreen() {
 }
 
 function App() {
+	const navigationRef = useRef();
+	const routeNameRef = useRef();
 	return (
 		<ApolloProvider client={client}>
 			<Provider store={store}>
 				<IconRegistry icons={EvaIconsPack} />
 				<ApplicationProvider {...eva} theme={eva.light}>
-					<NavigationContainer>
+					<NavigationContainer
+						// ref={navigationRef}
+						// onReady={() =>
+						// 	(routeNameRef.current = navigationRef.current.getCurrentRoute().name)
+						// }
+					>
 						<RootStack.Navigator mode="modal" headerMode="none">
 							<RootStack.Screen
 								name="Main"

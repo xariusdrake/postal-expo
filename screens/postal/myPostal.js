@@ -134,14 +134,14 @@ function MyPostalScreen(props) {
 	const cancelLabel = () => {
 		return (
 			<Button size="tiny" status="danger">
-				Đã hủy
+				Đã bị từ chối
 			</Button>
 		);
 	};
 
 	const archiveLabel = () => {
 		return (
-			<Button size="tiny" status="danger">
+			<Button size="tiny" status="warning">
 				Đã gỡ xuống
 			</Button>
 		);

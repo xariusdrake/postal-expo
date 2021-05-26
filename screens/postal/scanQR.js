@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import * as Permissions from "expo-permissions";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import { Button } from "@ui-kitten/components";
 
@@ -94,6 +94,8 @@ function ScanQRScreen(props) {
 	// 	}
 	// }
 
+	// const route = useRoute();
+
 	useEffect(() => {
 		(async () => {
 			// const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -147,6 +149,11 @@ function ScanQRScreen(props) {
 
 	// successfully scan something
 	const handleBarCodeScanned = async ({ type, data }) => {
+		if (String(props.route.name) != "ScanQR") {
+			console.log("stop");
+			return false;
+		}
+
 		console.log(236, type, data);
 		console.log(237, loading, scanMode, loadingPostal);
 
