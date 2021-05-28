@@ -16,7 +16,7 @@ import { Text } from "@ui-kitten/components";
 
 import { StatusBar } from "expo-status-bar";
 import { connect } from "react-redux";
-
+import { saveUserdata, saveToken } from "../../functions/helpers.js";
 // custom fonts
 import { AppLoading } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -65,8 +65,8 @@ function SignUpScreen(props) {
 
 			setLoading(false);
 
-			props.storeData(dataSignUp.insert_users.returning[0].token);
-			props.storeUserInfo(dataSignUp.insert_users.returning[0]);
+			saveToken(dataSignUp.insert_users.returning[0].token, props);
+			saveUserdata(dataSignUp.insert_users.returning[0], props);
 
 			AsyncStorage.setItem(
 				"@token",
@@ -267,6 +267,7 @@ function SignUpScreen(props) {
 									Số điện thoại
 								</Text>
 								<TextInput
+									maxLength={11}
 									autoCapitalize="none"
 									underlineColorAndroid="#00000000"
 									returnKeyType={"next"}

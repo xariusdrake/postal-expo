@@ -6,6 +6,7 @@ import {
 	SafeAreaView,
 	Dimensions,
 	Platform,
+	Alert,
 } from "react-native";
 
 import { useSubscription, useLazyQuery, gql } from "@apollo/client";
@@ -26,50 +27,52 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { connect } from "react-redux";
 
 import {
-	QUERY_GET_ALL_MY_POSTAL,
+	// QUERY_GET_ALL_MY_POSTAL,
 	QUERY_GET_INFO_USER,
 } from "../../graphql/query";
 
-const REALTIME_QUERY_GET_ALL_MY_POSTAL = gql`
-	subscription Mobile_QueryGetInfoUser($uid: Int!) {
-		users(where: { id: { _eq: $uid } }) {
-			id
-			fullname
-			phone
-			gender
-			birthday
-			address
-			token
-			is_actived
-			is_deleted
-			postals(where: { is_deleted: { _eq: 0 } }) {
-				id
-				name
-				phone
-				address
-				code_area
-				area_level1_index
-				area_level2_index
-				area_level3_index
-				area_level1_code
-				area_level2_code
-				area_level3_code
-				area_text
-				image_url
-				lng
-				lat
-				code
-				phone
-				region
-				type
-				uid
-				is_approved
-				is_actived
-				created_at
-			}
-		}
-	}
-`;
+import { saveUserdata } from "../../functions/helpers";
+
+// const REALTIME_QUERY_GET_ALL_MY_POSTAL = gql`
+// 	subscription Mobile_QueryGetInfoUser($uid: Int!) {
+// 		users(where: { id: { _eq: $uid } }) {
+// 			id
+// 			fullname
+// 			phone
+// 			gender
+// 			birthday
+// 			address
+// 			token
+// 			is_actived
+// 			is_deleted
+// 			postals(where: { is_deleted: { _eq: 0 } }) {
+// 				id
+// 				name
+// 				phone
+// 				address
+// 				code_area
+// 				area_level1_index
+// 				area_level2_index
+// 				area_level3_index
+// 				area_level1_code
+// 				area_level2_code
+// 				area_level3_code
+// 				area_text
+// 				image_url
+// 				lng
+// 				lat
+// 				code
+// 				phone
+// 				region
+// 				type
+// 				uid
+// 				is_approved
+// 				is_actived
+// 				created_at
+// 			}
+// 		}
+// 	}
+// `;
 
 function MyPostalScreen(props) {
 	const [
@@ -82,38 +85,25 @@ function MyPostalScreen(props) {
 			console.log(62, dataUser);
 			console.log(63, dataUser[0]);
 			console.log(64, dataUser.users[0].fullname);
-			// console.log(63, dataUser.full);
-			// saveMyPostalList(dataUser.users[0].postals);
-			props.storeUserInfo(dataUser.users[0]);
 
-			setLoading(false);
+			saveUserdata(dataUser.users[0], props);
 
 			// setAllPostalList(data.postals);
 		},
 		onError: (errorUser) => {
-			setLoading(false);
-			setTimeout(function () {
-				Alert.alert("Có lỗi xảy ra");
-			}, 700);
+			Alert.alert("Có lỗi xảy ra");
 			console.log("onError");
 			console.log(errorUser);
 		},
 	});
 
-	console.log(399, props.infos.id);
-
 	const [myPostalList, saveMyPostalList] = useState({});
-	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		if (props.infos.id != null) {
+		if (!!props.infos) {
 			getInfoUser({ variables: { uid: props.infos.id } });
 		}
 	}, []);
-
-	// if (props.token.length > 0) {
-	// 	getAllMyPostal({ variables: { uid: props.infos.id } });
-	// }
 
 	const waitingLabel = () => {
 		return (
@@ -156,7 +146,6 @@ function MyPostalScreen(props) {
 	};
 
 	let labelStatus;
-	let uid = props.infos.id;
 
 	let renderItem = ({ item, index }) => {
 		// console.log("info my item postal");
@@ -195,6 +184,8 @@ function MyPostalScreen(props) {
 			/>
 		);
 	};
+
+	let uid = props.infos != null ? props.infos.id : null;
 
 	const RefreshIcon = (props) => (
 		<Icon
@@ -240,7 +231,7 @@ function MyPostalScreen(props) {
 				</View>
 			)}
 
-			{props.token.length > 1 && (
+			{!!props.token && (
 				<React.Fragment>
 					<TopNavigation
 						alignment="center"
@@ -261,7 +252,7 @@ function MyPostalScreen(props) {
 						</View>
 					)}
 
-					{ loadingUser == false && props.infos.postals.length > 0 && (
+					{loadingUser == false && props.infos.postals.length > 0 && (
 						<List
 							data={props.infos.postals}
 							ItemSeparatorComponent={Divider}
@@ -269,7 +260,7 @@ function MyPostalScreen(props) {
 						/>
 					)}
 
-					{ loadingUser == false && props.infos.postals.length == 0 && (
+					{loadingUser == false && props.infos.postals.length == 0 && (
 						<View style={[styles.container]}>
 							<Text style={styles.title} category="h6">
 								Bạn chưa có địa điểm bưu chính
@@ -280,9 +271,35 @@ function MyPostalScreen(props) {
 								appearance="outline"
 								status="info"
 								onPress={() => {
-									props.navigation.navigate("CreatePostal", {
-										isUpdate: false,
-									});
+									if (!!props.token) {
+										if (props.infos.is_actived == 1) {
+											props.navigation.navigate(
+												"CreatePostal",
+												{
+													isUpdate: false,
+												}
+											);
+										} else if (
+											props.infos.is_actived == -1
+										) {
+											Alert.alert(
+												"Tài khoản của bạn đã bị khoá"
+											);
+										} else if (
+											props.infos.is_actived == 0
+										) {
+											props.navigation.navigate(
+												"VerifyPhoneNumber"
+											);
+											setTimeout(function () {
+												Alert.alert(
+													"Vui lòng xác nhận tài khoản của bạn để tiếp tục."
+												);
+											}, 700);
+										}
+									} else {
+										props.navigation.navigate("SignIn");
+									}
 								}}
 							>
 								Đăng ký mã bưu chính

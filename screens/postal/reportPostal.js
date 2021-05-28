@@ -72,7 +72,6 @@ function ReportPostalScreen(props) {
 			}
 		},
 		onError: (errorReport) => {
-			
 			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorReport);
@@ -89,7 +88,7 @@ function ReportPostalScreen(props) {
 
 	useEffect(() => {
 		(async () => {
-			if (!props.infos.id) {
+			if (!props.infos) {
 				props.navigation.navigate("SignIn");
 				return;
 			}

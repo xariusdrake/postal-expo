@@ -27,7 +27,12 @@ import {
 	QUERY_FORGET_PASSWORD_CHECK_CODE,
 } from "../../../graphql/query";
 
-import { isEmpty, isMin } from "../../../functions/strings";
+import {
+	isEmpty,
+	isMin,
+	isPhoneNumber,
+	allNumeric,
+} from "../../../functions/strings";
 
 import appConfigs from "../../../config";
 
@@ -162,6 +167,9 @@ function ForgetPasswordScreen(props) {
 		if (!phoneInput.trim()) {
 			Alert.alert("Vui lòng nhập số điện thoại");
 			return;
+		} else if (isPhoneNumber(phoneInput) == false) {
+			Alert.alert("Số điện thoại không hợp lệ!");
+			return;
 		}
 
 		console.log(126, phoneInput);
@@ -179,8 +187,11 @@ function ForgetPasswordScreen(props) {
 		if (!codeInput.trim()) {
 			Alert.alert("Vui lòng mã xác thực");
 			return;
+		} else if (allNumeric(codeInput) == false) {
+			Alert.alert("Mã xác thực không hợp lệ");
+			return;
 		} else if (codeInput.length != 4) {
-			Alert.alert("Xác xác thực gồm 4 ký tự. Vui lòng nhập lại");
+			Alert.alert("Xác thực gồm 4 ký tự. Vui lòng nhập lại");
 			return;
 		} else if (!phoneInput.trim()) {
 			Alert.alert("Có lỗi xảy ra. Vui lòng thử lại");

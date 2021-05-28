@@ -7,7 +7,7 @@ import {
 	TouchableOpacity,
 	ScrollView,
 	SafeAreaView,
-	Dimensions
+	Dimensions,
 } from "react-native";
 import { connect } from "react-redux";
 
@@ -56,7 +56,10 @@ function IntroModalScreen(props) {
 						QUỐC GIA
 					</Text>
 					<Image
-						style={{ height: 300, width: Dimensions.get("window").width }}
+						style={{
+							height: 300,
+							width: Dimensions.get("window").width,
+						}}
 						source={require("../../assets/images/document.png")}
 						resizeMode="contain"
 					/>

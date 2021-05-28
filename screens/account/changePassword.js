@@ -98,8 +98,7 @@ function ChangePasswordScreen(props) {
 		if (currentPasswordInput.length < 1) {
 			Alert.alert("Vui lòng nhập mật khẩu hiện tại");
 			return;
-		}
-		if (
+		} else if (
 			isMin(newPasswordInput, appConfigs.VALIDATE.USER.MIN_PASSWORD) ==
 				false ||
 			isMax(newPasswordInput, appConfigs.VALIDATE.USER.MAX_PASSWORD) ==

@@ -23,7 +23,8 @@ import { AppLoading } from "expo";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import { QUERY_LOGIN_USER, QUERY_CHECK_USER_TOKEN } from "../../graphql/query";
 
-import { isEmpty, isMin } from "../../functions/strings";
+import { isEmpty, isMin, isPhoneNumber } from "../../functions/strings";
+import { saveUserdata, saveToken } from "../../functions/helpers.js";
 
 import appConfigs from "../../config";
 
@@ -44,7 +45,7 @@ function SignInScreen(props) {
 		fetchPolicy: "no-cache",
 		onCompleted: (dataLogin) => {
 			console.log("onCompleted");
-			console.log(dataLogin);
+			console.log(48, dataLogin);
 			saveUserData();
 		},
 		onError: (errorLogin) => {
@@ -106,14 +107,8 @@ function SignInScreen(props) {
 					return;
 				}
 
-				props.storeData(user.token);
-				props.storeUserInfo(user);
-
-				try {
-					await AsyncStorage.setItem("@token", user.token);
-				} catch (e) {
-					console.log(e);
-				}
+				saveToken(user.token, props);
+				saveUserdata(user, props);
 
 				props.navigation.navigate("Explore");
 			} else {
@@ -128,6 +123,9 @@ function SignInScreen(props) {
 
 		if (!phoneInput.trim()) {
 			Alert.alert("Vui lòng nhập số điện thoại");
+			return;
+		} else if (isPhoneNumber(phoneInput) == false) {
+			Alert.alert("Số điện thoại không hợp lệ");
 			return;
 		} else if (!passwordInput.trim()) {
 			Alert.alert("Vui lòng nhập mật khẩu");
@@ -195,6 +193,7 @@ function SignInScreen(props) {
 									Số điện thoại
 								</Text>
 								<TextInput
+									maxLength={11}
 									value={phoneInput}
 									autoCapitalize="none"
 									underlineColorAndroid="#00000000"

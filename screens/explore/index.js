@@ -7,6 +7,7 @@ import {
 	Platform,
 	Alert,
 	Linking,
+	AsyncStorage,
 } from "react-native";
 
 import Constants from "expo-constants";
@@ -34,12 +35,16 @@ import Spinner from "react-native-loading-spinner-overlay";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+import { getDataFromStorage, retrieveSession, savePushtoken } from "../../functions/helpers";
+
 import GuideModalScreen from "../more/guide";
 import IntroModalScreen from "../more/intro";
 import DocumentModalScreen from "../more/document";
 
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
-import { MUTATION_UPDATE_NOTIFI_PUSHTOKEN } from "../../graphql/query";
+import {
+	MUTATION_UPDATE_NOTIFI_PUSHTOKEN,
+} from "../../graphql/query";
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -64,19 +69,6 @@ const channelId = "DownloadInfo";
 
 function ExploreScreen(props) {
 	const navigation = useNavigation();
-
-	const [
-		updateNotifPushtoken,
-		{ loading: queryNT, error: errorNT, data: dataNT },
-	] = useMutation(MUTATION_UPDATE_NOTIFI_PUSHTOKEN, {
-		onCompleted: (dataNT) => {
-			console.log("done updateNotifPushtoken");
-		},
-		onError: (errorNT) => {
-			console.log("onError");
-			console.log(errorNT);
-		},
-	});
 
 	const [hasPermissionLocation, setHasPermissionLocation] = useState(null);
 	const [hasPermissionCamera, setHasPermissionCamera] = useState(null);
@@ -145,19 +137,20 @@ function ExploreScreen(props) {
 				finalStatus = status;
 			}
 			if (finalStatus !== "granted") {
-				alert("Failed to get push token for push notification!");
+				console.log("Failed to get push token for push notification!");
 				return;
 			}
 			token = (await Notifications.getExpoPushTokenAsync()).data;
-			console.log(token);
+			savePushtoken(token)
+			// console.log(token);
 
-			if (!!props.infos.id) {
-				updateNotifPushtoken({
-					variables: { uid: 85, pushtoken: token },
-				});
-			}
+			// if (!!props.infos) {
+			// 	updateNotifPushtoken({
+			// 		variables: { uid: 85, pushtoken: token },
+			// 	});
+			// }
 		} else {
-			alert("Must use physical device for Push Notifications");
+			console.log("Must use physical device for Push Notifications");
 		}
 
 		if (Platform.OS === "android") {
@@ -174,8 +167,8 @@ function ExploreScreen(props) {
 
 	useEffect(() => {
 		askPermissions();
+		retrieveSession(props)
 
-		/* NOTIF
 		registerForPushNotificationsAsync().then((token) =>
 			setExpoPushToken(token)
 		);
@@ -200,7 +193,6 @@ function ExploreScreen(props) {
 				responseListener.current
 			);
 		};
-		*/
 	}, []);
 
 	const downloadPostal = async () => {
@@ -267,7 +259,7 @@ function ExploreScreen(props) {
 							<GuideModalScreen no_header={true} />
 						</Layout>
 					</Tab>
-					{/*<Tab title="DEBUG" style={{ height: 40 }}>
+					<Tab title="DEBUG" style={{ height: 40 }}>
 						<Layout style={styles.container}>
 							<View
 								style={{
@@ -314,7 +306,7 @@ function ExploreScreen(props) {
 								</Button>
 							</View>
 						</Layout>
-					</Tab>*/}
+					</Tab>
 				</TabView>
 			</SafeAreaView>
 		</React.Fragment>
@@ -327,9 +319,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		marginTop: -250,
-		// paddingTop: 200,
-		// paddingHorizontal: 25,
-		// backgroundColor: "#FFFFFF",
 	},
 	title: {
 		paddingTop: 0,
@@ -362,17 +351,28 @@ const styles = StyleSheet.create({
 
 function mapDispatchToProps(dispatch) {
 	return {
-		storeFilterDatas: function (filterDatas) {
-			dispatch({ type: "saveFilterData", filterDatas });
-		},
-		storeFav: function (favs) {
-			dispatch({ type: "saveFavs", favs });
+		storeData: function (token) {
+			dispatch({ type: "saveToken", token });
 		},
 		storeUserInfo: function (infos) {
 			dispatch({ type: "saveUserInfo", infos });
 		},
 	};
 }
+
+// function mapDispatchToProps(dispatch) {
+// 	return {
+// 		storeFilterDatas: function (filterDatas) {
+// 			dispatch({ type: "saveFilterData", filterDatas });
+// 		},
+// 		storeFav: function (favs) {
+// 			dispatch({ type: "saveFavs", favs });
+// 		},
+// 		storeUserInfo: function (infos) {
+// 			dispatch({ type: "saveUserInfo", infos });
+// 		},
+// 	};
+// }
 
 function mapStateToProps(state) {
 	return { token: state.token, infos: state.infos, filter: state.filter };

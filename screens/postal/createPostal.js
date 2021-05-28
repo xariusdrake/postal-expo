@@ -48,16 +48,23 @@ import { Entypo } from "@expo/vector-icons";
 
 import { useMutation, useLazyQuery } from "@apollo/client";
 
-import { isEmpty, isMin, isMax, isPhoneNumber } from "../../functions/strings";
+import {
+	isEmpty,
+	isMin,
+	isMax,
+	isPhoneNumber,
+	allLetterNumeric,
+	allNumeric,
+} from "../../functions/strings";
 
 import {
 	MUTATION_CREATE_POSTAL,
 	QUERY_GET_POSTAL,
 	MUTATION_UPDATE_POSTAL,
-	QUERY_GET_INFO_USER,
 } from "../../graphql/query";
 
 import appConfigs from "../../config";
+import { saveUserdata } from "../../functions/helpers";
 import DataPostalLevel1 from "./data/postal_level_1.json";
 
 Geocode.setApiKey(appConfigs.GOOGLE_MAP.API_KEY_2);
@@ -77,19 +84,21 @@ function createPostalLocationScreen(props) {
 		{ loading: queryLoading, error: queryError, data: dataCreatePostal },
 	] = useMutation(MUTATION_CREATE_POSTAL, {
 		onCompleted: (dataCreatePostal) => {
+			setLoading(false);
 			console.log("onCompleted");
 			console.log(dataCreatePostal);
 
 			if (dataCreatePostal.insert_postals.returning[0].id) {
-				getInfoUser({ variables: { uid: props.infos.id } });
+				saveUserdata(
+					dataCreatePostal.insert_postals.returning[0].user,
+					props
+				);
+				props.navigation.navigate("MyPostal");
 			} else {
 				console.log("some errror in response");
 			}
-
-			// setAllPostalList(data.postals);
 		},
 		onError: (queryError) => {
-			setLoading(false);
 			setTimeout(function () {
 				Alert.alert("Có lỗi xảy ra");
 			}, 700);
@@ -159,7 +168,10 @@ function createPostalLocationScreen(props) {
 			setCurrentLong(dataGet.postals[0].lng);
 		},
 		onError: (errorGet) => {
-			Alert.alert("Có lỗi xảy ra!");
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError");
 			console.log(errorPostal);
 		},
@@ -179,37 +191,22 @@ function createPostalLocationScreen(props) {
 			console.log("dataUpdate");
 			console.log(dataUpdate);
 			setLoading(false);
+
+			if (dataUpdate.update_postals.returning[0].id) {
+				saveUserdata(
+					dataUpdate.update_postals.returning[0].user,
+					props
+				);
+				props.navigation.navigate("MyPostal");
+			} else {
+				console.log("some errror in response");
+			}
 		},
 		onError: (errorPostal) => {
 			setLoading(false);
 			setTimeout(function () {
 				Alert.alert("Có lỗi xảy ra");
 			}, 700);
-		},
-	});
-
-	const [
-		getInfoUser,
-		{ loading: loadingUser, error: errorUser, data: dataUser },
-	] = useLazyQuery(QUERY_GET_INFO_USER, {
-		fetchPolicy: "no-cache",
-		onCompleted: (dataUser) => {
-			setLoading(false);
-			console.log("xxx onCompleted");
-			console.log(62, dataUser);
-			console.log(63, dataUser[0]);
-			console.log(64, dataUser.users[0].fullname);
-
-			props.storeUserInfo(dataUser.users[0]);
-			props.navigation.navigate("MyPostal");
-		},
-		onError: (loadingUser) => {
-			setLoading(false);
-			setTimeout(function () {
-				Alert.alert("Có lỗi xảy ra");
-			}, 700);
-			console.log("loadingUser");
-			console.log(loadingUser);
 		},
 	});
 
@@ -604,6 +601,9 @@ function createPostalLocationScreen(props) {
 		if (!nameInput.trim()) {
 			Alert.alert("Vui lòng nhập tên địa điểm");
 			return;
+		} else if (allLetterNumeric(nameInput.trim()) == false) {
+			Alert.alert("Tên địa điểm chỉ gồm chữ và số");
+			return;
 		} else if (
 			isMin(nameInput, appConfigs.VALIDATE.POSTAL.MIN_NAME) == false ||
 			isMax(nameInput, appConfigs.VALIDATE.POSTAL.MAX_NAME) == false
@@ -633,6 +633,12 @@ function createPostalLocationScreen(props) {
 			return;
 		} else if (!addressInput.trim()) {
 			Alert.alert("Vui lòng nhập địa chỉ");
+			return;
+		} else if (
+			isMin(addressInput, 6) == false ||
+			isMax(addressInput, 100) == false
+		) {
+			Alert.alert("Địa chỉ từ 6 đến 100 ký tự");
 			return;
 		}
 

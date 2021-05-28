@@ -55,6 +55,7 @@ function ScanQRScreen(props) {
 					postal: dataPostal.postals[0],
 				});
 			} else {
+				setLoading(false);
 				console.log("không tìm được");
 				Alert.alert("Không tìm thấy địa điểm");
 			}

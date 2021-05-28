@@ -19,17 +19,64 @@ import styles, {
 } from "./styles";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Spinner from "react-native-loading-spinner-overlay";
+
 import PhoneInput from "react-native-phone-number-input";
+
 import { isEmpty, isMin, isPhoneNumber } from "../../../functions/strings";
-
-import { useMutation } from "@apollo/client";
-import { MUTATION_CHANGE_PHONE_NUMBER } from "../../../graphql/query";
-
+import { saveUserdata, directForNonAuth } from "../../../functions/helpers.js";
 import appConfigs from "../../../config";
+
+import { useMutation, useLazyQuery } from "@apollo/client";
+import {
+	MUTATION_CHANGE_PHONE_NUMBER,
+	QUERY_CHECK_PHONE,
+} from "../../../graphql/query";
 
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 
 function ChangePhoneNumberScreen(props) {
+	const [
+		checkPhone,
+		{
+			error: errorCheckPhone,
+			// called: calledChange,
+			// loading: loadingChange,
+			data: dataCheckPhone,
+		},
+	] = useLazyQuery(QUERY_CHECK_PHONE, {
+		fetchPolicy: "no-cache",
+		onCompleted: (dataCheckPhone) => {
+			console.log("onCompleted");
+
+			console.log(44, dataCheckPhone);
+
+			if (isEmpty(dataCheckPhone.users[0]) == false) {
+				setLoading(false);
+
+				setTimeout(() => {
+					Alert.alert(
+						"Số điện thoại đã được tài khoản khác đăng ký."
+					);
+				}, 800);
+			} else {
+				changePhoneNumber({
+					variables: {
+						uid: props.infos.id,
+						phone: phoneInput,
+					},
+				});
+			}
+		},
+		onError: (errorChange) => {
+			console.log("onError");
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
+			console.log(errorChange);
+		},
+	});
 	const [
 		changePhoneNumber,
 		{
@@ -48,10 +95,10 @@ function ChangePhoneNumberScreen(props) {
 				console.log("false");
 
 				setTimeout(() => {
-					Alert.alert("Có lổi xảy ra. Vui lòng thử lại sau");
+					Alert.alert("Có lỗi xảy ra. Vui lòng thử lại sau");
 				}, 800);
 			} else {
-				props.storeUserInfo(dataChange.update_users.returning[0]);
+				saveUserdata(dataChange.update_users.returning[0], props);
 
 				props.navigation.navigate("More");
 				setTimeout(() => {
@@ -81,35 +128,45 @@ function ChangePhoneNumberScreen(props) {
 	);
 
 	const onClickSubmit = async () => {
-		if (isPhoneNumber(phoneInput) == false) {
+		if (phoneInput.length < 1) {
+			Alert.alert("Vui lòng nhập số điện thoại!");
+			return;
+		} else if (isPhoneNumber(phoneInput) == false) {
 			Alert.alert("Số điện thoại không hợp lệ");
+			return;
+		} else if (phoneInput == props.infos.phone) {
+			Alert.alert("Đây là số điện thoại hiện của bạn");
 			return;
 		}
 
-		changePhoneNumber({
+		checkPhone({
 			variables: {
-				uid: props.infos.id,
+				// uid: props.infos.id,
 				phone: phoneInput,
 			},
 		});
 	};
 
 	useEffect(() => {
-		if (!props.infos.id) {
-			props.navigation.navigate("SignIn");
-		}
+		directForNonAuth(props);
 	});
 
 	return (
 		<SafeAreaView style={styles.root}>
 			<TopNavigation
 				alignment="center"
-				title="Thay đổi"
+				title="Thay đổi số điện thoại"
 				accessoryLeft={renderBackAction}
 			/>
 			<Divider />
-
-			<View style={{ marginHorizontal: 40, marginTop: 70 }}>
+			<Spinner visible={loadingChange} />
+			<View
+				style={{
+					marginHorizontal: 40,
+					marginTop: 70,
+					textAlign: "center",
+				}}
+			>
 				<Image
 					style={{
 						marginLeft: "auto",
@@ -125,7 +182,7 @@ function ChangePhoneNumberScreen(props) {
 				<Text style={[styles.subTitle, { paddingBottom: 20 }]}>
 					Nhập số điện thoại của bạn
 				</Text>
-				<PhoneInput
+				{/*<PhoneInput
 					disableArrowIcon={true}
 					defaultValue={phoneInput}
 					defaultCode="VN"
@@ -137,9 +194,20 @@ function ChangePhoneNumberScreen(props) {
 					onChangeFormattedText={(text) => {
 						setFormattedValue(text);
 					}}
+				/>*/}
+				<Input
+					keyboardType="number-pad"
+					style={{
+						width: 300,
+						textAlign: "center",
+						justifyContent: "center",
+						alignItems: "center",
+						alignSelf: "center",
+					}}
+					maxLength={11}
+					onChangeText={(text) => setPhoneInput(text)}
 				/>
-				{/*<Input keyboardType="number-pad" style={{width: 150, textAlign: 'center'}}/>
-				<Text>{formattedValue} - {phoneInput}</Text>*/}
+
 				<TouchableOpacity onPress={() => onClickSubmit()}>
 					<View style={styles.nextButton}>
 						<Text style={styles.nextButtonText}>Tiếp tục</Text>

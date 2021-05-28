@@ -31,6 +31,8 @@ import {
 	gql,
 } from "@apollo/client";
 
+import { logout } from "../../../functions/helpers";
+
 const SUBSCRIPTION_USER_INFO = gql`
 	subscription MySubscription {
 		users(where: { id: { _eq: 32 } }) {
@@ -42,64 +44,24 @@ const SUBSCRIPTION_USER_INFO = gql`
 `;
 
 function MoreInfoScreen(props) {
-	
-	// const [
-	// 	liveUserInfo,
-	// 	{
-	// 		error: errorInfo,
-	// 		called: calledInfo,
-	// 		loading: loadingInfo,
-	// 		data: dataInfo,
-	// 	},
-	// ] = useSubscription(SUBSCRIPTION_USER_INFO, {
-	// 	onCompleted: (dataInfo) => {
-	// 		console.log(47, dataInfo);
-	// 	},
-	// 	onError: (errorInfo) => {},
-	// });
-
-	// const { data, loading } = useSubscription(SUBSCRIPTION_USER_INFO, {
-	// 	onSubscriptionData: (data) => {
-	// 		console.log(47, data);
-	// 	},
-	// 	// onError: (errorInfo) => {},
-	// });
-
-	// const [soundEnabled, setSoundEnabled] = React.useState < boolean > false;
-
-	// const toggleSound = (): void => {
-	// 	setSoundEnabled(!soundEnabled);
-	// };
-
 	const [newUpdate, setNewUpdate] = useState(false);
-
-	const logout = async () => {
-		try {
-			await AsyncStorage.removeItem("@token");
-			await props.storeData("");
-			props.navigation.navigate("More");
-		} catch (exception) {
-			console.log(exception);
-		}
-	};
 
 	function signin() {
 		props.navigation.navigate("SignIn");
 	}
 
 	useEffect(() => {
-		if (props.infos.is_actived == -1) {
-			logout();
-			setTimeout(function () {
-				Alert.alert("Tài khoản mật khẩu của bạn đã bị khoá.");
-			}, 3000);
-		}
-
-		// if (!!props.infos.id) {
-		// 	liveUserInfo()
-		// }
-
 		checkUpdate();
+
+		if (props.infos != null) {
+			if (props.infos.is_actived == -1) {
+				logout();
+				setTimeout(function () {
+					Alert.alert("Tài khoản mật khẩu của bạn đã bị khoá.");
+				}, 3000);
+				return;
+			}
+		}
 	});
 
 	// function signin() {
@@ -141,7 +103,7 @@ function MoreInfoScreen(props) {
 		<Layout style={styles.container}>
 			<ScrollView>
 				<SafeAreaView>
-					{props.token.length > 0 && (
+					{!!props.token && (
 						<React.Fragment>
 							<Layout style={styles.header} level="1">
 								<View style={styles.profileContainer}>
@@ -233,12 +195,12 @@ function MoreInfoScreen(props) {
 							<Setting
 								style={styles.setting}
 								hint="Đăng xuất"
-								onPress={logout}
+								onPress={() => logout(props)}
 							/>
 						</React.Fragment>
 					)}
 
-					{props.token.length == 0 && (
+					{!props.token && (
 						<React.Fragment>
 							<Setting
 								style={styles.setting}
@@ -273,11 +235,28 @@ function MoreInfoScreen(props) {
 					<Setting
 						style={styles.setting}
 						hint="Đăng ký mã bưu chính"
-						onPress={() =>
-							props.navigation.navigate("CreatePostal", {
-								isUpdate: false,
-							})
-						}
+						onPress={() => {
+							if (!!props.token) {
+								if (props.infos.is_actived == 1) {
+									props.navigation.navigate("CreatePostal", {
+										isUpdate: false,
+									});
+								} else if (props.infos.is_actived == -1) {
+									Alert.alert("Tài khoản của bạn đã bị khoá");
+								} else if (props.infos.is_actived == 0) {
+									props.navigation.navigate(
+										"VerifyPhoneNumber"
+									);
+									setTimeout(function () {
+										Alert.alert(
+											"Vui lòng xác nhận tài khoản của bạn để tiếp tục."
+										);
+									}, 700);
+								}
+							} else {
+								props.navigation.navigate("SignIn");
+							}
+						}}
 					/>
 					<TouchableOpacity
 						// {...touchableOpacityProps}
@@ -288,7 +267,7 @@ function MoreInfoScreen(props) {
 							category="s1"
 							style={{ color: "#0469c1" }}
 						>
-							Phiên bản 2.4.7
+							Phiên bản 2.4.9
 						</Text>
 					</TouchableOpacity>
 					<Divider />

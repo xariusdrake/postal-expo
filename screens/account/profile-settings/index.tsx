@@ -21,8 +21,6 @@ import {
 	Avatar,
 	RadioGroup,
 	Radio,
-	Datepicker,
-	NativeDateService,
 } from "@ui-kitten/components";
 
 // import { ProfileSetting } from "./extra/profile-setting.component";
@@ -32,74 +30,25 @@ import {
 
 import { connect } from "react-redux";
 
-import { MUTATION_UPDATE_PROFILE_DETAIL } from "../../../graphql/query";
-
-import { useMutation } from "@apollo/client";
-import { isEmpty, isMin, isMax, allLetter, allNumeric } from "../../../functions/strings";
-import Spinner from "react-native-loading-spinner-overlay";
-
 import appConfigs from "../../../config";
 
-// const profile: Profile = Profile.jenniferGreen();
+import { MUTATION_UPDATE_PROFILE_DETAIL } from "../../../graphql/query";
+import { useMutation } from "@apollo/client";
+
+import Spinner from "react-native-loading-spinner-overlay";
+
+import {
+	isEmpty,
+	isMin,
+	isMax,
+	allLetter,
+	allNumeric,
+} from "../../../functions/strings";
+import { saveUserdata } from "../../../functions/helpers";
+
 import DatePicker from "react-native-datepicker";
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 const CalendarIcon = (props) => <Icon {...props} name="calendar" />;
-
-const useDatepickerState = (initialDate = null) => {
-	const [date, setDate] = React.useState(initialDate);
-	return { date, onSelect: setDate };
-};
-
-const i18n = {
-	dayNames: {
-		short: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
-		long: [
-			"Chủ nhật",
-			"Thứ hai",
-			"Thứ ba",
-			"Thứ tư",
-			"Thứ năm",
-			"Thứ sáu",
-			"Thử bảy",
-		],
-	},
-	monthNames: {
-		short: [
-			"T1",
-			"T2",
-			"T3",
-			"T4",
-			"T5",
-			"T6",
-			"T7",
-			"T8",
-			"T9",
-			"T10",
-			"T11",
-			"T12",
-		],
-		long: [
-			"Tháng một",
-			"Tháng hai",
-			"Tháng ba",
-			"Tháng tư",
-			"Tháng năm",
-			"Tháng sáu",
-			"Tháng bảy",
-			"Tháng tám",
-			"Tháng chín",
-			"Tháng mười",
-			"Tháng mười một",
-			"Tháng mười hai",
-		],
-	},
-};
-
-const localeDateService = new NativeDateService("ru", {
-	i18n,
-	startDayOfWeek: 1,
-});
-const formatDateService = new NativeDateService("en", { format: "DD.MM.YYYY" });
 
 function EditProfileScreen(props) {
 	const [
@@ -121,12 +70,10 @@ function EditProfileScreen(props) {
 				console.log("false");
 
 				setTimeout(() => {
-					Alert.alert("Có lổi xảy ra. Vui lòng thử lại sau");
+					Alert.alert("Có lỗi xảy ra. Vui lòng thử lại sau");
 				}, 800);
 			} else {
-				props.storeUserInfo(dataInfo.update_users.returning[0]);
-
-				// props.navigation.navigate("More");
+				saveUserdata(dataInfo.update_users.returning[0], props);
 				setTimeout(() => {
 					Alert.alert("Đã lưu");
 				}, 800);
@@ -146,36 +93,20 @@ function EditProfileScreen(props) {
 	const [addressInput, setAddressInput] = useState("");
 
 	const [date, setDate] = useState(new Date());
-	const dateFormatPickerState = useDatepickerState();
-	const localePickerState = useDatepickerState();
-
-	const [dataInfoResponse, setDataInfo] = useState({});
 	const [selectedIndex, setSelectedIndex] = useState(null);
 
 	const [loading, setLoading] = useState(false);
 
 	const styles = useStyleSheet(themedStyles);
 
-	// console.log(300, props.token);
-	// console.log(311, props.infos);
-
 	useEffect(() => {
-		console.log(145, props.infos);
-
 		setFullnameInput(props.infos.fullname);
-
 		setGenderInput(props.infos.gender);
 		setSelectedIndex(props.infos.gender - 1);
-
 		setBirthdayInput(props.infos.birthday);
+		setIdNationInput(props.infos.nation_id);
 		setAddressInput(props.infos.address);
-
-		const getPostals = async () => {
-			var allPostals = await getListPostal();
-		};
 	}, []);
-
-	let userData;
 
 	function onSelectGender(index) {
 		// if (index != 0 && index != 1) return false
@@ -204,10 +135,10 @@ function EditProfileScreen(props) {
 					" ký tự"
 			);
 			return;
-			// } else if (!genderInput.trim()) {
-			// 	Alert.alert("Vui lòng chọn giới tính");
-			// 	return;
-		} else if (allNumeric(idNationInput) == false) {
+		} else if (
+			idNationInput.length > 0 &&
+			allNumeric(idNationInput) == false
+		) {
 			Alert.alert("Số CMT/CCCD chỉ bao gồm số");
 			return;
 		} else if (parseInt(genderInput) != 1 && parseInt(genderInput) != 2) {
@@ -219,8 +150,6 @@ function EditProfileScreen(props) {
 			// 	Alert.alert("Vui lòng nhập sinh nhật");
 			// 	return;
 		}
-
-
 
 		// else if (isMax(addressInput, appConfigs.VALIDATE.USER.MAX_ADDRESS)) {
 		// 	Alert.alert(
@@ -243,19 +172,20 @@ function EditProfileScreen(props) {
 				fullname: fullnameInput,
 				gender: genderInput,
 				birthday: birthdayInput,
+				nation_id: idNationInput,
 				address: addressInput,
 			},
 		});
 	};
 
-	const renderPhotoButton = () => (
-		<Button
-			style={styles.photoButton}
-			size="small"
-			status="basic"
-			icon={CameraIcon}
-		/>
-	);
+	// const renderPhotoButton = () => (
+	// 	<Button
+	// 		style={styles.photoButton}
+	// 		size="small"
+	// 		status="basic"
+	// 		icon={CameraIcon}
+	// 	/>
+	// );
 
 	const renderBackAction = () => (
 		<TopNavigationAction
@@ -274,6 +204,7 @@ function EditProfileScreen(props) {
 				// accessoryRight={renderRightActions}
 			/>
 			<Divider />
+			<Spinner visible={loadingInfo} />
 			{/*<Layout style={styles.photoSection} level="1">
 				<ProfileAvatar
 					style={styles.photo}
@@ -310,18 +241,7 @@ function EditProfileScreen(props) {
 					onChangeText={(text) => setFullnameInput(text)}
 					style={{ paddingBottom: 15 }}
 				/>
-				{/*				<Datepicker
-					style={{ paddingBottom: 15 }}
-					label="Ngày sinh"
-					date={date}
-					onSelect={(nextDate) => setDate(nextDate)}
-					accessoryRight={CalendarIcon}
-					minDate="01-01-1920"
-					maxDate="01-01-2022"
-					dateService={localeDateService}
-					{...localePickerState}
-				/>
-				*/}
+
 				<Text category="s2" style={{ paddingBottom: 10 }}>
 					Ngày sinh
 				</Text>
@@ -344,18 +264,6 @@ function EditProfileScreen(props) {
 						confirmBtnText="Chọn"
 						cancelBtnText="Đóng"
 						showIcon={false}
-						// customStyles={{
-						// 	// dateIcon: {
-						// 	// 	//display: 'none',
-						// 	// 	position: "absolute",
-						// 	// 	left: 0,
-						// 	// 	top: 4,
-						// 	// 	marginLeft: 0,
-						// 	// },
-						// 	dateInput: {
-						// 		marginLeft: 36,
-						// 	},
-						// }}
 						onDateChange={(birthdayInput) => {
 							setBirthdayInput(birthdayInput);
 						}}

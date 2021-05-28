@@ -17,6 +17,7 @@ import {
 } from "react-native-confirmation-code-field";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import {
 	Text,
@@ -39,6 +40,8 @@ import styles, {
 
 import HTTPRequest from "../../../functions/httpRequest";
 import SMS from "../../../functions/sms";
+import { allNumeric } from "../../../functions/strings";
+import { saveUserdata, directForNonAuth } from "../../../functions/helpers";
 
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import {
@@ -101,7 +104,6 @@ function VerifyPhoneNumberScreen(props) {
 					message:
 						dataCode.insert_user_confirm_code.returning[0].code +
 						" la ma xac minh dang ky Baotrixemay cua ban",
-					// message: dataCode.insert_user_confirm_code.returning[0].code,
 					phone: phone,
 				})
 					.then((response) => {
@@ -144,10 +146,20 @@ function VerifyPhoneNumberScreen(props) {
 				activeUser({
 					variables: { uid: dataConfirm.user_confirm_code[0].uid },
 				});
+			} else {
+				setLoading(false);
+
+				setTimeout(function () {
+					Alert.alert("Có lỗi xảy ra");
+				}, 700);
 			}
 		},
 		onError: (errorConfirm) => {
-			Alert.alert("Có lỗi xảy ra!");
+			setLoading(false);
+
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
 			console.log("onError");
 			console.log(errorConfirm);
 		},
@@ -163,28 +175,29 @@ function VerifyPhoneNumberScreen(props) {
 		},
 	] = useMutation(MUTATION_ACTIVE_USER, {
 		onCompleted: (dataActive) => {
-			console.log("activeUser");
-			console.log(143, dataActive);
+			setLoading(false);
 
 			if (dataActive.update_users.returning[0].id != null) {
 				console.log("done confirm");
 
-				// var userData = props.infos;
-				// console.log("is_actived" + userData.is_actived);
-				// userData["is_actived"] = 1;
-				// userData.is_actived = 2;
-
-				props.storeUserInfo(dataActive.update_users.returning[0]);
-
-				console.log(158, dataActive.update_users.returning[0]);
+				saveUserdata(dataActive.update_users.returning[0], props);
 
 				setTimeout(() => {
 					Alert.alert("Đã xác thực tài khoản");
 				}, 800);
 				props.navigation.navigate("More");
+			} else {
+				setTimeout(function () {
+					Alert.alert("Có lỗi xảy ra");
+				}, 700);
 			}
 		},
 		onError: (errorConfirm) => {
+			setLoading(false);
+			setTimeout(function () {
+				Alert.alert("Có lỗi xảy ra");
+			}, 700);
+
 			Alert.alert("Có lỗi xảy ra!");
 			console.log("onError");
 			console.log(errorActive);
@@ -195,6 +208,8 @@ function VerifyPhoneNumberScreen(props) {
 	const [codeConfirm, setCodeConfirm] = useState("");
 	const [isSent, setIsSent] = useState(false);
 	const [value, setValue] = useState("");
+	const [loading, setLoading] = useState(false);
+
 	const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
 	const [propsX, getCellOnLayoutHandler] = useClearByFocusCell({
 		value,
@@ -203,21 +218,18 @@ function VerifyPhoneNumberScreen(props) {
 
 	const [timeLeft, setTimeLeft] = useState(60);
 
-	if (!props.infos.id) {
-		props.navigation.navigate("SignIn");
-	}
-
 	useEffect(() => {
-		const timer = setTimeout(() => {
-			let timeNew;
-			if (timeLeft > 0) {
-				timeNew = timeLeft - 1;
-			} else {
-				timeNew = timeLeft;
-			}
+		directForNonAuth(props);
+		// const timer = setTimeout(() => {
+		// 	let timeNew;
+		// 	if (timeLeft > 0) {
+		// 		timeNew = timeLeft - 1;
+		// 	} else {
+		// 		timeNew = timeLeft;
+		// 	}
 
-			setTimeLeft(timeNew);
-		}, 1000);
+		// 	setTimeLeft(timeNew);
+		// }, 1000);
 
 		if (props.infos.is_actived == 0) {
 			onCreateCodeConfirm();
@@ -261,7 +273,12 @@ function VerifyPhoneNumberScreen(props) {
 		if (!value.trim()) {
 			Alert.alert("Vui lòng nhập mã xác nhận");
 			return;
+		} else if (allNumeric(value) == false) {
+			Alert.alert("Mã xác nhận không hợp lệ");
+			return;
 		}
+
+		setLoading(true);
 
 		checkCodeConfirm({
 			variables: { code: parseInt(value), uid: props.infos.id },
@@ -338,6 +355,7 @@ function VerifyPhoneNumberScreen(props) {
 				// accessoryRight={renderRightActions}
 			/>
 			<Divider />
+			<Spinner visible={loading} />
 			<View style={{ marginHorizontal: 40, marginTop: 70 }}>
 				<Image style={styles.icon} source={source} />
 				<Text style={styles.subTitle}>
@@ -356,7 +374,7 @@ function VerifyPhoneNumberScreen(props) {
 					renderCell={renderCell}
 				/>
 
-	{/*			{isSent == false && (
+				{/*			{isSent == false && (
 					<TouchableOpacity onPress={() => onCreateCodeConfirm()}>
 						<View style={styles.nextButton}>
 							<Text style={styles.nextButtonText}>
@@ -373,7 +391,7 @@ function VerifyPhoneNumberScreen(props) {
 						</View>
 					</TouchableOpacity>
 				)}
-				<TouchableOpacity onPress={() => onClickConfirm()}>
+				{/*<TouchableOpacity onPress={() => onClickConfirm()}>
 					<Text
 						style={
 							timeLeft == 0
@@ -383,7 +401,7 @@ function VerifyPhoneNumberScreen(props) {
 					>
 						Gửi lại mã ({timeLeft} giây)
 					</Text>
-				</TouchableOpacity>
+				</TouchableOpacity>*/}
 			</View>
 		</SafeAreaView>
 	);

@@ -294,10 +294,10 @@ function App() {
 				<IconRegistry icons={EvaIconsPack} />
 				<ApplicationProvider {...eva} theme={eva.light}>
 					<NavigationContainer
-						// ref={navigationRef}
-						// onReady={() =>
-						// 	(routeNameRef.current = navigationRef.current.getCurrentRoute().name)
-						// }
+					// ref={navigationRef}
+					// onReady={() =>
+					// 	(routeNameRef.current = navigationRef.current.getCurrentRoute().name)
+					// }
 					>
 						<RootStack.Navigator mode="modal" headerMode="none">
 							<RootStack.Screen

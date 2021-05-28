@@ -86,7 +86,7 @@ function NotificationScreen(props) {
 		},
 	});
 
-	const uid = props.infos.id;
+	const uid = props.infos != null ? props.infos.id : null;
 
 	const [notifications, setNotifications] = useState([]);
 	const [loading, setLoading] = useState(false);

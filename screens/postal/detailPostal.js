@@ -34,7 +34,7 @@ import {
 
 import Geocode from "react-geocode";
 import QRCode from "react-native-qrcode-svg";
-import Hashids from "hashids";
+// import Hashids from "hashids";
 import Geohash from "latlon-geohash";
 import Spinner from "react-native-loading-spinner-overlay";
 
@@ -43,24 +43,16 @@ import MapViewDirections from "react-native-maps-directions";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const hashids = new Hashids("encode", 7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-//1234567890
+// const hashids = new Hashids("encode", 7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 import appConfigs from "../../config";
+import { saveUserdata } from "../../functions/helpers";
 
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import {
 	MUTATION_DELETE_POSTAL,
-	QUERY_GET_INFO_USER,
-	// MUTATION_UPDATE_STATUS_POSTAL,
 	MUTATION_UPDATE_ACTIVE_POSTAL,
 } from "../../graphql/query";
-
-const keyboardOffset = (height: number): number =>
-	Platform.select({
-		android: 0,
-		ios: height,
-	});
 
 const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
 const EditIcon = (props) => <Icon {...props} name="edit-outline" />;
@@ -86,8 +78,9 @@ function DetailPostalScreen(props) {
 
 			console.log(87, dataActive);
 
-			// if (dataActive.update_postals.returning[0].is_actived == -1) {
+			// if (dataActive.update_postals.returning[0]d == -.is_active1) {
 			setValueActive(dataActive.update_postals.returning[0].is_actived);
+			saveUserdata(dataActive.update_postals.returning[0].user, props)
 			// }
 
 			setTimeout(function () {
@@ -101,6 +94,7 @@ function DetailPostalScreen(props) {
 			}, 700);
 		},
 	});
+
 	const [
 		deletePostal,
 		{
@@ -116,7 +110,12 @@ function DetailPostalScreen(props) {
 			console.log(dataDelete);
 
 			if (dataDelete.update_postals.returning[0].id) {
-				getInfoUser({ variables: { uid: props.infos.id } });
+				// getInfoUser({ variables: { uid: props.infos.id } });
+			} else {
+				setLoading(false);
+				setTimeout(function () {
+					Alert.alert("Có lỗi xảy ra");
+				}, 700);
 			}
 		},
 		onError: (errorDelete) => {
@@ -130,31 +129,6 @@ function DetailPostalScreen(props) {
 		},
 	});
 
-	const [
-		getInfoUser,
-		{ loading: loadingUser, error: errorUser, data: dataUser },
-	] = useLazyQuery(QUERY_GET_INFO_USER, {
-		fetchPolicy: "no-cache",
-		onCompleted: (dataUser) => {
-			setLoading(false);
-			console.log("xxx onCompleted");
-			console.log(62, dataUser);
-			console.log(63, dataUser[0]);
-			console.log(64, dataUser.users[0].fullname);
-
-			props.storeUserInfo(dataUser.users[0]);
-
-			props.navigation.navigate("MyPostal");
-		},
-		onError: (errorUser) => {
-			setLoading(false);
-			setTimeout(function () {
-				Alert.alert("Có lỗi xảy ra");
-			}, 700);
-			console.log("onError");
-			console.log(errorUser);
-		},
-	});
 
 	const styles = useStyleSheet(themedStyles);
 
@@ -170,8 +144,8 @@ function DetailPostalScreen(props) {
 	const [getLongtitude, setLongtitude] = useState(null);
 	const [loading, setLoading] = useState(false);
 
-	console.log(60, response.postal.uid, props.infos.id);
-	console.log(61, response);
+	// console.log(60, response.postal.uid, props.infos.id);
+	// console.log(61, response);
 
 	useEffect(() => {
 		(async () => {
@@ -359,11 +333,11 @@ function DetailPostalScreen(props) {
 									/>
 								)}
 
-								<MenuItem
+								{/*<MenuItem
 									accessoryLeft={DeleteIcon}
 									onPress={onClickDelete}
 									title="Xoá"
-								/>
+								/>*/}
 								{/*	<TopNavigationAction
 									icon={DeleteIcon}
 									
@@ -442,14 +416,6 @@ function DetailPostalScreen(props) {
 		return response.postal.postcode
 			? response.postal.postcode
 			: response.postal.code;
-
-		// if (postal.type == 1) {
-		// 	return response.postal.code;
-		// } else if (postal.type == 2) {
-		// 	return hashids.encode(postal.id);
-		// } else {
-		// 	return null;
-		// }
 	};
 
 	const postalCodeReturn = postalCode(response.postal);

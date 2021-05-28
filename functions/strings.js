@@ -78,6 +78,19 @@ export function allNumeric(input) {
 	}
 }
 
+export function allLetterNumeric(input) {
+	var letterNumber = /^[0-9a-zA-Z]+$/;
+	if (input.match(letterNumber)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+export function isWhitepace(input) {
+	return input.indexOf(" ") >= 0 ? true : false;
+}
+
 export function isFullname(input) {
 	if (allLetter(input) == false) {
 		return false;
@@ -92,7 +105,9 @@ export function isFullname(input) {
 }
 
 export function isPhoneNumber(input) {
-	if (allNumeric(input) == false) {
+	if (isWhitepace(input) == true) {
+		return false;
+	} else if (allNumeric(input) == false) {
 		return false;
 	} else if (input.substring(0, 1) != 0) {
 		return false;
@@ -107,7 +122,9 @@ export function isPhoneNumber(input) {
 }
 
 export function isPassword(input) {
-	if (
+	if (isWhitepace(input) == true) {
+		return false;
+	} else if (
 		isMin(input, appConfigs.VALIDATE.USER.MIN_PASSWORD) == false ||
 		isMax(input, appConfigs.VALIDATE.USER.MAX_PASSWORD) == false
 	) {
