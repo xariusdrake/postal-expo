@@ -211,7 +211,7 @@ function MyPostalScreen(props) {
 				paddingTop: Platform.OS === "android" ? 25 : 0,
 			}}
 		>
-			{!props.token && (
+			{!props.infos && (
 				<View style={{ ...styles.container }}>
 					<Text style={styles.title} category="h6">
 						Để đăng ký mã bưu chính.{"\n"}Đầu tiên, hãy đăng nhập
@@ -231,7 +231,7 @@ function MyPostalScreen(props) {
 				</View>
 			)}
 
-			{!!props.token && (
+			{!!props.infos && (
 				<React.Fragment>
 					<TopNavigation
 						alignment="center"
@@ -271,7 +271,7 @@ function MyPostalScreen(props) {
 								appearance="outline"
 								status="info"
 								onPress={() => {
-									if (!!props.token) {
+									if (!!props.infos) {
 										if (props.infos.is_actived == 1) {
 											props.navigation.navigate(
 												"CreatePostal",

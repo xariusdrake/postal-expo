@@ -82,7 +82,8 @@
     "redux": "^4.0.5",
     "request": "^2.88.2",
     "sentry-expo": "^3.0.4",
-    "terra-search-field": "^3.65.0"
+    "terra-search-field": "^3.65.0",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

@@ -255,7 +255,6 @@ export const MUTATION_UPDATE_POSTAL = gql`
 	mutation Mobile_MutationUpdatePostal(
 		$id: Int!
 		$name: String!
-		$phone: String!
 		$address: String!
 		$code_area: String!
 		$area_level1_index: Int!
@@ -272,7 +271,6 @@ export const MUTATION_UPDATE_POSTAL = gql`
 			where: { id: { _eq: $id } }
 			_set: {
 				name: $name
-				phone: $phone
 				address: $address
 				code_area: $code_area
 				area_level1_index: $area_level1_index
@@ -442,7 +440,6 @@ export const MUTATION_CREATE_POSTAL = gql`
 	mutation Mobile_CreatePostal(
 		$name: String!
 		$image_url: String!
-		$phone: String!
 		$address: String!
 		$code_area: String!
 		$area_level1_index: Int!
@@ -460,7 +457,6 @@ export const MUTATION_CREATE_POSTAL = gql`
 		insert_postals(
 			objects: {
 				name: $name
-				phone: $phone
 				image_url: $image_url
 				type: $type
 				address: $address

@@ -80,11 +80,9 @@ function SignInScreen(props) {
 
 	const [phoneInput, setPhoneInput] = useState("");
 	const [passwordInput, setPasswordInput] = useState("");
-	const [loading, setLoading] = useState(false);
 
 	const saveUserData = async () => {
 		if (isEmpty(dataLogin.users[0]) == true) {
-			setLoading(false);
 			Alert.alert("Tài khoản mật khẩu của bạn không chính xác");
 			setPasswordInput("");
 			// this.firstInput.focus();
@@ -110,7 +108,11 @@ function SignInScreen(props) {
 				saveToken(user.token, props);
 				saveUserdata(user, props);
 
-				props.navigation.navigate("Explore");
+				setTimeout(function () {
+					props.navigation.navigate("Explore");
+				}, 850);
+
+				
 			} else {
 			}
 		} else {
@@ -140,8 +142,6 @@ function SignInScreen(props) {
 		// 	return;
 		// }
 
-		setLoading(true);
-
 		console.log(126, phoneInput, passwordInput);
 
 		loginUser({
@@ -153,7 +153,7 @@ function SignInScreen(props) {
 		// loginUser({ variables: { phone: '0964940256', password: 'htn@2021' } });
 	};
 
-	if (props.token) {
+	if (!!props.infos) {
 		props.navigation.navigate("Explore");
 		return <AppLoading />;
 	} else {
@@ -384,7 +384,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-	return { token: state.token };
+	return { infos: state.infos, token: state.token };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);

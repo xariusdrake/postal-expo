@@ -227,7 +227,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-	return { infos: state.infos };
+	return { infos: state.infos, token: state.token };
 }
 
 export default connect(

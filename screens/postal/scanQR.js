@@ -53,6 +53,7 @@ function ScanQRScreen(props) {
 			if (dataPostal.postals.length > 0) {
 				navigation.navigate("Postal", {
 					postal: dataPostal.postals[0],
+					// is_search: 1,
 				});
 			} else {
 				setLoading(false);

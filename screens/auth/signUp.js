@@ -59,21 +59,17 @@ function SignUpScreen(props) {
 		fetchPolicy: "no-cache",
 		onCompleted: (dataSignUp) => {
 			console.log("onCompleted");
-			console.log(dataSignUp);
-			console.log(dataSignUp.insert_users);
-			console.log(dataSignUp.insert_users.returning[0]);
-
-			setLoading(false);
+			console.log(62, dataSignUp);
+			console.log(63, dataSignUp.insert_users);
+			console.log(64, dataSignUp.insert_users.returning[0]);
 
 			saveToken(dataSignUp.insert_users.returning[0].token, props);
 			saveUserdata(dataSignUp.insert_users.returning[0], props);
 
-			AsyncStorage.setItem(
-				"@token",
-				dataSignUp.insert_users.returning[0].token
-			);
-
-			props.navigation.navigate("Explore");
+			// setTimeout(function () {
+				setLoading(false);
+				props.navigation.navigate("Explore");
+			// }, 850);
 		},
 		onError: (errorSignUp) => {
 			setLoading(false);
@@ -210,7 +206,7 @@ function SignUpScreen(props) {
 		checkPhone({ variables: { phone: phoneInput.toString() } });
 	};
 
-	if (props.token) {
+	if (!!props.infos) {
 		props.navigation.navigate("Explore");
 		return <AppLoading />;
 	} else {
@@ -439,7 +435,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mapStateToProps(state) {
-	return { token: state.token };
+	return { infos: state.infos, token: state.token };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen);

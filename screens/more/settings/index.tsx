@@ -89,6 +89,7 @@ function MoreInfoScreen(props) {
 	}
 
 	async function updateVersion() {
+
 		if (newUpdate == true) {
 			console.log("updateVersion");
 			Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
@@ -103,7 +104,7 @@ function MoreInfoScreen(props) {
 		<Layout style={styles.container}>
 			<ScrollView>
 				<SafeAreaView>
-					{!!props.token && (
+					{!!props.infos && (
 						<React.Fragment>
 							<Layout style={styles.header} level="1">
 								<View style={styles.profileContainer}>
@@ -111,7 +112,7 @@ function MoreInfoScreen(props) {
 										style={styles.profileDetailsContainer}
 									>
 										<Text category="h5">
-											{props.infos.fullname}
+											{props.infos.fullname ? props.infos.fullname : ''}
 										</Text>
 										<View
 											style={
@@ -123,7 +124,7 @@ function MoreInfoScreen(props) {
 												appearance="hint"
 												category="s1"
 											>
-												{props.infos.phone}
+												{props.infos.phone ? props.infos.phone : ''}
 											</Text>
 										</View>
 									</View>
@@ -200,7 +201,7 @@ function MoreInfoScreen(props) {
 						</React.Fragment>
 					)}
 
-					{!props.token && (
+					{!props.infos && (
 						<React.Fragment>
 							<Setting
 								style={styles.setting}
@@ -236,7 +237,7 @@ function MoreInfoScreen(props) {
 						style={styles.setting}
 						hint="Đăng ký mã bưu chính"
 						onPress={() => {
-							if (!!props.token) {
+							if (!!props.infos) {
 								if (props.infos.is_actived == 1) {
 									props.navigation.navigate("CreatePostal", {
 										isUpdate: false,

@@ -44,6 +44,7 @@ import {
 	allLetter,
 	allNumeric,
 } from "../../../functions/strings";
+import { isEmptyString } from "../../../functions/strings";
 import { saveUserdata } from "../../../functions/helpers";
 
 import DatePicker from "react-native-datepicker";
@@ -136,7 +137,7 @@ function EditProfileScreen(props) {
 			);
 			return;
 		} else if (
-			idNationInput.length > 0 &&
+			isEmptyString(idNationInput) == false &&
 			allNumeric(idNationInput) == false
 		) {
 			Alert.alert("Số CMT/CCCD chỉ bao gồm số");

@@ -206,7 +206,7 @@ function ForgetPasswordScreen(props) {
 		});
 	};
 
-	if (props.token) {
+	if (!!props.infos) {
 		props.navigation.navigate("Explore");
 		return <AppLoading />;
 	} else {
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state) {
-	return { token: state.token };
+	return { infos: state.infos, token: state.token };
 }
 
 export default connect(mapStateToProps, null)(ForgetPasswordScreen);

@@ -80,7 +80,7 @@ function DetailPostalScreen(props) {
 
 			// if (dataActive.update_postals.returning[0]d == -.is_active1) {
 			setValueActive(dataActive.update_postals.returning[0].is_actived);
-			saveUserdata(dataActive.update_postals.returning[0].user, props)
+			saveUserdata(dataActive.update_postals.returning[0].user, props);
 			// }
 
 			setTimeout(function () {
@@ -128,7 +128,6 @@ function DetailPostalScreen(props) {
 			console.log(errorLogin);
 		},
 	});
-
 
 	const styles = useStyleSheet(themedStyles);
 
@@ -298,6 +297,14 @@ function DetailPostalScreen(props) {
 		<TopNavigationAction icon={MenuIcon} onPress={toggleMenu} />
 	);
 
+	function checkPrivate(postal) {
+		if (postal.type) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	const renderRightActions = () => {
 		return (
 			<React.Fragment>
@@ -361,7 +368,7 @@ function DetailPostalScreen(props) {
 											{
 												text: "Báo cáo",
 												onPress: () => {
-													if (!props.token) {
+													if (!props.infos) {
 														props.navigation.navigate(
 															"SignIn"
 														);
@@ -505,19 +512,21 @@ function DetailPostalScreen(props) {
 					</Text>
 				)}
 
-				<Text
-					style={{
-						marginHorizontal: 16,
-						marginTop: 10,
-						marginBottom: 10,
-					}}
-					category="s1"
-				>
-					Số điện thoại:{" "}
-					{response.postal.phone != null
-						? response.postal.phone
-						: "Đang cập nhật"}{" "}
-				</Text>
+				{checkPrivate(response.postal) == false && (
+					<Text
+						style={{
+							marginHorizontal: 16,
+							marginTop: 10,
+							marginBottom: 10,
+						}}
+						category="s1"
+					>
+						Số điện thoại:{" "}
+						{response.postal.phone != null
+							? response.postal.phone
+							: "Đang cập nhật"}{" "}
+					</Text>
+				)}
 
 				{response.postal.type != 99 && (
 					<Text

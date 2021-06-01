@@ -162,7 +162,7 @@ function createPostalLocationScreen(props) {
 			// 	selectAreaLevel3(indexLevel3);
 			// }, 4000);
 
-			setPhoneInput(dataGet.postals[0].phone);
+			// setPhoneInput(dataGet.postals[0].phone);
 			// mapRef.current?.setAddressText(dataGet.postals[0].address);
 			setCurrentLat(dataGet.postals[0].lat);
 			setCurrentLong(dataGet.postals[0].lng);
@@ -212,6 +212,7 @@ function createPostalLocationScreen(props) {
 
 	const [mapWidth, setMapWidth] = useState(Dimensions.get("window").width);
 	const [mapHeight, setMapHeight] = useState(200);
+	const [mapType, setMapType] = useState("standard");
 	const [mapFull, setMapFull] = useState(false);
 
 	const [indexLevel1, setIndexLevel1] = useState(new IndexPath(0));
@@ -232,11 +233,11 @@ function createPostalLocationScreen(props) {
 	const [codeArea, setCodeArea] = useState(null);
 
 	const [nameInput, setNameInput] = useState("");
-	const [phoneInput, setPhoneInput] = useState("");
+	// const [phoneInput, setPhoneInput] = useState("");
 	const [addressInput, setAddressInput] = useState("");
 
-	const [currentLat, setCurrentLat] = useState(null);
-	const [currentLong, setCurrentLong] = useState(null);
+	const [currentLat, setCurrentLat] = useState(105.8556549);
+	const [currentLong, setCurrentLong] = useState(21.0285619);
 	const [loadingAddress, setLoadingAddress] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -246,7 +247,7 @@ function createPostalLocationScreen(props) {
 	let isUpdate = props.route.params.isUpdate;
 
 	useEffect(() => {
-		if (!props.token) {
+		if (!props.infos) {
 			props.navigation.navigate("SignIn");
 			return;
 		} else if (props.infos.is_actived == 0) {
@@ -271,7 +272,7 @@ function createPostalLocationScreen(props) {
 					console.log("askPermissions granted");
 
 					let location = await Location.getCurrentPositionAsync();
-					console.log(location);
+					console.log(3123123123123, location);
 					// setCurrentLocation(location);
 
 					// Location.watchPositionAsync({ distanceInterval: 10 }, (location) => {
@@ -281,13 +282,21 @@ function createPostalLocationScreen(props) {
 					// 		location.coords.longitude
 					// 	);
 
-					if (
-						location.coords.latitude != null &&
-						location.coords.longitude != null
-					) {
-						setCurrentLat(location.coords.latitude);
-						setCurrentLong(location.coords.longitude);
-					}
+					// if (
+					// 	location.coords.latitude != null &&
+					// 	location.coords.longitude != null
+					// ) {
+
+					setCurrentLat(location.coords.latitude);
+					setCurrentLong(location.coords.longitude);
+
+					mapRef.current.animateToRegion({
+						latitude: parseFloat(location.coords.latitude),
+						longitude: parseFloat(location.coords.longitude),
+						latitudeDelta: 0.00322,
+						longitudeDelta: 0.00321,
+					});
+					// }
 
 					// fetchAddress(
 					// 	location.coords.latitude,
@@ -323,38 +332,71 @@ function createPostalLocationScreen(props) {
 	}
 
 	async function fetchGeocode(address) {
-		Geocode.fromAddress(address).then(
-			(response) => {
-				const { lat, lng } = response.results[0].geometry.location;
-				console.log(22222222, lat, lng);
+		let coordinates = [];
 
-				setCurrentLat(lat);
-				setCurrentLong(lng);
+		await axios({
+			method: "get",
+			url:
+				"https://maps.vietmap.vn/api/search?api-version=1.1&apikey=6f5bf21b9c50883b38af007b6570d719317a96778d1e6149&text=" +
+				address +
+				"&size=1&categories=",
+			headers: {
+				accept: "text/plain",
+			},
+		})
+			.then((data) => {
+				coordinates = data.data.data.features[0].geometry.coordinates;
 
-				let markers = {
-					latitude: parseFloat(lat),
-					longitude: parseFloat(lng),
-				};
+				setCurrentLat(parseFloat(coordinates[1]));
+				setCurrentLong(parseFloat(coordinates[0]));
 
-				// mapRef.current.fitToCoordinates(true)
-
-				// mapRef.fitToSuppliedMarkers(
-				// 	markers.map(({ _id }) => _id)
-				// );
-				// refX.fitToSuppliedMarkers(members.map(m => m.id), true);
 				mapRef.current.animateToRegion({
-					latitude: parseFloat(lat),
-					longitude: parseFloat(lng),
-					latitudeDelta: 0.0122,
-					longitudeDelta: 0.0121,
+					latitude: parseFloat(coordinates[1]),
+					longitude: parseFloat(coordinates[0]),
+					latitudeDelta: 0.00322,
+					longitudeDelta: 0.00321,
 					// latitudeDelta: 0.009,
 					// longitudeDelta: 0.001,
 				});
-			},
-			(error) => {
-				console.error(error);
-			}
-		);
+
+				// setDataPostalLevel2(data.data);
+			})
+			.catch((e) => {
+				// console.log("error", e);
+			});
+
+		// Geocode.fromAddress(address).then(
+		// 	(response) => {
+		// 		const { lat, lng } = response.results[0].geometry.location;
+		// 		console.log(22222222, lat, lng);
+
+		// 		setCurrentLat(lat);
+		// 		setCurrentLong(lng);
+
+		// 		let markers = {
+		// 			latitude: parseFloat(lat),
+		// 			longitude: parseFloat(lng),
+		// 		};
+
+		// 		// mapRef.current.fitToCoordinates(true)
+
+		// 		// mapRef.fitToSuppliedMarkers(
+		// 		// 	markers.map(({ _id }) => _id)
+		// 		// );
+		// 		// refX.fitToSuppliedMarkers(members.map(m => m.id), true);
+		// 		mapRef.current.animateToRegion({
+		// 			latitude: parseFloat(lat),
+		// 			longitude: parseFloat(lng),
+		// 			latitudeDelta: 0.0122,
+		// 			longitudeDelta: 0.0121,
+		// 			// latitudeDelta: 0.009,
+		// 			// longitudeDelta: 0.001,
+		// 		});
+		// 	},
+		// 	(error) => {
+		// 		console.error(error);
+		// 	}
+		// );
 	}
 
 	async function updateF() {
@@ -486,7 +528,7 @@ function createPostalLocationScreen(props) {
 	}
 
 	async function selectAreaLevel1(index) {
-		console.log("selectAreaLevel1=>index", index);
+		// console.log("selectAreaLevel1=>index", index);
 
 		setIndexLevel1(new IndexPath(index));
 
@@ -502,24 +544,32 @@ function createPostalLocationScreen(props) {
 		setDataPostalLevel3([]);
 		setCodeLevel3("");
 
-		console.log("selectAreaLevel1", index, DataPostalLevel1[index]["code"]);
+		console.log(
+			"selectAreaLevel1: ",
+			index,
+			DataPostalLevel1[index]["code"]
+		);
 
 		fetchGeocode(DataPostalLevel1[index]["name"]);
-		await axios({
-			method: "get",
+
+
+		axios({
+			method: "post",
 			url:
-				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
-				DataPostalLevel1[index]["code"],
+				"https://asia-south1-titanium-vision-273216.cloudfunctions.net/function-postal-state",
 			headers: {
 				accept: "text/plain",
 			},
+			data: {
+				code: DataPostalLevel1[index]["code"],
+			},
 		})
 			.then((data) => {
-				console.log("data selectAreaLevel1 list2", data);
+				console.log(data);
 				setDataPostalLevel2(data.data);
 			})
 			.catch((e) => {
-				// console.log("error", e);
+				console.log("error", e);
 			});
 	}
 
@@ -544,13 +594,15 @@ function createPostalLocationScreen(props) {
 
 		fetchGeocode(dataPostalLevel2[index]["name"]);
 		await axios({
-			method: "get",
+			method: "post",
 			url:
-				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
-				dataPostalLevel2[index]["postcode"],
+				"https://asia-south1-titanium-vision-273216.cloudfunctions.net/function-postal-state",
 			headers: {
 				accept: "text/plain",
 			},
+			data: {
+				code: dataPostalLevel2[index]["postcode"],
+			}
 		})
 			.then((data) => {
 				console.log(data);
@@ -616,13 +668,18 @@ function createPostalLocationScreen(props) {
 					" ký tự"
 			);
 			return;
-		} else if (!phoneInput.trim()) {
-			Alert.alert("Vui lòng nhập số điện thoại");
-			return;
-		} else if (isPhoneNumber(phoneInput) == false) {
-			Alert.alert("Số điện thoại không hợp lệ");
-			return;
-		} else if (!codeLevel1.trim()) {
+		}
+
+		// else if (!phoneInput.trim()) {
+		// 	Alert.alert("Vui lòng nhập số điện thoại");
+		// 	return;
+		// }
+
+		// else if (isPhoneNumber(phoneInput) == false) {
+		// 	Alert.alert("Số điện thoại không hợp lệ");
+		// 	return;
+		// }
+		else if (!codeLevel1.trim()) {
 			Alert.alert("Vui lòng chọn tỉnh/thành phố");
 			return;
 		} else if (!codeLevel2.trim()) {
@@ -645,7 +702,7 @@ function createPostalLocationScreen(props) {
 		console.log(264, {
 			// id: props.route.params.postal.id,
 			name: nameInput,
-			phone: phoneInput.toString(),
+			// phone: phoneInput.toString(),
 			address: addressInput,
 			code_area: codeArea,
 			area_level1_index: parseInt(indexLevel1) - 1,
@@ -668,7 +725,7 @@ function createPostalLocationScreen(props) {
 				variables: {
 					id: props.route.params.postal.id,
 					name: nameInput,
-					phone: phoneInput.toString(),
+					// phone: phoneInput.toString(),
 					address: addressInput,
 					code_area: codeArea,
 					area_text: dataPostalLevel3[indexLevel3 - 1]["name"],
@@ -688,7 +745,7 @@ function createPostalLocationScreen(props) {
 				createPostal({
 					variables: {
 						name: nameInput,
-						phone: phoneInput.toString(),
+						// phone: phoneInput.toString(),
 						address: addressInput,
 						code_area: codeArea,
 						area_text: dataPostalLevel3[indexLevel3 - 1]["name"],
@@ -731,7 +788,26 @@ function createPostalLocationScreen(props) {
 		/>
 	);
 
-	if (!props.token) {
+	const MapIcon = (props) => (
+		<Icon
+			{...props}
+			name={
+				mapType == "standard"
+					? "toggle-right-outline"
+					: "toggle-left-outline"
+			}
+		/>
+	);
+
+	const onClickMapType = () => {
+		if (mapType == "standard") {
+			setMapType("satellite");
+		} else {
+			setMapType("standard");
+		}
+	};
+
+	if (!props.infos) {
 		props.navigation.navigate("SignIn");
 	}
 
@@ -769,6 +845,7 @@ function createPostalLocationScreen(props) {
 
 	const renderRightActions = () => (
 		<React.Fragment>
+			<TopNavigationAction icon={MapIcon} onPress={onClickMapType} />
 			<TopNavigationAction icon={ZoomIcon} onPress={onClickZoom} />
 		</React.Fragment>
 	);
@@ -855,185 +932,185 @@ function createPostalLocationScreen(props) {
 									/>
 									<Divider />
 									<Spinner visible={loading} />
-									{currentLat != null && currentLong != null && (
-										<MapView
-											ref={mapRef}
-											initialRegion={{
+									{/*{currentLat != null && currentLong != null && (*/}
+									<MapView
+										ref={mapRef}
+										initialRegion={{
+											latitude: parseFloat(currentLat),
+											longitude: parseFloat(currentLong),
+											// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
+											// longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
+											latitudeDelta: 0.009,
+											longitudeDelta: 0.001,
+										}}
+										mapType={mapType}
+										//hiển thị chấm xanh
+										showsUserLocation={
+											true
+											// isUpdate == true ? false : true
+										}
+										userLocationAnnotationTitle={
+											"Vị trí của bạn"
+											// isUpdate == true
+											// 	? null
+											// 	: "Vị trí của bạn"
+										}
+										showsMyLocationButton={true}
+										// followsUserLocation={true}
+										loadingEnabled={true}
+										style={{
+											width: mapWidth,
+											height: mapHeight,
+										}}
+										showsBuildings={true}
+										isAccessibilityElement={true}
+
+										// onMapReady={() => {
+										// 	// mapRef.fitToSuppliedMarkers(...)
+										// 	// mapRef.current.fitToSuppliedMarkers(
+										// 	// 	[
+										// 	// 		"storeMarker", //'truckMarker',
+										// 	// 	],
+										// 	// 	{
+										// 	// 		edgePadding: {
+										// 	// 			top: 50,
+										// 	// 			right: 50,
+										// 	// 			bottom: 50,
+										// 	// 			left: 50,
+										// 	// 		},
+										// 	// 	}
+										// 	// );
+										// }}
+										// fitToCoordinates={{
+										// 	coordinates: {
+										// 		latitude: parseFloat(
+										// 			currentLat
+										// 		),
+										// 		longitude: parseFloat(
+										// 			currentLong
+										// 		),
+										// 	},
+										// }}
+										// onLayout={() => {
+										// 	// mapRef.fitToSuppliedMarkers(
+										// 	// 	{
+										// 	// 		latitude: parseFloat(
+										// 	// 			currentLat
+										// 	// 		),
+										// 	// 		longitude: parseFloat(
+										// 	// 			currentLong
+										// 	// 		),
+										// 	// 	},
+										// 	// 	false // not animated
+										// 	// );
+										// 	console.log(1)
+										// 	// mapRef.fitToCoordinates(
+										// 	// 	{
+										// 	// 		latitude: parseFloat(
+										// 	// 			currentLat
+										// 	// 		),
+										// 	// 		longitude: parseFloat(
+										// 	// 			currentLong
+										// 	// 		),
+										// 	// 	},
+										// 	// 	{
+										// 	// 		edgePadding: {
+										// 	// 			top: 10,
+										// 	// 			right: 10,
+										// 	// 			bottom: 10,
+										// 	// 			left: 10,
+										// 	// 		},
+										// 	// 		animated: false,
+										// 	// 	}
+										// 	// )
+										// }}
+										// onLayout={() =>
+										// 	mapRef.current.fitToCoordinates(
+										// 		{
+										// 			latitude: parseFloat(
+										// 				currentLat
+										// 			),
+										// 			longitude: parseFloat(
+										// 				currentLong
+										// 			),
+										// 		},
+										// 		{
+										// 			edgePadding: {
+										// 				top: 10,
+										// 				right: 10,
+										// 				bottom: 10,
+										// 				left: 10,
+										// 			},
+										// 			animated: true,
+										// 		}
+										// 	)
+										// }
+										// onLayout={() => {
+										// 	console.log("mapReady...");
+
+										// 	// This orientates the map with the origin on bottom and destination on top
+										// 	// You can see that when the map first loads,
+										// 	// but the map isn't fit to the points
+										// 	// mapRef.current.setCamera({
+										// 	// 	,
+										// 	// });
+
+										// 	// 5 seconds after the map loads,
+										// 	// this runs and does fit the map to the points,
+										// 	// but it sets the heading back to 0
+										// 	// setTimeout(() => {
+										// 	// 	console.log(
+										// 	// 		"fitting to coordinates"
+										// 	// 	);
+										// 	// 	mapRef.current.fitToCoordinates(
+										// 	// 		[
+										// 	// 			{
+										// 	// 				latitude: parseFloat(
+										// 	// 					currentLat
+										// 	// 				),
+										// 	// 				longitude: parseFloat(
+										// 	// 					currentLong
+										// 	// 				),
+										// 	// 			},
+										// 	// 			// destination,
+										// 	// 		],
+										// 	// 		{
+										// 	// 			animated: true,
+										// 	// 		}
+										// 	// 	);
+										// 	// }, 1000);
+										// }}
+										// scrollEnabled={true}
+										// fitToElements={true}
+										// customMapStyle={mapStyle}
+									>
+										<MapView.Marker
+											identifier={"storeMarker"}
+											key={"marker_here"}
+											draggable
+											coordinate={{
 												latitude: parseFloat(
 													currentLat
 												),
 												longitude: parseFloat(
 													currentLong
 												),
-												// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
-												// longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
-												latitudeDelta: 0.009,
-												longitudeDelta: 0.001,
 											}}
-											//hiển thị chấm xanh
-											showsUserLocation={
-												isUpdate == true ? false : true
+											onSelect={(e) =>
+												console.log("onSelect", e)
 											}
-											userLocationAnnotationTitle={
-												isUpdate == true
-													? null
-													: "Vị trí của bạn"
+											// onDrag={(e) => console.log("onDrag", e)}
+											// onDragStart={(e) => console.log("onDragStart", e)}
+											onDragEnd={(region) =>
+												onRegionChange(region)
 											}
-											showsMyLocationButton={true}
-											// followsUserLocation={true}
-											loadingEnabled={true}
-											style={{
-												width: mapWidth,
-												height: mapHeight,
-											}}
-											showsBuildings={true}
-											isAccessibilityElement={true}
+											onPress={(e) =>
+												console.log("onPress", e)
+											}
+										/>
+									</MapView>
 
-											// onMapReady={() => {
-											// 	// mapRef.fitToSuppliedMarkers(...)
-											// 	// mapRef.current.fitToSuppliedMarkers(
-											// 	// 	[
-											// 	// 		"storeMarker", //'truckMarker',
-											// 	// 	],
-											// 	// 	{
-											// 	// 		edgePadding: {
-											// 	// 			top: 50,
-											// 	// 			right: 50,
-											// 	// 			bottom: 50,
-											// 	// 			left: 50,
-											// 	// 		},
-											// 	// 	}
-											// 	// );
-											// }}
-											// fitToCoordinates={{
-											// 	coordinates: {
-											// 		latitude: parseFloat(
-											// 			currentLat
-											// 		),
-											// 		longitude: parseFloat(
-											// 			currentLong
-											// 		),
-											// 	},
-											// }}
-											// onLayout={() => {
-											// 	// mapRef.fitToSuppliedMarkers(
-											// 	// 	{
-											// 	// 		latitude: parseFloat(
-											// 	// 			currentLat
-											// 	// 		),
-											// 	// 		longitude: parseFloat(
-											// 	// 			currentLong
-											// 	// 		),
-											// 	// 	},
-											// 	// 	false // not animated
-											// 	// );
-											// 	console.log(1)
-											// 	// mapRef.fitToCoordinates(
-											// 	// 	{
-											// 	// 		latitude: parseFloat(
-											// 	// 			currentLat
-											// 	// 		),
-											// 	// 		longitude: parseFloat(
-											// 	// 			currentLong
-											// 	// 		),
-											// 	// 	},
-											// 	// 	{
-											// 	// 		edgePadding: {
-											// 	// 			top: 10,
-											// 	// 			right: 10,
-											// 	// 			bottom: 10,
-											// 	// 			left: 10,
-											// 	// 		},
-											// 	// 		animated: false,
-											// 	// 	}
-											// 	// )
-											// }}
-											// onLayout={() =>
-											// 	mapRef.current.fitToCoordinates(
-											// 		{
-											// 			latitude: parseFloat(
-											// 				currentLat
-											// 			),
-											// 			longitude: parseFloat(
-											// 				currentLong
-											// 			),
-											// 		},
-											// 		{
-											// 			edgePadding: {
-											// 				top: 10,
-											// 				right: 10,
-											// 				bottom: 10,
-											// 				left: 10,
-											// 			},
-											// 			animated: true,
-											// 		}
-											// 	)
-											// }
-											// onLayout={() => {
-											// 	console.log("mapReady...");
-
-											// 	// This orientates the map with the origin on bottom and destination on top
-											// 	// You can see that when the map first loads,
-											// 	// but the map isn't fit to the points
-											// 	// mapRef.current.setCamera({
-											// 	// 	,
-											// 	// });
-
-											// 	// 5 seconds after the map loads,
-											// 	// this runs and does fit the map to the points,
-											// 	// but it sets the heading back to 0
-											// 	// setTimeout(() => {
-											// 	// 	console.log(
-											// 	// 		"fitting to coordinates"
-											// 	// 	);
-											// 	// 	mapRef.current.fitToCoordinates(
-											// 	// 		[
-											// 	// 			{
-											// 	// 				latitude: parseFloat(
-											// 	// 					currentLat
-											// 	// 				),
-											// 	// 				longitude: parseFloat(
-											// 	// 					currentLong
-											// 	// 				),
-											// 	// 			},
-											// 	// 			// destination,
-											// 	// 		],
-											// 	// 		{
-											// 	// 			animated: true,
-											// 	// 		}
-											// 	// 	);
-											// 	// }, 1000);
-											// }}
-											// scrollEnabled={true}
-											// fitToElements={true}
-											// customMapStyle={mapStyle}
-										>
-											<MapView.Marker
-												identifier={"storeMarker"}
-												key={"marker_here"}
-												draggable
-												coordinate={{
-													latitude: parseFloat(
-														currentLat
-													),
-													longitude: parseFloat(
-														currentLong
-													),
-												}}
-												onSelect={(e) =>
-													console.log("onSelect", e)
-												}
-												// onDrag={(e) => console.log("onDrag", e)}
-												// onDragStart={(e) => console.log("onDragStart", e)}
-												onDragEnd={(region) =>
-													onRegionChange(region)
-												}
-												onPress={(e) =>
-													console.log("onPress", e)
-												}
-											/>
-										</MapView>
-									)}
+									{/*)}*/}
 
 									<Text
 										style={{
@@ -1053,7 +1130,7 @@ function createPostalLocationScreen(props) {
 											setNameInput(text)
 										}
 									/>
-									<Text
+									{/*<Text
 										style={{
 											marginTop: 5,
 											paddingTop: 6,
@@ -1072,7 +1149,7 @@ function createPostalLocationScreen(props) {
 											setPhoneInput(text)
 										}
 										keyboardType="numeric"
-									/>
+									/>*/}
 									<Text
 										style={{
 											marginTop: 5,

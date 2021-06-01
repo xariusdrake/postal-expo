@@ -84,8 +84,12 @@ const appConfigs = {
     GOOGLE_MAP: {
         latitudeDelta: 0.009,
         longitudeDelta: 0.001,
-        API_KEY: "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA",
-        API_KEY_2: "AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA", // for geocode
+        //AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA
+        API_KEY: "AIzaSyDSnZaFuv7fj1bdFDEZAgwfuvo8WX1go0Q",
+        API_KEY_2: "AIzaSyDSnZaFuv7fj1bdFDEZAgwfuvo8WX1go0Q", // for geocode
+    },
+    VIETMAP: {
+        KEY: "6f5bf21b9c50883b38af007b6570d719317a96778d1e6149"
     },
     ESMS: {
         BASE_URL:

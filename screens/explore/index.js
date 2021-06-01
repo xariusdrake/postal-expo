@@ -35,16 +35,18 @@ import Spinner from "react-native-loading-spinner-overlay";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { getDataFromStorage, retrieveSession, savePushtoken } from "../../functions/helpers";
+import {
+	getDataFromStorage,
+	retrieveSession,
+	savePushtoken,
+} from "../../functions/helpers";
 
 import GuideModalScreen from "../more/guide";
 import IntroModalScreen from "../more/intro";
 import DocumentModalScreen from "../more/document";
 
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
-import {
-	MUTATION_UPDATE_NOTIFI_PUSHTOKEN,
-} from "../../graphql/query";
+import { MUTATION_UPDATE_NOTIFI_PUSHTOKEN } from "../../graphql/query";
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -119,7 +121,7 @@ function ExploreScreen(props) {
 		} else {
 			setHasPermissionCamera(false);
 			console.log("camera false");
-			// Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
+			Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
 		}
 	}
 
@@ -141,7 +143,7 @@ function ExploreScreen(props) {
 				return;
 			}
 			token = (await Notifications.getExpoPushTokenAsync()).data;
-			savePushtoken(token)
+			savePushtoken(token);
 			// console.log(token);
 
 			// if (!!props.infos) {
@@ -167,32 +169,32 @@ function ExploreScreen(props) {
 
 	useEffect(() => {
 		askPermissions();
-		retrieveSession(props)
+		retrieveSession(props);
 
-		registerForPushNotificationsAsync().then((token) =>
-			setExpoPushToken(token)
-		);
+		// registerForPushNotificationsAsync().then((token) =>
+		// 	setExpoPushToken(token)
+		// );
 
-		notificationListener.current = Notifications.addNotificationReceivedListener(
-			(notification) => {
-				setNotification(notification);
-			}
-		);
+		// notificationListener.current = Notifications.addNotificationReceivedListener(
+		// 	(notification) => {
+		// 		setNotification(notification);
+		// 	}
+		// );
 
-		responseListener.current = Notifications.addNotificationResponseReceivedListener(
-			(response) => {
-				console.log(response);
-			}
-		);
+		// responseListener.current = Notifications.addNotificationResponseReceivedListener(
+		// 	(response) => {
+		// 		console.log(response);
+		// 	}
+		// );
 
-		return () => {
-			Notifications.removeNotificationSubscription(
-				notificationListener.current
-			);
-			Notifications.removeNotificationSubscription(
-				responseListener.current
-			);
-		};
+		// return () => {
+		// 	Notifications.removeNotificationSubscription(
+		// 		notificationListener.current
+		// 	);
+		// 	Notifications.removeNotificationSubscription(
+		// 		responseListener.current
+		// 	);
+		// };
 	}, []);
 
 	const downloadPostal = async () => {
@@ -259,7 +261,7 @@ function ExploreScreen(props) {
 							<GuideModalScreen no_header={true} />
 						</Layout>
 					</Tab>
-					<Tab title="DEBUG" style={{ height: 40 }}>
+					{/*<Tab title="DEBUG" style={{ height: 40 }}>
 						<Layout style={styles.container}>
 							<View
 								style={{
@@ -306,7 +308,7 @@ function ExploreScreen(props) {
 								</Button>
 							</View>
 						</Layout>
-					</Tab>
+					</Tab>*/}
 				</TabView>
 			</SafeAreaView>
 		</React.Fragment>
