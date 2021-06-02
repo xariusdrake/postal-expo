@@ -5,6 +5,7 @@ class SMS {
 	constructor(props) {}
 
 	static send({ phone, message }) {
+		
 		if (phone.length < 1 || message.length < 1) {
 			return false;
 		}

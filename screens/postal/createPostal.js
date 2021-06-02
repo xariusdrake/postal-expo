@@ -230,14 +230,14 @@ function createPostalLocationScreen(props) {
 	const [nameLevel3, setNameLevel3] = useState();
 	const [dataPostalLevel3, setDataPostalLevel3] = useState([]);
 
-	const [codeArea, setCodeArea] = useState(null);
+	const [codeArea, setCodeArea] = useState("Chưa chọn");
 
 	const [nameInput, setNameInput] = useState("");
 	// const [phoneInput, setPhoneInput] = useState("");
 	const [addressInput, setAddressInput] = useState("");
 
-	const [currentLat, setCurrentLat] = useState(105.8556549);
-	const [currentLong, setCurrentLong] = useState(21.0285619);
+	const [currentLat, setCurrentLat] = useState(21.0285619);
+	const [currentLong, setCurrentLong] = useState(105.8556549);
 	const [loadingAddress, setLoadingAddress] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -293,8 +293,8 @@ function createPostalLocationScreen(props) {
 					mapRef.current.animateToRegion({
 						latitude: parseFloat(location.coords.latitude),
 						longitude: parseFloat(location.coords.longitude),
-						latitudeDelta: 0.00322,
-						longitudeDelta: 0.00321,
+						latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
+						longitudeDelta: appConfigs.GOOGLE_MAP.longitudeDelta,
 					});
 					// }
 
@@ -345,6 +345,7 @@ function createPostalLocationScreen(props) {
 			},
 		})
 			.then((data) => {
+				console.log(349, data);
 				coordinates = data.data.data.features[0].geometry.coordinates;
 
 				setCurrentLat(parseFloat(coordinates[1]));
@@ -417,12 +418,14 @@ function createPostalLocationScreen(props) {
 
 		// fetchGeocode(DataPostalLevel1[index.row]["name"])
 		axios({
-			method: "get",
+			method: "post",
 			url:
-				"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
-				dataGet.postals[0].area_level1_code,
+				"https://asia-south1-titanium-vision-273216.cloudfunctions.net/function-postal-state",
 			headers: {
 				accept: "text/plain",
+			},
+			data: {
+				code: dataGet.postals[0].area_level1_code,
 			},
 		})
 			.then((dataResponse1) => {
@@ -468,12 +471,14 @@ function createPostalLocationScreen(props) {
 
 				// fetchGeocode(dataPostalLevel2[dataGet.postals[0].area_level2_index]["name"]);
 				axios({
-					method: "get",
+					method: "post",
 					url:
-						"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?is_state=0&parentPostCode=" +
-						dataGet.postals[0].area_level2_code,
+						"https://asia-south1-titanium-vision-273216.cloudfunctions.net/function-postal-state",
 					headers: {
 						accept: "text/plain",
+					},
+					data: {
+						code: dataGet.postals[0].area_level2_code,
 					},
 				})
 					.then((dataResponse2) => {
@@ -544,6 +549,8 @@ function createPostalLocationScreen(props) {
 		setDataPostalLevel3([]);
 		setCodeLevel3("");
 
+		setCodeArea(DataPostalLevel1[index]["code"]);
+
 		console.log(
 			"selectAreaLevel1: ",
 			index,
@@ -552,8 +559,7 @@ function createPostalLocationScreen(props) {
 
 		fetchGeocode(DataPostalLevel1[index]["name"]);
 
-
-		axios({
+		await axios({
 			method: "post",
 			url:
 				"https://asia-south1-titanium-vision-273216.cloudfunctions.net/function-postal-state",
@@ -588,6 +594,8 @@ function createPostalLocationScreen(props) {
 		setDataPostalLevel3([]);
 		setCodeLevel3("");
 
+		setCodeArea(dataPostalLevel2[index]["postcode"]);
+
 		console.log("setDisplayLevel2");
 		console.log(333333332, dataPostalLevel2);
 		// console.log('setDisplayLevel2', index, dataPostalLevel2[index]["code"])
@@ -602,7 +610,7 @@ function createPostalLocationScreen(props) {
 			},
 			data: {
 				code: dataPostalLevel2[index]["postcode"],
-			}
+			},
 		})
 			.then((data) => {
 				console.log(data);
@@ -1172,8 +1180,11 @@ function createPostalLocationScreen(props) {
 											paddingBottom: 10,
 										}}
 									>
-										{DataPostalLevel1.map((postal) => (
-											<SelectItem title={postal.name} />
+										{DataPostalLevel1.map((postal, i) => (
+											<SelectItem
+												key={i}
+												title={postal.name}
+											/>
 										))}
 									</Select>
 									<Select
@@ -1182,40 +1193,15 @@ function createPostalLocationScreen(props) {
 										selectedIndex={indexLevel2}
 										onSelect={(index) => {
 											selectAreaLevel2(index.row);
-
-											// setIndexLevel2(index);
-											// setDisplayLevel2(
-											// 	dataPostalLevel2[index.row]["name"].replace(
-											// 		"tỉnh " + displayLevel1,
-											// 		""
-											// 	)
-											// );
-
-											// // fetchGeocode(dataPostalLevel2[index.row]["name"])
-											// axios({
-											// 	method: "get",
-											// 	url:
-											// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetAdministrativeAgencies?parentPostCode=" +
-											// 		dataPostalLevel2[index.row]["postcode"],
-											// 	headers: {
-											// 		accept: "text/plain",
-											// 	},
-											// })
-											// 	.then((data) => {
-											// 		console.log("data", data);
-											// 		setDataPostalLevel3(data.data);
-											// 	})
-											// 	.catch((e) => {
-											// 		console.log("error", e);
-											// 	});
 										}}
 										style={{
 											paddingHorizontal: 10,
 											paddingBottom: 10,
 										}}
 									>
-										{dataPostalLevel2.map((postal) => (
+										{dataPostalLevel2.map((postal, i) => (
 											<SelectItem
+												key={i}
 												title={postal.name.replace(
 													" tỉnh " + displayLevel1,
 													""
@@ -1229,34 +1215,15 @@ function createPostalLocationScreen(props) {
 										selectedIndex={indexLevel3}
 										onSelect={(index) => {
 											selectAreaLevel3(index.row);
-											// setIndexLevel3(index);
-											// setDisplayLevel3(
-											// 	dataPostalLevel3[index.row]["name"]
-											// 		.replace("tỉnh " + displayLevel1, "")
-											// 		.replace(displayLevel2, "")
-											// );
-
-											// setNameLevel3(dataPostalLevel3[index.row]["name"]);
-
-											// console.log(
-											// 	601,
-											// 	dataPostalLevel3[index.row]["postcode"],
-											// 	dataPostalLevel3[index.row]["name"]
-											// );
-
-											// setCodeArea(
-											// 	dataPostalLevel3[index.row]["postcode"]
-											// );
-
-											// fetchGeocode(dataPostalLevel3[index.row]["name"]);
 										}}
 										style={{
 											paddingHorizontal: 10,
 											paddingBottom: 10,
 										}}
 									>
-										{dataPostalLevel3.map((postal) => (
+										{dataPostalLevel3.map((postal, i) => (
 											<SelectItem
+												key={i}
 												title={postal.name
 													.replace(
 														"tỉnh " + displayLevel1,
@@ -1269,6 +1236,16 @@ function createPostalLocationScreen(props) {
 											/>
 										))}
 									</Select>
+									<Text
+										style={{
+											marginTop: 5,
+											paddingTop: 6,
+											paddingHorizontal: 10,
+											paddingBottom: 8,
+										}}
+									>
+										Mã bưu chính: {codeArea}
+									</Text>
 									<Text
 										style={{
 											marginTop: 5,

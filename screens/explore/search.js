@@ -84,22 +84,21 @@ function SearchScreen(props) {
 
 			setLoadingPostal(true);
 
-			axios({
-				method: "get",
+			await axios({
+				method: "post",
 				url:
-					"https://api.mabuuchinh.vn/api/v1/MBC/GetPostalPaging?currentPage=1&limit=10&postcode=" +
-					s_postcode +
-					"&name=" +
-					s_name,
+					"https://asia-east2-titanium-vision-273216.cloudfunctions.net/postal-search",
 				headers: {
 					accept: "text/plain",
 				},
+				data: {
+					postcode: s_postcode,
+					name: s_name,
+				},
 			})
 				.then((data) => {
-					// setLoadingPostal(false);
 					console.log("data", data);
 					setAllPostalList(data.data.results);
-
 					getListPostal({
 						variables: {
 							text:
@@ -116,6 +115,39 @@ function SearchScreen(props) {
 				.catch((e) => {
 					console.log("error", e);
 				});
+
+			// axios({
+			// 	method: "get",
+			// 	url:
+			// 		"https://api.mabuuchinh.vn/api/v1/MBC/GetPostalPaging?currentPage=1&limit=10&postcode=" +
+			// 		s_postcode +
+			// 		"&name=" +
+			// 		s_name,
+			// 	headers: {
+			// 		accept: "text/plain",
+			// 	},
+			// })
+			// 	.then((data) => {
+			// 		// setLoadingPostal(false);
+			// 		console.log("data", data);
+			// 		setAllPostalList(data.data.results);
+
+			// 		getListPostal({
+			// 			variables: {
+			// 				text:
+			// 					"%" +
+			// 					textSearch.toLowerCase() +
+			// 					// .replace("xã", "x.")
+			// 					// .replace("phường", "p.") +
+			// 					"%",
+			// 				// litmit: 10,
+			// 				// offset: 0,
+			// 			},
+			// 		});
+			// 	})
+			// 	.catch((e) => {
+			// 		console.log("error", e);
+			// 	});
 		}
 	}
 
@@ -135,7 +167,9 @@ function SearchScreen(props) {
 	// };
 
 	const renderIconState = (props) => <Icon {...props} name="home-outline" />;
-	const renderIconPersonal = (props) => <Icon {...props} name="person-outline" />;
+	const renderIconPersonal = (props) => (
+		<Icon {...props} name="person-outline" />
+	);
 
 	let renderItem = ({ item, index }) => {
 		let name = item.name.replace("X. ", "Xã ").replace("P. ", "Phường ");
@@ -151,7 +185,9 @@ function SearchScreen(props) {
 						is_search: 1,
 					})
 				}
-				accessoryLeft={item.type == 99 ? renderIconPersonal : renderIconState}
+				accessoryLeft={
+					item.type == 99 ? renderIconPersonal : renderIconState
+				}
 			/>
 		);
 	};

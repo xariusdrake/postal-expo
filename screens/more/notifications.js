@@ -103,7 +103,7 @@ function NotificationScreen(props) {
 	function converTime(date) {
 		var date = new Date(Date.parse(date));
 
-		return date
+		return date;
 
 		// var msPerMinute = 60 * 1000;
 		// var msPerHour = msPerMinute * 60;
@@ -225,13 +225,13 @@ function NotificationScreen(props) {
 				/>
 			)}
 
-			{/*{notifications.length == 0 && loadingNotif == false && (
+			{notifications.length == 0 && loadingNotif == false && (
 				<View style={[styles.container]}>
 					<Text style={styles.title} category="h6">
 						Bạn chưa có thông báo nào
 					</Text>
 				</View>
-			)}*/}
+			)}
 		</SafeAreaView>
 	);
 }

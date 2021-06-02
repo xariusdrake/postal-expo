@@ -82,13 +82,12 @@ function ExploreScreen(props) {
 	const notificationListener = useRef();
 	const responseListener = useRef();
 
-	async function askPermissions() {
-		var responseLocation = await Permissions.askAsync(Permissions.LOCATION);
-
-		console.log("askPermissions response");
-		console.log(responseLocation);
-
-		if (responseLocation.status == "granted") {
+	async function getLocationAsync() {
+		// permissions returns only for location permissions on iOS and under certain conditions, see Permissions.LOCATION
+		const { status, permissions } = await Permissions.askAsync(
+			Permissions.LOCATION
+		);
+		if (status === "granted") {
 			setHasPermissionLocation(true);
 
 			console.log("askPermissions granted");
@@ -108,21 +107,53 @@ function ExploreScreen(props) {
 		} else {
 			setHasPermissionLocation(false);
 			Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
+			console.log(110, status)
+			throw new Error("Location permission not granted");
 		}
+	}
 
-		var responseCamera = await Permissions.askAsync(Permissions.CAMERA);
+	async function askPermissions() {
+		getLocationAsync();
+		// var responseLocation = await Permissions.askAsync(Permissions.LOCATION);
 
-		console.log("camera ask");
-		console.log(responseCamera);
+		// console.log("askPermissions response");
+		// console.log(responseLocation);
 
-		if (responseCamera.status == "granted") {
-			console.log("camera true");
-			setHasPermissionCamera(true);
-		} else {
-			setHasPermissionCamera(false);
-			console.log("camera false");
-			Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
-		}
+		// if (responseLocation.status === "granted") {
+		// 	setHasPermissionLocation(true);
+
+		// 	console.log("askPermissions granted");
+
+		// 	let location = await Location.getCurrentPositionAsync();
+
+		// 	if (
+		// 		location.coords.latitude != null &&
+		// 		location.coords.longitude != null
+		// 	) {
+		// 		console.log(
+		// 			"askPermissions here location: ",
+		// 			location.coords.latitude,
+		// 			location.coords.longitude
+		// 		);
+		// 	}
+		// } else {
+		// 	setHasPermissionLocation(false);
+		// 	Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
+		// }
+
+		// var responseCamera = await Permissions.askAsync(Permissions.CAMERA);
+
+		// console.log("camera ask");
+		// console.log(responseCamera);
+
+		// if (responseCamera.status === "granted") {
+		// 	console.log("camera true");
+		// 	setHasPermissionCamera(true);
+		// } else {
+		// 	setHasPermissionCamera(false);
+		// 	console.log("camera false");
+		// 	Alert.alert("Quyền vị trị không được cấp. Vào cài đặt để đặt lại.");
+		// }
 	}
 
 	async function registerForPushNotificationsAsync() {

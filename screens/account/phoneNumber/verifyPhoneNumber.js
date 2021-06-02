@@ -41,7 +41,12 @@ import styles, {
 import HTTPRequest from "../../../functions/httpRequest";
 import SMS from "../../../functions/sms";
 import { allNumeric } from "../../../functions/strings";
-import { saveUserdata, directForNonAuth } from "../../../functions/helpers";
+import {
+	saveUserdata,
+	directForNonAuth,
+	setDataStorage,
+	getDataFromStorage,
+} from "../../../functions/helpers";
 
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import {
@@ -204,6 +209,7 @@ function VerifyPhoneNumberScreen(props) {
 		},
 	});
 
+	const [lastedSent, setLastestSent] = useState(null);
 	const [countSMS, setCountSMS] = useState(0);
 	const [codeConfirm, setCodeConfirm] = useState("");
 	const [isSent, setIsSent] = useState(false);
@@ -219,7 +225,7 @@ function VerifyPhoneNumberScreen(props) {
 	const [timeLeft, setTimeLeft] = useState(60);
 
 	useEffect(() => {
-		directForNonAuth(props);
+		// onCreateCodeConfirm();
 		// const timer = setTimeout(() => {
 		// 	let timeNew;
 		// 	if (timeLeft > 0) {
@@ -227,12 +233,20 @@ function VerifyPhoneNumberScreen(props) {
 		// 	} else {
 		// 		timeNew = timeLeft;
 		// 	}
-
 		// 	setTimeLeft(timeNew);
 		// }, 1000);
+		// if (props.infos.is_actived == 0) {
+		// 	onCreateCodeConfirm();
+		// }
 
-		if (props.infos.is_actived == 0) {
-			onCreateCodeConfirm();
+		if (!props.infos) {
+			directForNonAuth(props);
+		} else {
+			if (props.infos.is_actived != 0) {
+				props.navigation.navigate("More");
+			} else {
+				onCreateCodeConfirm();
+			}
 		}
 	});
 
@@ -246,29 +260,40 @@ function VerifyPhoneNumberScreen(props) {
 	// }
 
 	function onCreateCodeConfirm() {
-		if (countSMS < 3) {
-			let newCount = countSMS + 1;
-			setCountSMS(newCount);
+		getDataFromStorage("@lasted_verity_phone_time")
+			.then((lastest) => {
+				if (
+					lastest == null ||
+					Math.floor(Date.now() / 1000) - parseInt(lastest) > 179
+				) {
+					setDataStorage(
+						"@lasted_verity_phone_time",
+						Math.floor(Date.now() / 1000).toString()
+					);
 
-			console.log("run onCreateCodeConfirm");
+					console.log("run onCreateCodeConfirm");
 
-			let randomCode = Math.floor(1000 + Math.random() * 9000);
-			console.log("randomCode: " + randomCode);
-			setCodeConfirm(randomCode);
-			setIsSent(true);
+					let randomCode = Math.floor(1000 + Math.random() * 9000);
+					console.log("randomCode: " + randomCode);
+					setCodeConfirm(randomCode);
+					setIsSent(true);
 
-			createCodeConfirm({
-				variables: {
-					code: parseInt(randomCode),
-					uid: parseInt(props.infos.id),
-				},
+					createCodeConfirm({
+						variables: {
+							code: parseInt(randomCode),
+							uid: parseInt(props.infos.id),
+						},
+					});
+				} else {
+					console.log(290, lastest, Math.floor(Date.now() / 1000));
+				}
+			})
+			.catch((error) => {
+				console.log(error);
 			});
-		}
 	}
 
 	function onClickCheckCode() {
-		console.log(value);
-		console.log("onClickCheckCode");
 
 		if (!value.trim()) {
 			Alert.alert("Vui lòng nhập mã xác nhận");
@@ -384,13 +409,11 @@ function VerifyPhoneNumberScreen(props) {
 					</TouchableOpacity>
 				)}*/}
 
-				{isSent == true && (
-					<TouchableOpacity onPress={() => onClickCheckCode()}>
-						<View style={styles.nextButton}>
-							<Text style={styles.nextButtonText}>Xác nhận</Text>
-						</View>
-					</TouchableOpacity>
-				)}
+				<TouchableOpacity onPress={() => onClickCheckCode()}>
+					<View style={styles.nextButton}>
+						<Text style={styles.nextButtonText}>Xác nhận</Text>
+					</View>
+				</TouchableOpacity>
 				{/*<TouchableOpacity onPress={() => onClickConfirm()}>
 					<Text
 						style={

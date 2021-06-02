@@ -51,9 +51,10 @@ function MoreInfoScreen(props) {
 	}
 
 	useEffect(() => {
-		checkUpdate();
+		// checkUpdate();
 
-		if (props.infos != null) {
+		if (!props.infos) {
+		} else {
 			if (props.infos.is_actived == -1) {
 				logout();
 				setTimeout(function () {
@@ -89,15 +90,31 @@ function MoreInfoScreen(props) {
 	}
 
 	async function updateVersion() {
+		try {
+			const update = await Updates.checkForUpdateAsync();
+			if (update.isAvailable) {
+				setNewUpdate(false);
+				// Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
 
-		if (newUpdate == true) {
-			console.log("updateVersion");
-			Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
-			await Updates.fetchUpdateAsync();
-			await Updates.reloadAsync();
-		} else {
-			Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
+				await Updates.fetchUpdateAsync();
+				await Updates.reloadAsync();
+			} else {
+				// setNewUpdate(true);
+				// Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
+				console.log("nothing");
+			}
+		} catch (e) {
+			console.log(e);
 		}
+
+		// if (newUpdate == true) {
+		// 	console.log("updateVersion");
+		// 	Alert.alert("Phiên bản mới nhất đang bắt đầu cập nhật");
+		// 	await Updates.fetchUpdateAsync();
+		// 	await Updates.reloadAsync();
+		// } else {
+		// 	Alert.alert("Bạn đang sử dụng phiên bản mới nhất");
+		// }
 	}
 
 	return (
@@ -112,7 +129,9 @@ function MoreInfoScreen(props) {
 										style={styles.profileDetailsContainer}
 									>
 										<Text category="h5">
-											{props.infos.fullname ? props.infos.fullname : ''}
+											{props.infos.fullname
+												? props.infos.fullname
+												: ""}
 										</Text>
 										<View
 											style={
@@ -124,7 +143,9 @@ function MoreInfoScreen(props) {
 												appearance="hint"
 												category="s1"
 											>
-												{props.infos.phone ? props.infos.phone : ''}
+												{props.infos.phone
+													? props.infos.phone
+													: ""}
 											</Text>
 										</View>
 									</View>
@@ -268,7 +289,7 @@ function MoreInfoScreen(props) {
 							category="s1"
 							style={{ color: "#0469c1" }}
 						>
-							Phiên bản 2.4.9
+							Phiên bản 2.5.1
 						</Text>
 					</TouchableOpacity>
 					<Divider />

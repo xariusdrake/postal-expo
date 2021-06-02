@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
+import axios from "axios";
 
 import {
 	Input,
@@ -141,6 +142,7 @@ function DetailPostalScreen(props) {
 	const [visibleModal, setVisibleModal] = useState(false);
 	const [getLatitude, setLatitude] = useState(null);
 	const [getLongtitude, setLongtitude] = useState(null);
+	const [mapType, setMapType] = useState("standard");
 	const [loading, setLoading] = useState(false);
 
 	// console.log(60, response.postal.uid, props.infos.id);
@@ -172,7 +174,33 @@ function DetailPostalScreen(props) {
 		setAddress(response.postal.address);
 
 		if (response.postal.type != 99) {
-			Geocode.fromAddress(valueSearch).then(
+			let coordinates;
+			axios({
+				method: "get",
+				url:
+					"https://maps.vietmap.vn/api/search?api-version=1.1&apikey=6f5bf21b9c50883b38af007b6570d719317a96778d1e6149&text=" +
+					valueSearch +
+					"&size=1&categories=",
+				headers: {
+					accept: "text/plain",
+				},
+			})
+				.then((data) => {
+					console.log(
+						186,
+						data.data.data.features[0].geometry.coordinates
+					);
+					coordinates =
+						data.data.data.features[0].geometry.coordinates;
+
+					setLatitude(parseFloat(coordinates[1]));
+					setLongtitude(parseFloat(coordinates[0]));
+				})
+				.catch((e) => {
+					console.log("error", e);
+				});
+
+			/*Geocode.fromAddress(valueSearch).then(
 				(response) => {
 					console.log("from address");
 					console.log(response);
@@ -192,7 +220,7 @@ function DetailPostalScreen(props) {
 				(error) => {
 					console.error(error);
 				}
-			);
+			);*/
 		}
 
 		// try {
@@ -305,9 +333,29 @@ function DetailPostalScreen(props) {
 		}
 	}
 
+	const MapIcon = (props) => (
+		<Icon
+			{...props}
+			name={
+				mapType == "standard"
+					? "toggle-right-outline"
+					: "toggle-left-outline"
+			}
+		/>
+	);
+
+	const onClickMapType = () => {
+		if (mapType == "standard") {
+			setMapType("satellite");
+		} else {
+			setMapType("standard");
+		}
+	};
+
 	const renderRightActions = () => {
 		return (
 			<React.Fragment>
+				{getLatitude != null && getLongtitude != null && (<TopNavigationAction icon={MapIcon} onPress={onClickMapType} />)}
 				{response.postal.uid != null &&
 					props.infos.id == response.postal.uid && (
 						<React.Fragment>
@@ -569,11 +617,10 @@ function DetailPostalScreen(props) {
 						initialRegion={{
 							latitude: getLatitude,
 							longitude: getLongtitude,
-							// latitudeDelta: appConfigs.GOOGLE_MAP.latitudeDelta,
-							// lngitudeDelta: appConfigs.GOOGLE_MAP.lngitudeDelta,
 							latitudeDelta: 0.009,
 							longitudeDelta: 0.001,
 						}}
+						mapType={mapType}
 						//hiển thị chấm xanh
 						// showsUserLocation={true}
 						// showsMyLocationButton={true}
@@ -601,6 +648,7 @@ function DetailPostalScreen(props) {
 								latitude: getLatitude,
 								longitude: getLongtitude,
 							}}
+							mapType={mapType}
 							apikey={appConfigs.GOOGLE_MAP.API_KEY_2}
 							timePrecision={"now"}
 							mode={"DRIVING"}

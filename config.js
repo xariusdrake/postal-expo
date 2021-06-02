@@ -82,8 +82,8 @@ const appConfigs = {
         EXPIRED_TIME: 365,
     },
     GOOGLE_MAP: {
-        latitudeDelta: 0.009,
-        longitudeDelta: 0.001,
+        latitudeDelta: 0.00322,
+        longitudeDelta: 0.00321,
         //AIzaSyAVqIeFgHndRBRSKJsTnjvygWXxWwsIUbA
         API_KEY: "AIzaSyDSnZaFuv7fj1bdFDEZAgwfuvo8WX1go0Q",
         API_KEY_2: "AIzaSyDSnZaFuv7fj1bdFDEZAgwfuvo8WX1go0Q", // for geocode
